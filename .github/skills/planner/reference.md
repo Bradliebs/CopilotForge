@@ -227,7 +227,7 @@ Start here: Open FORGE.md to see your full setup. Edit it anytime.
 Accept them. Map each answer to the corresponding question. If any question is unanswered, ask only the missing ones.
 
 ### User says "just use defaults"
-Apply all defaults: memory = yes, testing = yes, skill level = beginner. Still ask Question 1 (project) and Question 2 (stack) — these have no defaults.
+Apply all defaults: memory = yes, testing = yes, skill level = beginner, extras = none (suggest based on experience level but accept "none" as default). Still ask Question 1 (project) and Question 2 (stack) — these have no defaults.
 
 ### Unknown or mixed stack
 If the stack includes languages/frameworks you don't recognize, generate generic conventions (file structure, error handling, naming) and note in decisions.md that stack-specific patterns should be added manually.
@@ -257,6 +257,7 @@ The Planner is idempotent on structure. Running it again should:
 - Append to decisions.md (never delete entries)
 - Update preferences.md with any changed settings
 - Add a new session entry to history.md
+- On re-runs, check preferences.md for previously selected extras. Show them and ask if the user wants to change.
 
 ### Corrupted or partial memory
 If memory files exist but are malformed or partially readable:
@@ -269,7 +270,7 @@ If memory files exist but are malformed or partially readable:
 ### User says "start fresh"
 If the user explicitly requests a fresh start ("start fresh", "reset everything", "start over"):
 - Bypass all memory read-back
-- Run the full 5-question wizard as if no memory exists
+- Run the full wizard as if no memory exists
 - Record this as a decision in decisions.md: "Full reset requested — previous context ignored"
 - Regenerate all files (with user confirmation before overwriting)
 
@@ -289,6 +290,31 @@ If the user's answer conflicts with detected files (e.g., user says "Django" but
 - Trust the user's answer as the primary stack
 - Note both in `decisions.md`: "User specified {user answer}; detected {detected stack} — user answer takes precedence"
 - Generate recipes and conventions for the user's stated stack, but mention the conflict in the validation summary
+
+---
+
+## Extras Catalog
+
+When the user selects extras in Question 6, generate the corresponding recipe files. Each extra maps to specific files:
+
+| Extra | Recipe File(s) | Description |
+|-------|---------------|-------------|
+| Task automation | `cookbook/ralph-loop.{ext}` | Autonomous dev loop — reads TODO list, implements tasks, validates, commits |
+| Auto-experiments | `cookbook/auto-research.{ext}` | Experiment loop — proposes changes, runs eval, tracks metrics in TSV |
+| Knowledge wiki | `cookbook/knowledge-wiki.{ext}` | Wiki builder — init, ingest, search, lint CLI with Obsidian-compatible output |
+| CLI hooks | `cookbook/copilot-hooks.{ext}` | Hook generator — creates `.github/hooks/hooks.json` with companion scripts |
+| Blog writer | `cookbook/blog-writer.{ext}` | PR reader → outline → draft → edit pipeline for developer blog posts |
+| Template factory | `cookbook/template-creator.{ext}` | Scans repo, generates README, CONTRIBUTING, issue templates, and more |
+| PR dashboard | `cookbook/pr-visualization.{ext}` | Fetches PR data via GitHub API, generates charts and summary reports |
+
+`{ext}` = `ts` for TypeScript/JavaScript stacks, `py` for Python stacks, `ts` as default for other stacks.
+
+### Extras Edge Cases
+
+- **"I want everything"** / **"all of them"** → Select all 7 extras. Warn: "That's a lot of files! I'll generate them all — you can always delete ones you don't use."
+- **"I want the wiki"** → Map fuzzy names: "wiki" = Knowledge wiki, "loops" / "automation" = Task automation, "research" / "experiments" = Auto-experiments, "hooks" = CLI hooks, "blog" = Blog writer, "templates" / "docs" = Template factory, "dashboard" / "PRs" = PR dashboard.
+- **User picks an extra that needs TypeScript/Python but their stack is Go/Rust** → Generate anyway with a comment: `// NOTE: This recipe is optimized for TypeScript. Adapt patterns for your {stack}.`
+- **Returning user** → Read extras list from `preferences.md`. Show current selections. Only ask about changes.
 
 ---
 
@@ -422,7 +448,7 @@ When memory files exist, the wizard becomes adaptive:
 | Q4 (Testing) | Ask yes/no | Show current setting, ask "Keep this?" — or infer from test files |
 | Q5 (Skill level) | Ask from scratch | Show stored level, ask "Keep this?" |
 
-A returning user can confirm all 5 questions with a single "yes" instead of re-typing everything.
+A returning user can confirm all questions with a single "yes" instead of re-typing everything.
 
 ### How Memory Affects Generation (Convention Application)
 
@@ -454,6 +480,6 @@ Memory never causes the wizard to crash or produce invalid output. If memory is 
 
 Users can reset CopilotForge memory in three ways:
 
-1. **"Start fresh" command** — Tell the wizard "start fresh" or "reset everything." It will ignore all memory and run the full 5-question wizard. The reset is logged in decisions.md.
+1. **"Start fresh" command** — Tell the wizard "start fresh" or "reset everything." It will ignore all memory and run the full wizard. The reset is logged in decisions.md.
 2. **Delete memory files** — Remove the `forge-memory/` directory. CopilotForge will treat the next run as a first-time setup.
 3. **Edit memory files** — Memory files are plain markdown. Users can edit, delete entries, or add overrides directly. CopilotForge reads whatever is there on the next run.

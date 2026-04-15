@@ -24,7 +24,7 @@ triggers:
 
 # CopilotForge Planner
 
-> Drop this file into any repo at `.github/skills/planner/SKILL.md`. When triggered, it walks you through five questions and scaffolds a complete Copilot-ready project structure — skills, agents, memory, and cookbook recipes. No CLI. No framework. Just markdown.
+> Drop this file into any repo at `.github/skills/planner/SKILL.md`. When triggered, it walks you through a short set of questions and scaffolds a complete Copilot-ready project structure — skills, agents, memory, and cookbook recipes. No CLI. No framework. Just markdown.
 
 ## What This Does
 
@@ -95,7 +95,7 @@ Only ask questions for information that's **missing** from memory — see Step 1
 
 **If no memory files exist (first-time user):**
 
-Proceed to Step 1 as normal (the full greeting and 5-question wizard).
+Proceed to Step 1 as normal (the full greeting and wizard).
 
 **If memory files exist but are corrupted or incomplete:**
 
@@ -109,7 +109,7 @@ Treat any readable data as valid context. For anything unreadable, fall back to 
 
 Say exactly this (adjust tone for friendliness, keep the meaning):
 
-> **Welcome to CopilotForge!** I'll ask you five quick questions about your project, then scaffold a complete set of Copilot skills, agent definitions, memory files, and code recipes into this repo. Takes about two minutes. Let's go.
+> **Welcome to CopilotForge!** I'll ask you a few quick questions about your project, then scaffold a complete set of Copilot skills, agent definitions, memory files, and code recipes into this repo. Takes about two minutes. Let's go.
 
 **Returning users** (memory found in Step 0):
 
@@ -190,9 +190,38 @@ If the user skips or says nothing, default to **yes**.
 
 If the user skips or says nothing, default to **beginner**.
 
+**Question 6 — Extras**
+
+*If already in memory (from preferences.md):*
+> Your current extras: **{list from memory}**
+> Want to change these? *(yes / no — or name specific additions/removals)*
+
+*If not in memory:*
+> **Optional extras** — powerful features you can add now or anytime later. Pick any that sound useful, or skip them all — the core setup works great on its own.
+>
+> | Extra | What it does (plain English) |
+> |-------|----------------------------|
+> | 🔄 **Task automation** | An AI works through your TODO list while you're away — picks a task, does it, moves to the next |
+> | 🧪 **Auto-experiments** | An AI tries changes to your code, runs tests, keeps what works. Like a tireless intern optimizing overnight |
+> | 📚 **Knowledge wiki** | Drop in articles and notes, get a searchable personal Wikipedia with cross-references |
+> | 🔗 **CLI hooks** | Automatic actions during AI chat sessions — logging, safety checks, blocking dangerous commands |
+> | ✍️ **Blog writer** | Turns your pull requests and code changes into blog posts automatically |
+> | 📋 **Template factory** | Generates README files, issue templates, and project docs in bulk |
+> | 📊 **PR dashboard** | Charts showing what pull requests are open, how old they are, who's reviewing |
+>
+> Type the ones you want (e.g., "task automation, wiki") or say **"none"** to skip.
+> *(You can always add these later — see `cookbook/CHEATSHEET.md`)*
+
+**Default suggestions by experience level** (from Question 5):
+- **beginner** → Suggest "none" with reassurance: *"These are optional — I'd recommend starting simple. You can always add them later."*
+- **intermediate** → Suggest "task automation" as a starting point: *"Task automation pairs well with most projects. Want to add it?"*
+- **advanced** → Suggest "task automation, auto-experiments": *"These two are popular with experienced devs. Want them?"*
+
+If the user skips or says nothing, default to **none** (no extras).
+
 ### Step 2 — Confirm Before Scaffolding
 
-After collecting all five answers, present a summary and ask for confirmation:
+After collecting all answers, present a summary and ask for confirmation:
 
 > **Here's what I'll create:**
 >
@@ -201,8 +230,9 @@ After collecting all five answers, present a summary and ask for confirmation:
 > - **Memory:** {yes/no}
 > - **Test automation:** {yes/no}
 > - **Verbosity:** {beginner/intermediate/advanced}
+> - **Extras:** {list of selected extras, or "none"}
 >
-> I'll generate skills, agents, memory files, cookbook recipes, and a FORGE.md control panel. Ready to go?
+> I'll generate skills, agents, memory files, cookbook recipes, {and selected extras, }and a FORGE.md control panel. Ready to go?
 
 Wait for confirmation. If the user says "change X," adjust and re-confirm. Do not scaffold until the user confirms.
 
@@ -353,6 +383,13 @@ Generate code recipes based on the project's detected stack. Recipes are copy-pa
 | Database | ORM query patterns — CRUD, transactions, error handling | Prisma, SQLAlchemy, GORM, EF Core |
 | Component scaffold | Typed UI component with props and common patterns | React, Blazor |
 | Route handler | Web route with validation, middleware, error responses | Express, FastAPI, net/http, ASP.NET |
+| Task automation | Autonomous dev loop — works through a TODO list, commits each task | All languages |
+| Auto-experiments | Autonomous optimization — tries changes, measures results, keeps improvements | All languages |
+| Knowledge wiki | Personal wiki builder — ingest sources, search, lint, cross-reference | TypeScript, Python |
+| CLI hooks | Copilot CLI session hooks — logging, safety checks, audit trails | TypeScript, Python |
+| Blog writer | PR-to-blog pipeline — reads code changes, writes blog posts | TypeScript, Python |
+| Template factory | Document generator — README, issue templates, project docs | TypeScript, Python |
+| PR dashboard | Pull request analytics — charts, age tracking, reviewer stats | TypeScript, Python |
 
 **How recipes are selected:**
 
@@ -363,6 +400,17 @@ Recipes are auto-selected based on what's detected in your project:
 - You always get an error handling recipe and an API client recipe for your primary language
 
 The goal is: every recipe matches something you actually use. No generic filler.
+
+**Extras-based selection:** If the user selected extras in Question 6, include the corresponding recipe files:
+- Task automation → `ralph-loop.{ext}`
+- Auto-experiments → `auto-research.{ext}`
+- Knowledge wiki → `knowledge-wiki.{ext}`
+- CLI hooks → `copilot-hooks.{ext}`
+- Blog writer → `blog-writer.{ext}`
+- Template factory → `template-creator.{ext}`
+- PR dashboard → `pr-visualization.{ext}`
+
+Extras recipes are only generated if explicitly selected. They are never auto-included.
 
 Always generate `cookbook/README.md` listing all recipes with one-line descriptions.
 
@@ -439,6 +487,7 @@ After all files are created, print a plain-English summary of everything that wa
 > - **{N} skills** — {list names with one-line descriptions}
 > - **{N} agents** — {list names with one-line descriptions}
 > - **{N} cookbook recipes** — {list names}
+> - **{N} extras** — {list names, or "none selected"}
 > - **{N} memory files** — decisions.md, patterns.md, preferences.md, history.md
 > - **1 control panel** — FORGE.md
 >
