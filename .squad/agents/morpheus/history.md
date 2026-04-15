@@ -30,3 +30,5 @@
 
 - **2026-04-15: Phase 7 & 8 complete — v1.0 ready.** Beginner navigation (Phase 7) delivered via WHAT-TO-USE.md + persona routing. Wizard Q6 extras (Phase 8) added advanced feature selection. All eight phases verified complete. Architecture is solid: skills → wizard → agents → memory → recipes. Zero critical gaps. Recommendation: ready for publication.
 - **2026-04-15: Documentation is the product.** README + GETTING-STARTED + WHAT-TO-USE + CHEATSHEET + FAQ form a complete onboarding funnel. Users never feel lost because documentation anticipates every question. No user should ever ask "where do I start?" — WHAT-TO-USE answers it.
+
+- **2026-04-16: Planning Mode documentation added.** Updated README, GETTING-STARTED, WHAT-TO-USE, CHEATSHEET, and FAQ to explain Planning Mode. Consistent terminology: "Planning Mode", "IMPLEMENTATION_PLAN.md", "Ralph Loop". All beginner-friendly. Added heroic example flow showing autonomous project build from plan.

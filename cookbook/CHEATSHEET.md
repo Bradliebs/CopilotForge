@@ -27,6 +27,7 @@
 | **Run autonomous experiments** | Auto-Research | `auto-research.ts` / `.py` |
 | **Build a personal knowledge base** | Knowledge Wiki | `knowledge-wiki.ts` / `.py` |
 | **Build an autonomous dev loop** | Ralph Loop | `ralph-loop.ts` / `.py` |
+| **I want AI to build my project from a plan** | Ralph Loop + IMPLEMENTATION_PLAN.md | `cookbook/ralph-loop.ts` | beginner+ |
 | **See delegation in action** | Delegation Example | `delegation-example.ts` |
 | **Create custom skills** | Skill Creation | `skill-creation-example.ts` |
 

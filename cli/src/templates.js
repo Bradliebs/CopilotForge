@@ -151,6 +151,233 @@ if __name__ == "__main__":
     main()
 `;
 
+const RALPH_LOOP_TS = `/**
+ * ralph-loop.ts — CopilotForge Cookbook Recipe (Starter)
+ *
+ * WHAT THIS DOES:
+ *   Autonomous dev loop: read IMPLEMENTATION_PLAN.md, pick the next pending
+ *   task, implement it, validate, mark done (git commit), repeat.
+ *
+ * WHEN TO USE:
+ *   When you want an AI agent to work through tasks without human
+ *   intervention between steps.
+ *
+ * HOW TO RUN:
+ *   1. Edit IMPLEMENTATION_PLAN.md with your tasks
+ *   2. npx ts-node cookbook/ralph-loop.ts
+ */
+
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
+import { execSync } from "node:child_process";
+
+// --- Plan Parser ---
+
+interface Task { id: string; title: string; status: "pending" | "done" | "failed"; }
+
+function parsePlan(filePath: string): Task[] {
+  const content = readFileSync(filePath, "utf-8");
+  const tasks: Task[] = [];
+  for (const line of content.split("\n")) {
+    const m = line.match(/^- \[(.)]\s(\S+)\s*—\s*(.+)$/);
+    if (!m) continue;
+    const status = m[1] === "x" ? "done" : m[1] === "!" ? "failed" : "pending";
+    tasks.push({ id: m[2], title: m[3].trim(), status } as Task);
+  }
+  return tasks;
+}
+
+function writePlan(filePath: string, tasks: Task[]): void {
+  const lines = ["# Implementation Plan", ""];
+  for (const t of tasks) {
+    const marker = t.status === "done" ? "x" : t.status === "failed" ? "!" : " ";
+    lines.push(\`- [\${marker}] \${t.id} — \${t.title}\`);
+  }
+  writeFileSync(filePath, lines.join("\n") + "\n", "utf-8");
+}
+
+// --- TODO: Replace these with your real logic ---
+
+function implementTask(task: Task): void {
+  // TODO: Call Copilot SDK, write code, run generators, etc.
+  console.log(\`[Ralph] Implementing: \${task.id}...\`);
+}
+
+function validateTask(task: Task): boolean {
+  // TODO: Run tests, lint, type-check — return false on failure.
+  console.log(\`[Ralph] Validating: \${task.id}...\`);
+  return true;
+}
+
+// --- Ralph Loop ---
+
+function ralphLoop(planPath: string, maxIter = 10): void {
+  if (!existsSync(planPath)) {
+    console.error(\`[Ralph] Plan not found: \${planPath}\`);
+    console.error("  Create IMPLEMENTATION_PLAN.md with: - [ ] task-id — Title");
+    return;
+  }
+
+  for (let i = 1; i <= maxIter; i++) {
+    const tasks = parsePlan(planPath); // fresh read each iteration
+    const pending = tasks.find((t) => t.status === "pending");
+    if (!pending) {
+      const done = tasks.filter((t) => t.status === "done").length;
+      console.log(\`[Ralph] 🏁 All tasks complete. \${done} done.\`);
+      return;
+    }
+    console.log(\`[Ralph] === Iteration \${i}/\${maxIter} — \${pending.id} ===\`);
+
+    implementTask(pending);
+    const passed = validateTask(pending);
+
+    // Update plan on disk
+    const fresh = parsePlan(planPath);
+    const target = fresh.find((t) => t.id === pending.id);
+    if (target) { target.status = passed ? "done" : "failed"; writePlan(planPath, fresh); }
+
+    if (passed) {
+      try { execSync("git add -A && git commit -m \"feat: " + pending.id + "\"", { stdio: "pipe" }); } catch {}
+      console.log(\`[Ralph] ✅ \${pending.id} done.\`);
+    } else {
+      console.log(\`[Ralph] ❌ \${pending.id} failed.\`);
+    }
+  }
+  console.log("[Ralph] ⚠️ Max iterations reached.");
+}
+
+ralphLoop(join(".", "IMPLEMENTATION_PLAN.md"));
+`;
+
+const RALPH_LOOP_PY = `"""
+ralph-loop.py — CopilotForge Cookbook Recipe (Starter)
+
+WHAT THIS DOES:
+    Autonomous dev loop: read IMPLEMENTATION_PLAN.md, pick the next pending
+    task, implement it, validate, mark done (git commit), repeat.
+
+WHEN TO USE:
+    When you want an AI agent to work through tasks without human
+    intervention between steps.
+
+HOW TO RUN:
+    1. Edit IMPLEMENTATION_PLAN.md with your tasks
+    2. python cookbook/ralph-loop.py
+"""
+
+from __future__ import annotations
+
+import re
+import subprocess
+from pathlib import Path
+
+
+# --- Plan Parser ---
+
+
+def parse_plan(file_path: Path) -> list[dict]:
+    tasks = []
+    for line in file_path.read_text(encoding="utf-8").splitlines():
+        m = re.match(r"^- \[(.)]\s(\S+)\s*—\s*(.+)$", line)
+        if not m:
+            continue
+        marker, task_id, title = m.group(1), m.group(2), m.group(3).strip()
+        status = "done" if marker == "x" else "failed" if marker == "!" else "pending"
+        tasks.append({"id": task_id, "title": title, "status": status})
+    return tasks
+
+
+def write_plan(file_path: Path, tasks: list[dict]) -> None:
+    lines = ["# Implementation Plan", ""]
+    for t in tasks:
+        marker = {"done": "x", "failed": "!", "pending": " "}.get(t["status"], " ")
+        lines.append(f"- [{marker}] {t['id']} — {t['title']}")
+    file_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+# --- TODO: Replace these with your real logic ---
+
+
+def implement_task(task: dict) -> None:
+    # TODO: Call Copilot SDK, write code, run generators, etc.
+    print(f"[Ralph] Implementing: {task['id']}...")
+
+
+def validate_task(task: dict) -> bool:
+    # TODO: Run tests, lint, type-check — return False on failure.
+    print(f"[Ralph] Validating: {task['id']}...")
+    return True
+
+
+# --- Ralph Loop ---
+
+
+def ralph_loop(plan_path: Path, max_iter: int = 10) -> None:
+    if not plan_path.exists():
+        print(f"[Ralph] Plan not found: {plan_path}")
+        print("  Create IMPLEMENTATION_PLAN.md with: - [ ] task-id — Title")
+        return
+
+    for i in range(1, max_iter + 1):
+        tasks = parse_plan(plan_path)  # fresh read each iteration
+        pending = next((t for t in tasks if t["status"] == "pending"), None)
+        if pending is None:
+            done = sum(1 for t in tasks if t["status"] == "done")
+            print(f"[Ralph] 🏁 All tasks complete. {done} done.")
+            return
+        print(f"[Ralph] === Iteration {i}/{max_iter} — {pending['id']} ===")
+
+        implement_task(pending)
+        passed = validate_task(pending)
+
+        # Update plan on disk
+        fresh = parse_plan(plan_path)
+        target = next((t for t in fresh if t["id"] == pending["id"]), None)
+        if target:
+            target["status"] = "done" if passed else "failed"
+            write_plan(plan_path, fresh)
+
+        if passed:
+            try:
+                subprocess.run(["git", "add", "-A"], capture_output=True, check=True)
+                subprocess.run(["git", "commit", "-m", f"feat: {pending['id']}"],
+                               capture_output=True, check=True)
+            except Exception:
+                pass
+            print(f"[Ralph] ✅ {pending['id']} done.")
+        else:
+            print(f"[Ralph] ❌ {pending['id']} failed.")
+
+    print("[Ralph] ⚠️ Max iterations reached.")
+
+
+if __name__ == "__main__":
+    ralph_loop(Path("IMPLEMENTATION_PLAN.md"))
+`;
+
+const IMPLEMENTATION_PLAN_MD = `# Implementation Plan
+#
+# Generated by CopilotForge. This file drives the Ralph Loop — an autonomous
+# dev pattern where an AI works through your tasks one by one.
+#
+# HOW IT WORKS:
+#   1. Describe your tasks below (one per line)
+#   2. Run the ralph-loop recipe: npx ts-node cookbook/ralph-loop.ts
+#   3. Ralph picks the next [ ] task, implements it, validates, commits, repeats
+#
+# TASK FORMAT:
+#   - [ ] task-id — Task description (pending)
+#   - [x] task-id — Task description (done — Ralph marks these)
+#   - [!] task-id — Task description (failed — Ralph marks these)
+#
+# TIP: Run the CopilotForge wizard ("set up my project") with Task Automation
+# enabled to auto-generate tasks from your project description.
+
+- [ ] setup-project — Initialize project structure and dependencies
+- [ ] hello-world — Create a minimal working example
+- [ ] add-tests — Add basic test coverage
+`;
+
 const GETTING_STARTED_MD = `# Getting Started with CopilotForge
 
 > Your project has been scaffolded! Here's what to do next.
@@ -192,5 +419,8 @@ module.exports = {
   PREFERENCES_MD,
   HELLO_WORLD_TS,
   HELLO_WORLD_PY,
+  RALPH_LOOP_TS,
+  RALPH_LOOP_PY,
+  IMPLEMENTATION_PLAN_MD,
   GETTING_STARTED_MD,
 };

@@ -88,6 +88,28 @@ The wizard asks six questions about your project, then scaffolds everything auto
 
 You'll see a summary of your answers. Say "yes" to confirm, or change anything before it starts building.
 
+### 🔄 Planning Mode — Let AI Build Your Project
+
+Select **Task automation** in Question 6 and CopilotForge generates two things:
+
+1. **`IMPLEMENTATION_PLAN.md`** — A step-by-step build plan derived from your project description
+2. **`cookbook/ralph-loop.ts`** (or `.py`) — The autonomous execution engine
+
+The Ralph Loop reads your plan, picks the next task, implements it, runs validation, commits the result, and moves to the next task. No human intervention between steps.
+
+**Example flow:**
+```
+You: "A REST API for a pet adoption platform, TypeScript + Express + Prisma"
+↓
+IMPLEMENTATION_PLAN.md (12 tasks: setup → models → routes → auth → tests)
+↓
+Ralph Loop: picks "setup-express" → implements → validates → commits → picks "setup-prisma" → ...
+↓
+Working project with 12 commits, each building on the last
+```
+
+You can also edit the plan manually — add tasks, reorder them, or mark tasks as done. Ralph picks up where you left off.
+
 ### What You Get
 
 In about a minute, your repo gets a full set of AI-ready files:

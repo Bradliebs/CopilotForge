@@ -48,6 +48,10 @@ Optional advanced features you can add during wizard setup. They generate specia
 
 You don't need any of them to use CopilotForge. They're power-ups you can add anytime. See `cookbook/CHEATSHEET.md` to add them later without re-running the wizard. For beginners, we recommend "none." For intermediate developers, try "task automation." Advanced users often combine "task automation" with "auto-experiments."
 
+### What is Planning Mode?
+
+Planning Mode is what happens when you select "Task automation" in Q6. The wizard generates an `IMPLEMENTATION_PLAN.md` — a checklist of tasks derived from your project description. The ralph-loop recipe then works through the plan autonomously: pick a task, implement it, validate, commit, repeat. You can edit the plan at any time to add, remove, or reorder tasks. Ralph always re-reads the file from disk, so changes take effect immediately.
+
 ### I got an error during scaffolding — what do I do?
 
 CopilotForge handles partial failures gracefully. If one part fails, the rest still generates. Check the validation summary at the end — it lists what was created and what was skipped.

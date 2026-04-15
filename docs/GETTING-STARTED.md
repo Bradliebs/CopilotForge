@@ -181,6 +181,14 @@ The wizard shows you a menu of optional advanced features:
 
 > 💡 You can always add extras later from `cookbook/CHEATSHEET.md` without re-running the wizard. If you're more experienced, try "task automation" — it pairs well with any project. For advanced users, combine "task automation" with "auto-experiments" for autonomous AI development.
 
+### Planning Mode
+
+If you picked **Task automation** in Q6, you'll also get:
+- `IMPLEMENTATION_PLAN.md` — your project's build plan (edit this anytime!)
+- `cookbook/ralph-loop.ts` / `.py` — the engine that executes the plan
+
+To run the plan: tell your AI assistant "run the plan" or execute the ralph-loop recipe directly.
+
 ---
 
 ## Step 4 — Confirm and Generate

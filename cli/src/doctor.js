@@ -66,6 +66,15 @@ function run() {
     warn('No cookbook/ found (run the wizard to create recipes)');
   }
 
+  // Optional: IMPLEMENTATION_PLAN.md
+  const planMd = path.join(cwd, 'IMPLEMENTATION_PLAN.md');
+  if (exists(planMd)) {
+    success('IMPLEMENTATION_PLAN.md exists');
+    checks++;
+  } else {
+    info('Optional: IMPLEMENTATION_PLAN.md (for Ralph Loop planning mode)');
+  }
+
   // Git
   if (hasGit()) {
     success('Git repository detected');

@@ -51,6 +51,18 @@ const FULL_FILES = [
     dest: path.join('cookbook', 'hello-world.py'),
     content: templates.HELLO_WORLD_PY,
   },
+  {
+    dest: path.join('cookbook', 'ralph-loop.ts'),
+    content: templates.RALPH_LOOP_TS,
+  },
+  {
+    dest: path.join('cookbook', 'ralph-loop.py'),
+    content: templates.RALPH_LOOP_PY,
+  },
+  {
+    dest: 'IMPLEMENTATION_PLAN.md',
+    content: templates.IMPLEMENTATION_PLAN_MD,
+  },
 ];
 
 async function run(args) {

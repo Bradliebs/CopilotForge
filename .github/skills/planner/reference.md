@@ -300,6 +300,7 @@ When the user selects extras in Question 6, generate the corresponding recipe fi
 | Extra | Recipe File(s) | Description |
 |-------|---------------|-------------|
 | Task automation | `cookbook/ralph-loop.{ext}` | Autonomous dev loop — reads TODO list, implements tasks, validates, commits |
+| | `IMPLEMENTATION_PLAN.md` | Project-specific task list generated from wizard answers (planning mode) |
 | Auto-experiments | `cookbook/auto-research.{ext}` | Experiment loop — proposes changes, runs eval, tracks metrics in TSV |
 | Knowledge wiki | `cookbook/knowledge-wiki.{ext}` | Wiki builder — init, ingest, search, lint CLI with Obsidian-compatible output |
 | CLI hooks | `cookbook/copilot-hooks.{ext}` | Hook generator — creates `.github/hooks/hooks.json` with companion scripts |
@@ -315,6 +316,11 @@ When the user selects extras in Question 6, generate the corresponding recipe fi
 - **"I want the wiki"** → Map fuzzy names: "wiki" = Knowledge wiki, "loops" / "automation" = Task automation, "research" / "experiments" = Auto-experiments, "hooks" = CLI hooks, "blog" = Blog writer, "templates" / "docs" = Template factory, "dashboard" / "PRs" = PR dashboard.
 - **User picks an extra that needs TypeScript/Python but their stack is Go/Rust** → Generate anyway with a comment: `// NOTE: This recipe is optimized for TypeScript. Adapt patterns for your {stack}.`
 - **Returning user** → Read extras list from `preferences.md`. Show current selections. Only ask about changes.
+
+### Planning Mode (Task Automation)
+
+- **Planning mode:** When selected, also generates `IMPLEMENTATION_PLAN.md` with project-specific tasks derived from Q1 (description) and Q2 (stack). The ralph-loop recipe consumes this plan.
+- **Edge case:** If the user already has an IMPLEMENTATION_PLAN.md, ask: "You already have a plan. Want me to add to it, replace it, or leave it alone?"
 
 ---
 

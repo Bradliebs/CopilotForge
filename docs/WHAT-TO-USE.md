@@ -44,6 +44,9 @@ What do you want to do?
 ├─ "Build a personal knowledge base"
 │   └─ → cookbook/knowledge-wiki.ts (or .py)
 │
+├─ "I want AI to build my project from a plan"
+│   └─ → Enable **Task automation** in Q6. Edit `IMPLEMENTATION_PLAN.md` to describe what you want built, then run the ralph-loop recipe. The AI works through tasks autonomously.
+│
 ├─ "I want to understand how it all fits together"
 │   └─ → docs/HOW-IT-WORKS.md
 │
