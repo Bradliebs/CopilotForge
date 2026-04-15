@@ -16,6 +16,16 @@ CopilotForge turns a plain-English description of your project into a working se
 
 ---
 
+## What You'll Need
+
+- **An AI coding assistant** — [GitHub Copilot](https://github.com/features/copilot), [Claude Code](https://claude.ai), [Cursor](https://cursor.sh), or similar
+- **A code project** — new or existing, any language
+- **Git** — recommended but not required
+
+That's it. No npm install, no CLI tools, no framework knowledge needed.
+
+---
+
 ## Quick Start
 
 ### Step 1 — Copy the Planner Skill
@@ -45,6 +55,8 @@ set up my project
 Other phrases that work: `forge`, `copilot forge`, `plan my project`, `scaffold my repo`, `bootstrap this repo`.
 
 The Planner reads the SKILL.md file and starts the wizard.
+
+> 📝 **Windows users:** These examples use forward slashes (`/`) in file paths. On Windows, use backslashes (`\`) or PowerShell (which accepts both).
 
 ### Step 3 — Answer Five Questions
 
@@ -162,6 +174,8 @@ This is the most important answer. CopilotForge uses it to pick the right code r
 
 CopilotForge also scans your repo for config files (`package.json`, `requirements.txt`, `go.mod`, `.csproj`) to auto-detect frameworks. The more specific you are, the better the output.
 
+**CopilotForge works with brand-new empty repos.** If no config files are found, the wizard asks you to describe your stack and works from there.
+
 ### Question 3 — Memory?
 
 > *"Do you want memory across sessions?"*
@@ -169,6 +183,8 @@ CopilotForge also scans your repo for config files (`package.json`, `requirement
 If you say **yes** (the default), CopilotForge creates a `forge-memory/` folder that tracks decisions, conventions, and preferences. This means the next time you run the wizard, it already knows your project and skips questions it can answer from memory.
 
 If you say **no**, you still get everything else — you just won't get the memory files.
+
+**All memory is stored locally in your repo** — nothing leaves your machine.
 
 ### Question 4 — Test Automation?
 
@@ -365,25 +381,13 @@ Yes — that's the main use case. Drop the Planner skill into any repo, run the 
 
 Delete the generated files (or the whole `forge-memory/` folder) and run the wizard again. Memory files track choices with append-only entries, so you can also just re-run the wizard — it'll show you your previous answers and let you change them.
 
-### "Do I need to understand skills or agents to use this?"
-
-No. CopilotForge creates and configures everything for you. You can use the generated agents and skills without ever opening the files. If you want to customize later, every file is plain markdown with comments explaining what it does.
-
-### "What languages and frameworks are supported?"
-
-CopilotForge generates code recipes for **TypeScript**, **Python**, **Go**, and **C#**. It recognizes frameworks like Express, Next.js, React, Prisma, FastAPI, SQLAlchemy, Gin, GORM, ASP.NET, Entity Framework, and more.
-
-The skills and agents work with any language — they're instructions, not code. Only the cookbook recipes are language-specific.
-
 ### "What's the difference between a skill and an agent?"
 
 A **skill** is a set of instructions — like a playbook for handling a specific task ("how to review code," "how to write tests").
 
 An **agent** is an AI team member with a job title — it knows which skills to use and when. Think of skills as the "how" and agents as the "who."
 
-### "Is this free?"
-
-CopilotForge itself is free. It's just markdown files. You need access to an AI coding assistant (GitHub Copilot, Claude Code, etc.) to run the wizard, but CopilotForge doesn't add any cost on top of that.
+📖 **[See the full FAQ →](docs/FAQ.md)**
 
 ---
 

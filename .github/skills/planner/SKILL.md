@@ -138,6 +138,12 @@ Ask each question one at a time. Wait for the user's answer before asking the ne
 > What's your stack? List languages, frameworks, and key tools.
 > *(Example: "TypeScript, Next.js, Prisma, PostgreSQL" or "Python, FastAPI, SQLAlchemy")*
 
+**If no config files are found** (`package.json`, `requirements.txt`, `go.mod`, `.csproj`, etc.) **and the user's answer is vague** ("I'm using Python" with no framework mentioned):
+Ask: *"I couldn't detect your tech stack automatically from config files. What language or framework are you using?"* Accept any answer and use it as the stack. Note this in `decisions.md`.
+
+**If the user's answer conflicts with detected config** (e.g., user says "Django" but `package.json` has Express):
+Trust the user's answer but note both in `decisions.md`: "User specified Django; detected Express in package.json — user answer takes precedence."
+
 **Question 3 — Memory**
 
 *If memory files already exist:*

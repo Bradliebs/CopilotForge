@@ -103,6 +103,17 @@ The wizard asks questions one at a time. Here's exactly how the conversation goe
 
 > 💡 The wizard also scans your repo automatically. Since you have a `package.json` and `prisma/schema.prisma`, it already knows you're using TypeScript and Prisma. Your answer confirms and adds detail.
 
+> ℹ️ **Not sure about your stack?** Look in your project folder for these files:
+> - `package.json` → JavaScript/TypeScript (check `dependencies` for React, Next.js, Express, etc.)
+> - `requirements.txt` or `pyproject.toml` → Python (check for Django, FastAPI, Flask, etc.)
+> - `go.mod` → Go
+> - `.csproj` → C# / .NET
+> - `Cargo.toml` → Rust
+> - `composer.json` → PHP
+> - `Gemfile` → Ruby
+>
+> If you don't have any of these, just tell the wizard your language and it will figure out the rest.
+
 ### Question 3 — Memory
 
 > **Wizard:** Do you want memory across sessions? This creates `forge-memory/` files so agents remember decisions and patterns between conversations.
@@ -339,6 +350,29 @@ Your customizations survive every re-run. Memory only grows — it never deletes
 
 ---
 
+## Cross-Platform Notes
+
+CopilotForge works on Windows, Mac, and Linux. A few things to keep in mind:
+
+### Path Separators
+- **In these docs:** We use `/` (forward slashes) in file path examples
+- **On Windows:** Use `\` (backslashes) — or just use PowerShell, which accepts both
+- Example: `.github/skills/planner/SKILL.md` on Mac/Linux = `.github\skills\planner\SKILL.md` on Windows
+
+### Test Scripts
+- `.sh` files (shell scripts) → Mac and Linux
+- `.ps1` files (PowerShell scripts) → Windows
+- The cookbook includes both when relevant
+
+### Environment Variables
+- **Unix/Mac:** `$VAR`
+- **PowerShell:** `$env:VAR`
+- **Windows cmd:** `%VAR%`
+
+Cookbook recipes use the convention for the target platform, but you can adapt them as needed.
+
+---
+
 ## Troubleshooting
 
 ### "The wizard didn't start when I said 'set up my project'"
@@ -357,6 +391,15 @@ The path must be exact. The file needs to be inside a `planner/` folder, which i
 CopilotForge is designed to handle partial failures gracefully. If one part fails, the rest still generates. Check the validation summary at the end — it lists what was created and what was skipped.
 
 Try running the wizard again. It'll detect existing files and only generate what's missing.
+
+### "I have no config files in my repo"
+
+That's fine! CopilotForge works with empty repositories. When the wizard asks about your stack (Question 2), just describe what you're planning to use. Examples:
+- "Python with Flask"
+- "JavaScript with React"
+- "Go"
+
+The wizard will generate conventions and recipes for that stack, even though you haven't created config files yet.
 
 ### "The generated files don't match my stack"
 
@@ -379,6 +422,41 @@ Yes. The SKILL.md file is just a set of instructions that any language model can
 ### "I want to use Python, not TypeScript"
 
 Just answer "Python" (and your frameworks) in Question 2. CopilotForge generates Python recipes — FastAPI routes, SQLAlchemy CRUD, Python error handling, pytest conventions. Everything adapts to your stack.
+
+---
+
+## Edge Cases & What-Ifs
+
+Real-world scenarios and how CopilotForge handles them:
+
+### Partial Failures
+**What if only some files are created?**
+- CopilotForge handles partial failures gracefully. If one section fails (e.g., cookbook recipes), the rest still generates.
+- Check the validation summary — it tells you exactly what succeeded and what didn't.
+- Re-run the wizard to fill in missing pieces. It skips files that already exist.
+
+### Outdated SKILL.md
+**What if the Planner skill is out of date?**
+- Delete `.github/skills/planner/` and copy the latest version from the CopilotForge repo.
+- Your existing project files (agents, recipes, memory) are unaffected.
+- Re-run the wizard to regenerate with the updated skill.
+
+### Large Repositories
+**What if my repo has thousands of files?**
+- File scanning is fast (usually under 5 seconds). If it takes longer, the wizard still works — it just takes a moment.
+- Memory files are kept small (soft limit of ~500 lines), so large repos don't slow down re-runs.
+
+### Public Repos and Memory
+**Should I commit `forge-memory/` to a public repo?**
+- Memory files contain your decisions and conventions, not secrets or code.
+- If you don't want them visible publicly, add `forge-memory/` to your `.gitignore`.
+- Private repos: commit memory files — they're useful context for your team.
+
+### Contradictory Stack Signals
+**What if my answer conflicts with detected files?**
+- Your answer always wins. If you say "Django" but `package.json` exists, CopilotForge uses Django.
+- The conflict is noted in `decisions.md` so you know what happened.
+- This is useful when migrating stacks or when the repo has legacy files.
 
 ---
 

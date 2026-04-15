@@ -232,6 +232,13 @@ Apply all defaults: memory = yes, testing = yes, skill level = beginner. Still a
 ### Unknown or mixed stack
 If the stack includes languages/frameworks you don't recognize, generate generic conventions (file structure, error handling, naming) and note in decisions.md that stack-specific patterns should be added manually.
 
+### Vague wizard answers
+If the user provides a vague answer to Question 2 ("I have some Python files", "JavaScript", "just Node"), treat it as the language with no specific framework:
+- Use the language name as the stack
+- Generate language-level conventions (naming, file structure, error handling)
+- Generate basic recipes for that language (error handling, API client)
+- Note in `decisions.md`: "Vague stack answer — user said '{answer}' with no framework specified"
+
 ### Repo already has `.copilot/` or `.github/skills/`
 Do not overwrite existing files. If a file already exists at a target path:
 1. Skip it
@@ -265,6 +272,23 @@ If the user explicitly requests a fresh start ("start fresh", "reset everything"
 - Run the full 5-question wizard as if no memory exists
 - Record this as a decision in decisions.md: "Full reset requested — previous context ignored"
 - Regenerate all files (with user confirmation before overwriting)
+
+### Empty Repository Handling
+
+When running CopilotForge on a brand-new or empty repository:
+
+**Scenario 1 — No config files found:**
+If stack detection finds no `package.json`, `requirements.txt`, `go.mod`, `.csproj`, `Cargo.toml`, `Gemfile`, or `composer.json`:
+- Ask the user: "I couldn't detect your tech stack automatically. What language or framework are you using?"
+- Accept any answer — even vague ones like "JavaScript" or "I'm learning Python"
+- Use the user's answer as the stack and note in `decisions.md`: "No config files detected — user specified: {answer}"
+- Generate generic conventions for that language (file structure, naming, error handling)
+
+**Scenario 2 — Contradictory stack signals:**
+If the user's answer conflicts with detected files (e.g., user says "Django" but `package.json` exists with Express):
+- Trust the user's answer as the primary stack
+- Note both in `decisions.md`: "User specified {user answer}; detected {detected stack} — user answer takes precedence"
+- Generate recipes and conventions for the user's stated stack, but mention the conflict in the validation summary
 
 ---
 

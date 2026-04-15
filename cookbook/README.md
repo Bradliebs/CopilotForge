@@ -87,6 +87,46 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 4. **Search for `TODO`** markers — these are the places you need to plug in your actual SDK keys, endpoints, or logic.
 5. **Run it** using the instructions in the header comment.
 
+> 📝 **Platform Note:** On Windows, use `\` instead of `/` in file paths shown in recipes. PowerShell accepts both.
+
+---
+
+## Troubleshooting
+
+### "Module not found" errors
+**Problem:** You get an error like `Cannot find module 'express'` or `ModuleNotFoundError: No module named 'fastapi'`
+
+**Solution:** Check the recipe's PREREQUISITES section at the top. Install the required packages:
+- **TypeScript/JavaScript:** `npm install <package-name>`
+- **Python:** `pip install <package-name>`
+- **Go:** `go get <package-name>`
+- **C#:** `dotnet add package <package-name>`
+
+### "Cannot find module 'ts-node'"
+**Problem:** TypeScript recipes fail with `Cannot find module 'ts-node'`
+
+**Solution:** Install TypeScript development dependencies:
+```bash
+npm install -D ts-node typescript @types/node
+```
+
+### "Permission denied"
+**Problem:** You get a permission error when running a recipe
+
+**Solution:** Check file permissions:
+- **Unix/Mac:** `chmod +x recipe-file.sh`
+- **Windows:** Run PowerShell as Administrator, or check file ownership in Properties
+
+### "Environment variable not set"
+**Problem:** Recipe fails because an environment variable is missing (e.g., `$API_KEY`)
+
+**Solution:** Set the environment variable before running:
+- **Unix/Mac:** `export API_KEY=your-key-here`
+- **PowerShell:** `$env:API_KEY="your-key-here"`
+- **Windows cmd:** `set API_KEY=your-key-here`
+
+Or create a `.env` file if the recipe uses dotenv.
+
 ---
 
 ## Recipe Conventions

@@ -207,6 +207,12 @@ Memory is what makes CopilotForge get smarter over time. It's a folder called `f
 | `preferences.md` | Your wizard settings and overrides | "Verbosity: intermediate, Primary: TypeScript" |
 | `history.md` | Session log — when CopilotForge ran | "2026-04-16 — Initial setup, created 17 files" |
 
+### Memory Privacy & Security
+
+Your memory files live in your repo (`forge-memory/`), stored as plain markdown. **Nothing is sent to external servers.** You can read, edit, or delete them anytime.
+
+**For public repos:** If you don't want your decisions visible publicly, add `forge-memory/` to your `.gitignore`.
+
 ### How memory is used
 
 When you run the wizard again, the Planner reads all memory files before asking questions. This means:
