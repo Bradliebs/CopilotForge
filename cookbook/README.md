@@ -98,6 +98,20 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 | [`managing-local-files.ts`](./managing-local-files.ts) | TypeScript | Organize files by metadata — extension, date, size — with dry-run mode |
 | [`managing-local-files.py`](./managing-local-files.py) | Python | Same file organization pattern in Python |
 
+### Session Persistence
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`persisting-sessions.ts`](./persisting-sessions.ts) | TypeScript | Save and restore conversations — custom IDs, resume, list, delete, get history |
+| [`persisting-sessions.py`](./persisting-sessions.py) | Python | Same session persistence pattern in Python |
+
+### PR Visualization
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`pr-visualization.ts`](./pr-visualization.ts) | TypeScript | Interactive CLI tool — detect GitHub repo, fetch PRs, generate age charts via Copilot |
+| [`pr-visualization.py`](./pr-visualization.py) | Python | Same PR visualization pattern in Python |
+
 ### Delegation & Skills
 
 | Recipe | Language | What It Does |
