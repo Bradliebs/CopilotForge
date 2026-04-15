@@ -24,7 +24,9 @@
 - [Testing That It Worked](#testing-that-it-worked)
 - [Customizing the Output](#customizing-the-output)
 - [Running It Again (Memory in Action)](#running-it-again-memory-in-action)
+- [Cross-Platform Notes](#cross-platform-notes)
 - [Troubleshooting](#troubleshooting)
+- [Edge Cases & What-Ifs](#edge-cases--what-ifs)
 
 ---
 
@@ -60,7 +62,17 @@ Let's add CopilotForge to it.
 
 ## Step 1 — Add the Planner Skill
 
-Create the following folder structure in your project:
+### Option A — Quick Install (Recommended)
+
+```bash
+npx copilotforge init
+```
+
+Done! This copies everything you need into your project automatically.
+
+### Option B — Manual Setup
+
+If you prefer not to use npm, create the following folder structure in your project:
 
 ```
 taskflow/
@@ -73,8 +85,6 @@ taskflow/
 Copy the `SKILL.md` file from CopilotForge's `.github/skills/planner/SKILL.md` into that location.
 
 > 💡 **Already have a `.github/` folder?** That's fine — just add the `skills/planner/` subfolder inside it. CopilotForge won't touch your existing workflows or settings.
-
-That's the only setup step. No packages, no config files, no CLI tools.
 
 ---
 

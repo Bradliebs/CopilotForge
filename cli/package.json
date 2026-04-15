@@ -1,0 +1,35 @@
+{
+  "name": "copilotforge",
+  "version": "1.0.0",
+  "description": "One command to set up AI-powered coding assistants in any project",
+  "bin": {
+    "copilotforge": "./bin/copilotforge.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "files/",
+    "README.md"
+  ],
+  "scripts": {
+    "sync": "node scripts/sync-files.js",
+    "prepublishOnly": "node scripts/sync-files.js"
+  },
+  "keywords": [
+    "copilot",
+    "github-copilot",
+    "ai",
+    "scaffolding",
+    "agents",
+    "skills",
+    "copilotforge"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BradLiebworthy/CopilotForge"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,3 @@
+# Exclude from npm package
+scripts/
+.npmignore

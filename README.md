@@ -34,9 +34,20 @@ That's it. No npm install, no CLI tools, no framework knowledge needed.
 
 ## Quick Start
 
-### Step 1 — Copy the Planner Skill
+### Option A — One Command (Recommended)
 
-Copy the `.github/skills/planner/` folder into your project:
+```bash
+cd your-project
+npx copilotforge init
+```
+
+That's it. One command copies everything you need into your project.
+
+> 💡 **Want starter templates too?** Use `npx copilotforge init --full` to include example agents, memory files, and starter recipes.
+
+### Option B — Manual Copy
+
+If you prefer not to use npm, copy the `.github/skills/planner/` folder from this repo into your project:
 
 ```
 your-project/
@@ -46,13 +57,15 @@ your-project/
         SKILL.md      ← this is the magic file
 ```
 
-That's it. One folder, one file. No packages to install, no config to write.
-
 > 💡 If your project doesn't have a `.github/` folder yet, just create it.
 
-### Step 2 — Trigger It
+### Option C — GitHub Template
 
-Open your AI coding assistant (GitHub Copilot Chat, Claude Code, or any LLM that can read your repo files) and say:
+Click **"Use this template"** on this repo's GitHub page to create a new repo with CopilotForge pre-installed.
+
+### Then...
+
+Open your AI assistant and say:
 
 ```
 set up my project
@@ -60,13 +73,9 @@ set up my project
 
 Other phrases that work: `forge`, `copilot forge`, `plan my project`, `scaffold my repo`, `bootstrap this repo`.
 
-The Planner reads the SKILL.md file and starts the wizard.
+> 📝 **Windows users:** The examples above use forward slashes (`/`) in file paths. On Windows, use backslashes (`\`) — or just use PowerShell, which accepts both.
 
-> 📝 **Windows users:** These examples use forward slashes (`/`) in file paths. On Windows, use backslashes (`\`) or PowerShell (which accepts both).
-
-### Step 3 — Answer Five Questions
-
-The wizard asks five questions, one at a time. Here's what to expect:
+The wizard asks five questions about your project, then scaffolds everything automatically. Here's what to expect:
 
 | # | Question | Example Answer |
 |---|----------|----------------|
@@ -78,7 +87,7 @@ The wizard asks five questions, one at a time. Here's what to expect:
 
 You'll see a summary of your answers. Say "yes" to confirm, or change anything before it starts building.
 
-### Step 4 — You're Done
+### What You Get
 
 In about a minute, your repo gets a full set of AI-ready files:
 
@@ -103,6 +112,29 @@ After the wizard scaffolds your project, it outputs a **ready-to-use prompt** yo
 This bridges the gap between describing your project and actually building it.
 
 > **Stuck?** Jump to [Troubleshooting](docs/FAQ.md#troubleshooting) or open an issue in this repo.
+
+---
+
+## Installation
+
+| Method | Command | Best For |
+|--------|---------|----------|
+| **npx** (recommended) | `npx copilotforge init` | Quick setup, any existing project |
+| **npx full** | `npx copilotforge init --full` | Full setup with starter templates |
+| **Manual copy** | Copy `.github/skills/planner/` | No Node.js, airgapped environments |
+| **GitHub Template** | Click "Use this template" | Starting a brand new project |
+
+### Health Check
+
+```bash
+npx copilotforge doctor
+```
+
+### Uninstall
+
+```bash
+npx copilotforge uninstall
+```
 
 ---
 

@@ -1,0 +1,135 @@
+'use strict';
+
+const path = require('path');
+const {
+  banner,
+  success,
+  warn,
+  info,
+  separator,
+  ask,
+  copyFile,
+  writeFile,
+  exists,
+  hasGit,
+  gitCommit,
+  colors,
+} = require('./utils');
+
+const templates = require('./templates');
+
+// Core files installed by `init` (relative to CWD)
+const CORE_FILES = [
+  path.join('.github', 'skills', 'planner', 'SKILL.md'),
+  path.join('.github', 'skills', 'planner', 'reference.md'),
+];
+
+// Extra files installed by `init --full`
+const FULL_FILES = [
+  { dest: 'FORGE.md', content: templates.FORGE_MD },
+  {
+    dest: path.join('.copilot', 'agents', 'planner.md'),
+    content: templates.PLANNER_AGENT_MD,
+  },
+  {
+    dest: path.join('forge-memory', 'decisions.md'),
+    content: templates.DECISIONS_MD,
+  },
+  {
+    dest: path.join('forge-memory', 'patterns.md'),
+    content: templates.PATTERNS_MD,
+  },
+  {
+    dest: path.join('forge-memory', 'preferences.md'),
+    content: templates.PREFERENCES_MD,
+  },
+  {
+    dest: path.join('cookbook', 'hello-world.ts'),
+    content: templates.HELLO_WORLD_TS,
+  },
+  {
+    dest: path.join('cookbook', 'hello-world.py'),
+    content: templates.HELLO_WORLD_PY,
+  },
+];
+
+async function run(args) {
+  const full = args.includes('--full');
+  const cwd = process.cwd();
+
+  banner();
+  console.log('  Setting up your project...');
+  console.log();
+
+  // Check for existing planner directory
+  const plannerDir = path.join(cwd, '.github', 'skills', 'planner');
+  if (exists(plannerDir)) {
+    warn('CopilotForge planner already exists in this project.');
+    const overwrite = await ask('Overwrite existing files?', false);
+    if (!overwrite) {
+      console.log();
+      info('Aborted. No files were changed.');
+      console.log();
+      return;
+    }
+    console.log();
+  }
+
+  // Copy core skill files from the package's files/ directory
+  const createdFiles = [];
+
+  for (const rel of CORE_FILES) {
+    const dest = path.join(cwd, rel);
+    // Source path inside the package: .github/skills/planner/SKILL.md
+    copyFile(rel, dest);
+    success(`Created ${rel}`);
+    createdFiles.push(rel);
+  }
+
+  // --full: write additional template files
+  if (full) {
+    console.log();
+    for (const entry of FULL_FILES) {
+      const dest = path.join(cwd, entry.dest);
+      if (exists(dest)) {
+        warn(`Skipped ${entry.dest} (already exists)`);
+      } else {
+        writeFile(dest, entry.content);
+        success(`Created ${entry.dest}`);
+        createdFiles.push(entry.dest);
+      }
+    }
+  }
+
+  separator();
+
+  // Offer to commit if git is available
+  if (hasGit() && createdFiles.length > 0) {
+    const commit = await ask('Want to commit these files?', false);
+    if (commit) {
+      try {
+        gitCommit(createdFiles, 'chore: add CopilotForge planner skill');
+        console.log();
+        success('Committed to git.');
+      } catch (err) {
+        console.log();
+        warn(`Git commit failed: ${err.message}`);
+      }
+    }
+    console.log();
+  }
+
+  console.log(`  ${colors.bold(colors.green('\uD83C\uDF89 Done!'))} Your project is CopilotForge-ready.`);
+  separator();
+
+  info('What to do next:');
+  info(`${colors.bold('1.')} Open your AI assistant (GitHub Copilot Chat, Claude Code, etc.)`);
+  info(`${colors.bold('2.')} Say: ${colors.cyan('"set up my project"')}`);
+  info(`${colors.bold('3.')} Answer 5 quick questions about what you're building`);
+  info(`${colors.bold('4.')} It will create skills, agents, and recipes for your project!`);
+  console.log();
+  info(`${colors.dim('\uD83D\uDCD6 Full guide: docs/GETTING-STARTED.md')}`);
+  separator();
+}
+
+module.exports = { run };
