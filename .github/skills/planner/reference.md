@@ -278,7 +278,7 @@ If the user explicitly requests a fresh start ("start fresh", "reset everything"
 When running CopilotForge on a brand-new or empty repository:
 
 **Scenario 1 — No config files found:**
-If stack detection finds no `package.json`, `requirements.txt`, `go.mod`, `.csproj`, `Cargo.toml`, `Gemfile`, or `composer.json`:
+If stack detection finds no `package.json`, `requirements.txt`, `go.mod`, `.csproj`, `Cargo.toml`, `Gemfile`, `composer.json`, `build.gradle`, `pom.xml`, or `mix.exs`:
 - Ask the user: "I couldn't detect your tech stack automatically. What language or framework are you using?"
 - Accept any answer — even vague ones like "JavaScript" or "I'm learning Python"
 - Use the user's answer as the stack and note in `decisions.md`: "No config files detected — user specified: {answer}"
@@ -323,7 +323,16 @@ The Planner runs stack detection before delegating to the cookbook writer. Detec
 4. **`*.csproj`** — Presence confirms C#. Check `<PackageReference>` elements:
    - `Microsoft.AspNetCore.*` → ASP.NET | `Microsoft.AspNetCore.Components` → Blazor
    - `Microsoft.EntityFrameworkCore` → EF Core
-5. **Fallback** — Use the wizard `stack` answer to infer language and frameworks.
+5. **`Cargo.toml`** — Presence confirms Rust. Check `[dependencies]` for crate names.
+6. **`composer.json`** — Presence confirms PHP. Check `require` block:
+   - `laravel/framework` → Laravel | `symfony/*` → Symfony
+7. **`build.gradle`** or **`pom.xml`** — Presence confirms Java/Kotlin. Check dependencies:
+   - `org.springframework` → Spring | `io.ktor` → Ktor
+8. **`Gemfile`** — Presence confirms Ruby. Check gem names:
+   - `rails` → Ruby on Rails | `sinatra` → Sinatra
+9. **`mix.exs`** — Presence confirms Elixir. Check `deps` function:
+   - `{:phoenix,` → Phoenix
+10. **Fallback** — Use the wizard `stack` answer to infer language and frameworks.
 
 All detected frameworks are passed to the cookbook writer. Recipes are generated for **every** detected framework, not just the primary one.
 

@@ -17,6 +17,11 @@
  * PREREQUISITES:
  *   - Node.js 18+
  *   - TypeScript 5+
+ *
+ * PLATFORM NOTES:
+ *   - Windows: Use backslashes in paths or path.join() (both shown in code)
+ *   - macOS/Linux: Forward slashes work natively
+ *   - Environment variables: Use $env:VAR (PowerShell) or export VAR (bash)
  */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from "node:fs";

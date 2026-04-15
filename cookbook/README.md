@@ -14,6 +14,20 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 
 ## Recipes
 
+### Hello World
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`hello-world.ts`](./hello-world.ts) | TypeScript | Simplest Copilot SDK recipe — connect, send one message, print response, disconnect |
+| [`hello-world.py`](./hello-world.py) | Python | Same hello-world pattern in Python |
+
+### Ralph Loop (Autonomous Dev Loop)
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`ralph-loop.ts`](./ralph-loop.ts) | TypeScript | Autonomous dev loop — pick task, implement, validate, commit, repeat |
+| [`ralph-loop.py`](./ralph-loop.py) | Python | Same ralph-loop pattern in Python |
+
 ### Session Management
 
 | Recipe | Language | What It Does |

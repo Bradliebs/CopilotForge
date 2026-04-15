@@ -16,6 +16,11 @@ HOW TO RUN:
 
 PREREQUISITES:
     - Python 3.10+
+
+PLATFORM NOTES:
+    - Windows: Use backslashes in paths or os.path.join() (both shown in code)
+    - macOS/Linux: Forward slashes work natively
+    - Environment variables: Use $env:VAR (PowerShell) or export VAR (bash)
 """
 
 from __future__ import annotations

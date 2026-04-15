@@ -21,6 +21,11 @@
  *   - TypeScript 5+
  *   - express ^4.18
  *   - zod ^3.22
+ *
+ * PLATFORM NOTES:
+ *   - Windows: Use backslashes in paths or path.join() (both shown in code)
+ *   - macOS/Linux: Forward slashes work natively
+ *   - Environment variables: Use $env:VAR (PowerShell) or export VAR (bash)
  */
 
 import express, { Request, Response, NextFunction, Router } from "express";

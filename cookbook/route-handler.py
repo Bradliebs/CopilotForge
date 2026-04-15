@@ -20,6 +20,11 @@ PREREQUISITES:
     - Python 3.10+
     - fastapi >= 0.100
     - uvicorn >= 0.23
+
+PLATFORM NOTES:
+    - Windows: Use backslashes in paths or os.path.join() (both shown in code)
+    - macOS/Linux: Forward slashes work natively
+    - Environment variables: Use $env:VAR (PowerShell) or export VAR (bash)
 """
 
 from __future__ import annotations
