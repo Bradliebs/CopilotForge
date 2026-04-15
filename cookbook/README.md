@@ -21,6 +21,13 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 | [`session-example.ts`](./session-example.ts) | TypeScript | Basic session management — create sessions, send messages, handle timeouts, clean up |
 | [`session-example.py`](./session-example.py) | Python | Same session pattern in Python |
 
+### Multiple Sessions
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`multiple-sessions.ts`](./multiple-sessions.ts) | TypeScript | Manage multiple independent conversations — custom IDs, listing, cleanup |
+| [`multiple-sessions.py`](./multiple-sessions.py) | Python | Same multi-session pattern in Python |
+
 ### Error Handling
 
 | Recipe | Language | What It Does |
@@ -69,6 +76,13 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 |--------|----------|--------------|
 | [`memory-reader.ts`](./memory-reader.ts) | TypeScript | Read and parse forge-memory files — decisions, patterns, preferences, history |
 | [`memory-reader.py`](./memory-reader.py) | Python | Same memory reader in Python — dataclass models, query helpers, context formatter |
+
+### File Management
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`managing-local-files.ts`](./managing-local-files.ts) | TypeScript | Organize files by metadata — extension, date, size — with dry-run mode |
+| [`managing-local-files.py`](./managing-local-files.py) | Python | Same file organization pattern in Python |
 
 ### Delegation & Skills
 
