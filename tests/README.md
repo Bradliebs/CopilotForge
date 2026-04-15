@@ -77,12 +77,67 @@ bash tests/validate-scaffold.sh /path/to/scaffolded/project
 4. **Real validation over mocked tests.** These scripts run against actual
    generated files. No mocks, no stubs, no "assume the output looks like this."
 
+## Phase 2 — Delegation & Re-Run Testing
+
+Phase 2 adds wizard delegation (4 specialist agents), re-run detection, and
+merge logic. The test suite expands to cover all of this while ensuring Phase 1
+tests still pass.
+
+### What Phase 2 Tests Cover
+
+| Area | What it catches |
+|------|----------------|
+| Wizard delegation flow | Planner doesn't delegate correctly, wrong execution order |
+| Specialist isolation | Agent writes to wrong directory, overwrites another's files |
+| Re-run behavior | User data destroyed, duplicated content, lost edits |
+| Error recovery | Partial failure leaves corrupt state, dependency errors cascade wrong |
+| Beginner experience | Internal jargon leaks, confusing output, broken Quick Actions |
+
+### How to Run Phase 2 Validation
+
+```bash
+# After Phase 2 agents are created:
+bash tests/phase2/validate-delegation.sh /path/to/project
+
+# Windows:
+.\tests\phase2\validate-delegation.ps1 -ProjectRoot C:\path\to\project
+```
+
+### Phase 2 File Index
+
+| File | Purpose |
+|------|---------|
+| `phase2/test-scenarios.md` | 40 test scenarios across 5 categories |
+| `phase2/validate-delegation.ps1` | PowerShell validation for Phase 2 delegation output |
+| `phase2/validate-delegation.sh` | Bash version of the same validator |
+| `phase2/rerun-scenarios.md` | Detailed re-run behavior matrix for every generated file |
+| `phase2/beginner-checklist.md` | Phase 2 beginner QA checklist (extends Phase 1) |
+
+### Running Both Phases
+
+Always run Phase 1 validation first to catch regressions:
+
+```bash
+# Phase 1 (scaffold structure):
+bash tests/validate-scaffold.sh /path/to/project
+
+# Phase 2 (delegation correctness):
+bash tests/phase2/validate-delegation.sh /path/to/project
+```
+
+---
+
 ## File Index
 
 | File | Purpose |
 |------|---------|
 | `README.md` | This file — test strategy overview |
-| `validate-scaffold.sh` | Bash validation script |
-| `validate-scaffold.ps1` | PowerShell validation script |
-| `test-scenarios.md` | Documented test scenarios |
-| `beginner-checklist.md` | Manual QA checklist for beginner experience |
+| `validate-scaffold.sh` | Bash validation script (Phase 1) |
+| `validate-scaffold.ps1` | PowerShell validation script (Phase 1) |
+| `test-scenarios.md` | Phase 1 test scenarios (24 scenarios) |
+| `beginner-checklist.md` | Phase 1 beginner QA checklist |
+| `phase2/test-scenarios.md` | Phase 2 test scenarios (40 scenarios) |
+| `phase2/validate-delegation.ps1` | Phase 2 PowerShell validation script |
+| `phase2/validate-delegation.sh` | Phase 2 Bash validation script |
+| `phase2/rerun-scenarios.md` | Re-run behavior matrix |
+| `phase2/beginner-checklist.md` | Phase 2 beginner QA checklist |

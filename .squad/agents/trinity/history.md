@@ -19,3 +19,10 @@
 - **Idempotency on re-run matters.** The Planner must skip existing files and append to logs. Overwriting user-customized files would be destructive. Borrowed the skip-if-exists pattern from Squad conventions.
 
 - **2026-04-15: Team delivered Phase 1.** Morpheus provided architecture, Neo built templates for Planner to scaffold, Tank validated the full chain. SKILL.md now portable across contexts.
+
+- **Phase 2 agent architecture: transparent delegation.** The Planner is the only public-facing agent. Four specialists (skill-writer, agent-writer, memory-writer, cookbook-writer) are internal — the user never sees them. This keeps the UX simple while allowing each specialist to have focused, high-quality system prompts.
+- **Specialists have input/output contracts, not free-form instructions.** Each specialist receives typed inputs (wizard answers + prior outputs) and returns structured output lists. This makes composition reliable — the Planner can chain them in order and collect results predictably.
+- **Agent-writer has a protected-file rule.** It must never generate or overwrite `planner.md`. This prevents a scaffolding run from clobbering the orchestrator — a subtle but critical safety rail.
+- **Memory-writer is gated on activation.** It only runs when `memory=yes`. Other specialists always run. This is the only conditional specialist in the delegation chain.
+- **Append-only memory on re-runs.** Both `decisions.md` and `patterns.md` use append-only semantics. Contradicting patterns get a note, not a deletion. This preserves project history and avoids destructive re-scaffolding.
+- **Template planner.md now points to the canonical agent.** The `templates/agents/planner.md` file is marked deprecated with a redirect to `.copilot/agents/planner.md`. Keeps backward compat without duplication drift.

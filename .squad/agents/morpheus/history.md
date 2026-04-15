@@ -19,3 +19,11 @@
 - **2026-04-15: Never overwrite existing files.** Planner detects conflicts and skips. Merge logic is deferred to Phase 3. Better to under-deliver safely than to destroy someone's work.
 
 - **2026-04-15: Team delivered Phase 1.** Trinity authored Planner SKILL.md (LLM-portable), Neo built 8 scaffolding templates, Tank created 24 validation scenarios. All coordinated from Morpheus architecture contract.
+
+- **2026-04-15: Phase 2 contract written — transparent delegation.** The Planner becomes a wizard orchestrator that delegates to four specialist agents (skill-writer, agent-writer, memory-writer, cookbook-writer). Delegation is transparent — users never see the handoffs. Specialists are CopilotForge internals, not user-facing agents in target repos.
+- **2026-04-15: FORGE-CONTEXT is the inter-specialist contract.** An in-conversation context block passes wizard answers and created-file lists between specialists. Portable across all LLM contexts, inspectable, no external state needed.
+- **2026-04-15: Sequential instruction loading over parallel spawning.** Specialists are loaded as instruction files, not spawned as independent agents. This works in VS Code Copilot, Claude Code, and copy-paste — the three portability targets.
+- **2026-04-15: Re-run behavior is detect-then-prompt.** Generated files are skipped if they exist (protect customizations), decisions.md is append-only (preserve history), FORGE.md and cookbook/README.md are regenerated with confirmation (dashboards must reflect reality).
+- **2026-04-15: Target repo output unchanged from Phase 1.** Phase 2 changes HOW files are generated, not WHAT files are generated. This means zero regression risk for Phase 1 users.
+- **2026-04-15: Each specialist self-checks before returning control.** Validation at the source catches errors early instead of debugging after all files are written. Pattern: every specialist protocol ends with a checklist.
+- **2026-04-15: FORGE.md generation stays with the Planner, not a specialist.** FORGE.md is the integration point that references all outputs. Only the orchestrator has the complete picture — don't delegate the thing that requires the full context.

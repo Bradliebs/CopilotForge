@@ -17,3 +17,9 @@
 - **2026-04-15 — Beginner-friendly is a testable claim.** The beginner checklist treats UX clarity as a pass/fail gate, not a nice-to-have. Recommend testing with an actual beginner, not a team member.
 
 - **2026-04-15: Team delivered Phase 1.** Morpheus, Trinity, Neo all coordinated on contract, skill, and templates. 24 scenarios and validators confirm Phase 1 scope met.
+
+- **2026-04-15 — Phase 2 test suite created.** Six deliverables: test-scenarios.md (40 scenarios across 5 categories), validate-delegation.ps1, validate-delegation.sh, rerun-scenarios.md (full re-run behavior matrix), beginner-checklist.md (Phase 2 specific), and updated tests/README.md.
+- **2026-04-15 — Jargon leaks are real.** Phase 2 validator immediately caught specialist agent names (skill-writer, agent-writer, etc.) leaking into user-facing templates: FORGE.md template and all 4 specialist agent definition templates. 24 jargon leak failures. Neo needs to scrub these before Phase 2 ships — internal names belong in docs/delegation-protocol.md only, not in files users see.
+- **2026-04-15 — Phase 1 has 6 pre-existing failures.** Missing forge-memory/ directory and files, missing FORGE.md, missing reviewer.md and tester.md agents. These are from the framework repo (not a scaffolded project), so expected — but confirms Phase 1 validators need a scaffolded output to run against, not the framework source itself.
+- **2026-04-15 — Template placeholders trip cross-reference checks.** Skill references like `.github/skills/{name}` in templates are valid template syntax but fail the "skill exists" check. Fixed validators to skip `{...}` patterns and report as warnings instead.
+- **2026-04-15 — Re-run behavior needs team decision.** Defined 7 re-run principles in rerun-scenarios.md. Key undecided: should deleted generated files be re-created? Tank recommends yes-with-warning. Also: memory=no on re-run should NEVER delete existing forge-memory/. Filed in decisions inbox.
