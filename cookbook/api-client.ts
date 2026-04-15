@@ -19,6 +19,8 @@
  *   - TypeScript 5+
  */
 
+import { randomUUID } from "node:crypto";
+
 // --- Types ---
 
 interface ApiClientConfig {

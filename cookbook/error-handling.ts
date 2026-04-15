@@ -19,6 +19,8 @@
  *   - TypeScript 5+
  */
 
+import { randomUUID } from "node:crypto";
+
 // --- Error Codes ---
 
 /** Centralized error codes. Add new codes here as your app grows. */

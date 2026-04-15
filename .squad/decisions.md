@@ -182,6 +182,45 @@ Beginners should never encounter internal delegation terminology. If FORGE.md sa
 
 ---
 
+### Architecture: Phase 3 Cookbook Layer
+
+**Source:** Morpheus
+**Date:** 2026-04-16
+**Status:** Draft — Pending Team Consensus
+
+Phase 3 delivers the full cookbook catalog (29 recipes across 7 categories), file-based stack detection, FORGE.md live config with merge markers, and an expanded cookbook-writer agent. Full specification at `docs/phase3-architecture.md`.
+
+**Key Design Decisions:**
+
+1. **File-based stack detection over wizard-only.** Manifest files (package.json, requirements.txt, go.mod, .csproj) are authoritative; wizard answer is fallback. Rationale: structured files are unambiguous; free-text parsing is fragile.
+
+2. **MCP recipes are detection-gated, not default.** Only generated when MCP SDK is in dependencies or wizard explicitly mentions MCP. Rationale: beginners shouldn't get specialized recipes they didn't ask for.
+
+3. **ORM-specific beats generic — never both.** If Prisma is detected, generate `db-prisma.ts` but not `db-query.ts`. One DB recipe per language. Rationale: avoids "which one do I use?" confusion for beginners.
+
+4. **FORGE.md manifest comment for removal tracking.** Hidden HTML comment (`<!-- forge:cookbook:manifest:[...] -->`) tracks which recipes were previously generated, so the merge algorithm can distinguish "user removed this" from "never generated." Rationale: without this, re-runs would re-add recipes users deliberately deleted.
+
+5. **CopilotForge-internal recipes don't get templates.** `delegation-example.ts` and `skill-creation-example.ts` are contributor documentation, not scaffolded into user repos. Rationale: they reference internal specialist names, violating the no-jargon-leaks rule.
+
+6. **Verbosity as agent instruction, not template engine.** Templates include all 3 verbosity variants as marked blocks; the cookbook-writer selects the matching level. No conditional template engine needed. Rationale: keeps system dependency-free and works in any LLM context.
+
+7. **Four languages in Phase 3 (TS, PY, Go, C#).** Covers >90% of Copilot agent development. Ruby, PHP, Java, Rust deferred to Phase 4 as language packs.
+
+**Deferred to Phase 4:**
+- Angular component recipes (complex component model needs its own pass)
+- Go/C# MCP recipes (SDKs not yet stable)
+- Recipe plugin system for custom categories
+- Recipe versioning / update flow for existing users
+- Strict mode validator (no `{{placeholder}}` remnants in scaffolded output)
+
+**Files Created/Updated:**
+- docs/phase3-architecture.md — Full architecture contract
+- .copilot/agents/cookbook-writer.md — Expanded (pending implementation)
+- cookbook/ — 27 new recipe files (pending implementation)
+- templates/cookbook/ — 23 new template files (pending implementation)
+
+---
+
 ## Governance
 
 - All meaningful changes require team consensus

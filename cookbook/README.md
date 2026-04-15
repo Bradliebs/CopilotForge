@@ -59,7 +59,7 @@
 
 | Recipe | Language | What It Does |
 |--------|----------|--------------|
-| [`delegation-example.ts`](./delegation-example.ts) | TypeScript | Full delegation flow — how the Planner orchestrates specialist agents programmatically |
+| [`delegation-example.ts`](./delegation-example.ts) | TypeScript | Full delegation flow — how the Planner orchestrates delegate generators programmatically |
 | [`skill-creation-example.ts`](./skill-creation-example.ts) | TypeScript | Create custom SKILL.md files programmatically from code |
 
 ---

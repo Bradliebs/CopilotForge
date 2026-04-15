@@ -3,8 +3,7 @@
  *
  * WHAT THIS DOES:
  *   Demonstrates the CopilotForge delegation pattern — how the Planner
- *   orchestrates specialist agents (skill-writer, agent-writer, memory-writer,
- *   cookbook-writer) to scaffold a project programmatically.
+ *   orchestrates delegate generators (for skills, agents, memory, and cookbook recipes) to scaffold a project programmatically.
  *
  * WHEN TO USE THIS:
  *   When you want to automate CopilotForge scaffolding in a CI pipeline,
@@ -35,22 +34,22 @@ interface WizardAnswers {
   skillLevel: "beginner" | "intermediate" | "advanced";
 }
 
-/** Common context passed to every specialist. */
-interface SpecialistContext {
+/** Common context passed to every delegate. */
+interface delegateContext {
   answers: WizardAnswers;
   date: string;
   existingFiles: string[];
 }
 
-/** Output from any specialist. */
-interface SpecialistOutput {
+/** Output from any delegate. */
+interface delegateOutput {
   filesCreated: Array<{ name: string; path: string; description: string }>;
   status: "success" | "partial" | "failed";
   errors: string[];
 }
 
-/** Skill-writer adds skill names to its output. */
-interface SkillWriterOutput extends SpecialistOutput {
+/** skill generator adds skill names to its output. */
+interface SkillGeneratorOutput extends delegateOutput {
   skillNames: string[];
 }
 
@@ -68,14 +67,14 @@ function detectRerun(targetDir: string): string[] {
   return FORGE_MARKERS.filter((marker) => existsSync(join(targetDir, marker)));
 }
 
-// --- Specialist Stubs ---
+// --- delegate Stubs ---
 
 /**
  * Generates SKILL.md files for the project.
- * In production, this calls the skill-writer agent or uses templates.
+ * In production, this calls the skill generator agent or uses templates.
  */
-async function runSkillWriter(ctx: SpecialistContext): Promise<SkillWriterOutput> {
-  const skills: SkillWriterOutput = {
+async function runSkillGenerator(ctx: delegateContext): Promise<SkillGeneratorOutput> {
+  const skills: SkillGeneratorOutput = {
     filesCreated: [],
     skillNames: [],
     status: "success",
@@ -110,20 +109,20 @@ async function runSkillWriter(ctx: SpecialistContext): Promise<SkillWriterOutput
   }
 
   // TODO: Replace with actual template rendering.
-  // Each skill would be generated from templates/agents/skill-writer.md logic.
-  console.log(`[skill-writer] Generated ${skills.filesCreated.length} skills`);
+  // Each skill would be generated from templates/agents/skill generator.md logic.
+  console.log(`[skill generator] Generated ${skills.filesCreated.length} skills`);
   return skills;
 }
 
 /**
  * Generates agent definition files.
- * Depends on skill-writer output for skill references.
+ * Depends on skill generator output for skill references.
  */
 async function runAgentWriter(
-  ctx: SpecialistContext,
+  ctx: delegateContext,
   skillNames: string[]
-): Promise<SpecialistOutput> {
-  const output: SpecialistOutput = {
+): Promise<delegateOutput> {
+  const output: delegateOutput = {
     filesCreated: [],
     status: "success",
     errors: [],
@@ -147,23 +146,23 @@ async function runAgentWriter(
   }
 
   // TODO: Replace with actual template rendering.
-  console.log(`[agent-writer] Generated ${output.filesCreated.length} agents`);
+  console.log(`[agent generator] Generated ${output.filesCreated.length} agents`);
   return output;
 }
 
 /**
  * Generates forge-memory files.
- * Runs in parallel — no dependencies on other specialists.
+ * Runs in parallel — no dependencies on other delegates.
  */
-async function runMemoryWriter(ctx: SpecialistContext): Promise<SpecialistOutput> {
-  const output: SpecialistOutput = {
+async function runMemoryWriter(ctx: delegateContext): Promise<delegateOutput> {
+  const output: delegateOutput = {
     filesCreated: [],
     status: "success",
     errors: [],
   };
 
   if (!ctx.answers.memoryEnabled) {
-    console.log("[memory-writer] Skipped — memory disabled");
+    console.log("[memory generator] Skipped — memory disabled");
     return output;
   }
 
@@ -181,16 +180,16 @@ async function runMemoryWriter(ctx: SpecialistContext): Promise<SpecialistOutput
   );
 
   // TODO: Replace with actual template rendering.
-  console.log(`[memory-writer] Generated ${output.filesCreated.length} memory files`);
+  console.log(`[memory generator] Generated ${output.filesCreated.length} memory files`);
   return output;
 }
 
 /**
  * Generates cookbook recipes.
- * Runs in parallel — no dependencies on other specialists.
+ * Runs in parallel — no dependencies on other delegates.
  */
-async function runCookbookWriter(ctx: SpecialistContext): Promise<SpecialistOutput> {
-  const output: SpecialistOutput = {
+async function runCookbookWriter(ctx: delegateContext): Promise<delegateOutput> {
+  const output: delegateOutput = {
     filesCreated: [],
     status: "success",
     errors: [],
@@ -221,7 +220,7 @@ async function runCookbookWriter(ctx: SpecialistContext): Promise<SpecialistOutp
   }
 
   // TODO: Replace with actual template rendering.
-  console.log(`[cookbook-writer] Generated ${output.filesCreated.length} recipes`);
+  console.log(`[cookbook generator] Generated ${output.filesCreated.length} recipes`);
   return output;
 }
 
@@ -231,7 +230,7 @@ async function runCookbookWriter(ctx: SpecialistContext): Promise<SpecialistOutp
  * The main delegation loop. This is what the Planner does:
  * 1. Collect wizard answers (provided here as input).
  * 2. Detect re-runs.
- * 3. Dispatch specialists in the correct order.
+ * 3. Dispatch delegates in the correct order.
  * 4. Assemble FORGE.md from all outputs.
  * 5. Print validation summary.
  */
@@ -247,18 +246,18 @@ async function runPlanner(answers: WizardAnswers, targetDir: string): Promise<vo
     console.log("\n🆕 Fresh run — no existing CopilotForge files detected.\n");
   }
 
-  // Step 2: Build specialist context
-  const ctx: SpecialistContext = {
+  // Step 2: Build delegate context
+  const ctx: delegateContext = {
     answers,
     date,
     existingFiles: existing,
   };
 
-  // Step 3: Run skill-writer FIRST (agent-writer depends on it)
+  // Step 3: Run skill generator FIRST (agent generator depends on it)
   console.log("--- Phase 1: Skills ---");
-  const skillResult = await runSkillWriter(ctx);
+  const skillResult = await runSkillGenerator(ctx);
 
-  // Step 4: Run agent-writer (sequential), memory-writer + cookbook-writer (parallel)
+  // Step 4: Run agent generator (sequential), memory generator + cookbook generator (parallel)
   console.log("\n--- Phase 2: Agents + Memory + Cookbook (parallel) ---");
   const [agentResult, memoryResult, cookbookResult] = await Promise.all([
     runAgentWriter(ctx, skillResult.skillNames),
@@ -288,10 +287,10 @@ function slugify(name: string): string {
 }
 
 function printSummary(
-  skills: SkillWriterOutput,
-  agents: SpecialistOutput,
-  memory: SpecialistOutput,
-  cookbook: SpecialistOutput
+  skills: SkillGeneratorOutput,
+  agents: delegateOutput,
+  memory: delegateOutput,
+  cookbook: delegateOutput
 ): void {
   const allResults = [skills, agents, memory, cookbook];
   const failed = allResults.filter((r) => r.status === "failed");
