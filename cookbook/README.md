@@ -1,6 +1,14 @@
 # 📖 CopilotForge Cookbook
 
-> Copy-paste-ready code recipes for common CopilotForge tasks. Every recipe includes all imports, error handling, and clear comments — no "install this first" surprises.
+> Copy-paste-ready code recipes for common tasks. Every recipe includes all imports, error handling, and clear comments — no "install this first" surprises.
+
+---
+
+### 🆕 New to CopilotForge?
+
+This is the recipe library — a collection of ready-to-use code examples generated for your stack. If you're just getting started, head to the **[main README](../README.md)** for the full picture, or check out the **[Getting Started guide](../docs/GETTING-STARTED.md)** for a step-by-step walkthrough.
+
+The short version: run the CopilotForge wizard (say "set up my project" in your AI assistant), and it picks the right recipes for your project automatically. You can also browse and copy recipes from here directly.
 
 ---
 
