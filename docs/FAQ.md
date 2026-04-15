@@ -34,6 +34,20 @@ The skills and agents work with any language — they're instructions, not code.
 
 ## Setup & Scaffolding
 
+### What are the "extras" in Question 6?
+
+Optional advanced features you can add during wizard setup. They generate specialized code recipes in your `cookbook/` folder:
+
+- **Task automation** (ralph-loop) — An AI dev loop that works through your TODO list autonomously
+- **Auto-experiments** (auto-research) — An AI that tries code changes, measures results, keeps improvements
+- **Knowledge wiki** (knowledge-wiki) — Builds a searchable personal wiki from your notes and docs
+- **CLI hooks** (copilot-hooks) — Automatic actions during Copilot CLI sessions (logging, safety checks)
+- **Blog writer** (blog-writer) — Converts your pull requests into blog posts
+- **Template factory** (template-creator) — Generates project documentation in bulk
+- **PR dashboard** (pr-visualization) — Analytics and charts for your pull requests
+
+You don't need any of them to use CopilotForge. They're power-ups you can add anytime. See `cookbook/CHEATSHEET.md` to add them later without re-running the wizard. For beginners, we recommend "none." For intermediate developers, try "task automation." Advanced users often combine "task automation" with "auto-experiments."
+
 ### I got an error during scaffolding — what do I do?
 
 CopilotForge handles partial failures gracefully. If one part fails, the rest still generates. Check the validation summary at the end — it lists what was created and what was skipped.

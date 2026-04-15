@@ -2,7 +2,7 @@
 
 > Describe what you want. Get a fully-configured AI team. No CLI required.
 
-CopilotForge turns a plain-English description of your project into a working set of AI-powered tools — all inside your repo. You tell it what you're building, answer five quick questions, and it creates everything: coding assistants that know your stack, code review checklists, test helpers, ready-to-use code recipes, and a memory system that gets smarter over time. No install. No command line. Just drop one file into your repo and start talking.
+CopilotForge turns a plain-English description of your project into a working set of AI-powered tools — all inside your repo. You tell it what you're building, answer a few questions, and it creates everything: coding assistants that know your stack, code review checklists, test helpers, ready-to-use code recipes, and a memory system that gets smarter over time. No install. No command line. Just drop one file into your repo and start talking.
 
 It creates **skills** (instruction files for your AI), **agents** (AI team members defined in markdown), **recipes** (copy-paste code examples), and a **memory** system (plain-text files that remember your decisions). "Scaffolding" just means auto-generating these files into your project.
 
@@ -16,7 +16,7 @@ It creates **skills** (instruction files for your AI), **agents** (AI team membe
 > "I want AI help with my Next.js app but I don't know where to start with skills, agents, or configuration."
 
 **After CopilotForge:**
-> You answered 5 questions. Now your repo has a code reviewer that knows TypeScript conventions, a test writer that uses Jest, copy-paste code recipes for Express and Prisma, and a memory system that remembers your decisions. All from one conversation.
+> You answered a few questions. Now your repo has a code reviewer that knows TypeScript conventions, a test writer that uses Jest, copy-paste code recipes for Express and Prisma, and a memory system that remembers your decisions. All from one conversation.
 
 ---
 
@@ -75,7 +75,7 @@ Other phrases that work: `forge`, `copilot forge`, `plan my project`, `scaffold 
 
 > 📝 **Windows users:** The examples above use forward slashes (`/`) in file paths. On Windows, use backslashes (`\`) — or just use PowerShell, which accepts both.
 
-The wizard asks five questions about your project, then scaffolds everything automatically. Here's what to expect:
+The wizard asks six questions about your project, then scaffolds everything automatically. Here's what to expect:
 
 | # | Question | Example Answer |
 |---|----------|----------------|
@@ -84,6 +84,7 @@ The wizard asks five questions about your project, then scaffolds everything aut
 | 3 | **Do you want memory?** | "yes" *(so it remembers your choices next time)* |
 | 4 | **Do you want test automation?** | "yes" *(creates a test-writing helper)* |
 | 5 | **What's your experience level?** | "beginner" *(adds extra comments to everything)* |
+| 6 | **Want to add any advanced features?** | "none" *(or: task automation, auto-experiments, etc.)* |
 
 You'll see a summary of your answers. Say "yes" to confirm, or change anything before it starts building.
 
@@ -201,11 +202,11 @@ Here's the whole flow:
 4. **It generates everything** — skills, agents, code recipes, memory files, and a control panel. Every file is customized for your stack.
 5. **You're ready to go** — start using phrases like "review this code" or "write tests for this module" and your AI assistant already knows your conventions.
 
-On the **second run**, the wizard remembers your previous answers. Instead of asking five questions again, it shows you what it knows and asks what you'd like to change. The more you use it, the less setup you need.
+On the **second run**, the wizard remembers your previous answers. Instead of asking all six questions again, it shows you what it knows and asks what you'd like to change. The more you use it, the less setup you need.
 
 ---
 
-## The Five Questions
+## The Six Questions
 
 Here's exactly what the wizard asks and what each answer controls.
 
@@ -267,6 +268,24 @@ This controls how much explanation appears in generated files:
 | **advanced** | Minimal comments. Just the essentials. |
 
 Default is **beginner**.
+
+### Question 6 — Extras (Optional)?
+
+> *"Want to add any advanced features?"*
+
+Optional add-ons you can generate right now or add later:
+
+- **Task automation** (ralph-loop) — AI works through your TODO list autonomously
+- **Auto-experiments** (auto-research) — AI tries code changes, measures results, keeps improvements
+- **Knowledge wiki** (knowledge-wiki) — Build a searchable personal wiki from your notes
+- **CLI hooks** (copilot-hooks) — Automatic actions during Copilot CLI sessions
+- **Blog writer** (blog-writer) — Convert PRs into blog posts automatically
+- **Template factory** (template-creator) — Generate documentation and templates in bulk
+- **PR dashboard** (pr-visualization) — Analytics and charts for your pull requests
+
+Default is **none** — perfectly fine for beginners. If you're intermediate, **task automation** is a great first extra. Advanced users often combine **task automation** with **auto-experiments**.
+
+All extras can be added later via `cookbook/CHEATSHEET.md` without re-running the wizard.
 
 ---
 
@@ -376,7 +395,7 @@ If you said "yes" to memory (Question 3), your project gets a `forge-memory/` fo
 | `preferences.md` | Your settings — experience level, stack preferences, generation options |
 | `history.md` | A session log — when CopilotForge ran and what it did |
 
-**Why this matters:** The next time you run CopilotForge, it reads these files first. Instead of asking all five questions again, it shows what it already knows and only asks about what's changed. Over time, the wizard gets faster because it already knows your project.
+**Why this matters:** The next time you run CopilotForge, it reads these files first. Instead of asking all six questions again, it shows what it already knows and only asks about what's changed. Over time, the wizard gets faster because it already knows your project.
 
 Memory is append-only — it never deletes previous entries. If you want to start fresh, rename or delete the `forge-memory/` folder and run the wizard again.
 

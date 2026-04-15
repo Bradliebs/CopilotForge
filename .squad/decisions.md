@@ -152,7 +152,7 @@ Beginners should never encounter internal delegation terminology. If FORGE.md sa
    - Error recovery with partial context
 
 5. **End-to-End Beginner Flow** (4 scenarios)
-   - Complete wizard (five questions) → all specialists run → final scaffolding matches Phase 1 output
+   - Complete wizard (six questions) → all specialists run → final scaffolding matches Phase 1 output
    - Different tech stacks (Node.js, Python, C#)
    - With and without memory option
    - Re-run with template updates

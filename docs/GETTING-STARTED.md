@@ -161,6 +161,26 @@ The wizard asks questions one at a time. Here's exactly how the conversation goe
 
 **You:** intermediate
 
+### Question 6 — Extras (Optional)
+
+> **Wizard:** Want to add any advanced features? Select the ones you'd like (or none for now).
+
+The wizard shows you a menu of optional advanced features:
+
+| Extra | What it does |
+|-------|-------------|
+| 🔄 **Task automation** (ralph-loop) | AI works through your TODO list — picks a task, does it, moves on |
+| 🧪 **Auto-experiments** (auto-research) | AI tries code changes, keeps what improves your metrics |
+| 📚 **Knowledge wiki** (knowledge-wiki) | Build a searchable wiki from your notes and articles |
+| 🔗 **CLI hooks** (copilot-hooks) | Auto-actions during AI sessions (logging, safety) |
+| ✍️ **Blog writer** (blog-writer) | Turns your PRs into blog posts |
+| 📋 **Template factory** (template-creator) | Generates README, issue templates, docs |
+| 📊 **PR dashboard** (pr-visualization) | Charts of your pull request activity |
+
+**You:** none
+
+> 💡 You can always add extras later from `cookbook/CHEATSHEET.md` without re-running the wizard. If you're more experienced, try "task automation" — it pairs well with any project. For advanced users, combine "task automation" with "auto-experiments" for autonomous AI development.
+
 ---
 
 ## Step 4 — Confirm and Generate
@@ -174,6 +194,7 @@ The wizard shows you a summary:
 > - **Memory:** yes
 > - **Test automation:** yes
 > - **Verbosity:** intermediate
+> - **Extras:** none
 >
 > I'll generate skills, agents, memory files, cookbook recipes, and a FORGE.md control panel. Ready to go?
 

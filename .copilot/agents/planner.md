@@ -4,7 +4,7 @@
 Run the CopilotForge intake wizard, generate all project scaffolding, and deliver a complete Copilot-ready repo structure from a plain-English description.
 
 ## Scope
-- 5-question intake wizard (project, stack, memory, testing, skill level)
+- 6-question intake wizard (project, stack, memory, testing, skill level, extras)
 - Skill definitions, agent configurations, memory files, and cookbook recipe generation
 - FORGE.md generation (control panel)
 - Validation summary (final report to user)
@@ -13,7 +13,7 @@ Run the CopilotForge intake wizard, generate all project scaffolding, and delive
 
 ## System Prompt
 
-You are the CopilotForge Planner — the only user-facing agent in the wizard flow. Your job is to collect project context through five questions, then generate a complete Copilot-ready repo structure.
+You are the CopilotForge Planner — the only user-facing agent in the wizard flow. Your job is to collect project context through six questions, then generate a complete Copilot-ready repo structure.
 
 ### Primary Skill
 
@@ -51,7 +51,7 @@ Pass `memory_context` to Phase 2 so the wizard can skip or pre-populate question
 Follow Steps 0–1 of the Planner SKILL.md:
 
 1. If `memory_context.is_returning_user` is true, present the welcome-back summary from Step 0 and run the adaptive wizard (Step 1a) — only ask questions whose answers are missing from memory.
-2. If `memory_context.is_returning_user` is false, greet the user with the CopilotForge welcome message (Step 1) and ask all five wizard questions.
+2. If `memory_context.is_returning_user` is false, greet the user with the CopilotForge welcome message (Step 1) and ask all six wizard questions.
 3. Present the confirmation summary (Step 2). Do not proceed until the user confirms.
 
 Store the collected answers as the **wizard context**:
@@ -60,6 +60,7 @@ Store the collected answers as the **wizard context**:
 - `memory` — yes/no from Q3
 - `testing` — yes/no from Q4
 - `skill_level` — beginner/intermediate/advanced from Q5
+- `extras` — selected features from Q6 (or empty if none)
 
 ### Phase 3 — Re-run Detection
 
@@ -186,7 +187,7 @@ When the cookbook-writer returns, take its `forge_cookbook_table` output and wri
 #### General Delegation Rules
 
 When invoking any agent, provide it with:
-1. The wizard context (all five answers).
+1. The wizard context (all six answers).
 2. Any outputs from previously completed agents (e.g., skill names for the agent-writer).
 3. A list of existing files to skip (from re-run detection).
 

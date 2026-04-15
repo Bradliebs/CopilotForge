@@ -24,7 +24,7 @@ triggers:
 
 # CopilotForge Planner
 
-> Drop this file into any repo at `.github/skills/planner/SKILL.md`. When triggered, it walks you through five questions and scaffolds a complete Copilot-ready project structure — skills, agents, memory, and cookbook recipes. No CLI. No framework. Just markdown.
+> Drop this file into any repo at `.github/skills/planner/SKILL.md`. When triggered, it walks you through six questions and scaffolds a complete Copilot-ready project structure — skills, agents, memory, and cookbook recipes. No CLI. No framework. Just markdown.
 
 ## What This Does
 

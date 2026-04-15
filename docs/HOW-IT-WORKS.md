@@ -31,7 +31,7 @@ When you run CopilotForge, the Planner coordinates everything. It collects your 
 ```
 You describe your project
         ↓
-   The Planner asks 5 questions
+   The Planner asks six questions
         ↓
    It scans your repo (package.json, requirements.txt, etc.)
         ↓
@@ -58,7 +58,7 @@ The metadata includes trigger phrases — words you can say to activate the wiza
 ### What it does step by step
 
 1. **Checks for memory** — Looks for existing `forge-memory/` files. If found, it's a returning user.
-2. **Runs the wizard** — Asks five questions (or fewer, if memory has the answers).
+2. **Runs the wizard** — Asks six questions (or fewer, if memory has the answers).
 3. **Confirms with you** — Shows a summary and waits for your "yes."
 4. **Detects your stack** — Scans manifest files (`package.json`, `requirements.txt`, `go.mod`, `.csproj`) to identify your frameworks.
 5. **Generates files** — Creates skills, agents, recipes, memory files, and the FORGE.md control panel.
@@ -223,7 +223,7 @@ When you run the wizard again, the Planner reads all memory files before asking 
 - **It knows your preferences** — no need to re-select experience level
 - **It respects your conventions** — new files follow the patterns already established
 
-Instead of five questions, returning users see a summary and can jump straight to what they want to change.
+Instead of answering all questions again, returning users see a summary and can jump straight to what they want to change.
 
 ### How memory grows
 

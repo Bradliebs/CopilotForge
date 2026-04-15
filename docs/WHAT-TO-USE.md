@@ -18,7 +18,7 @@ Find yourself in this table. Follow your path. Ignore everything else.
 | I am... | Start here | Skip everything else |
 |---------|-----------|---------------------|
 | **A total beginner** who's never used AI coding tools | [README Quick Start](../README.md#quick-start) → then try the `hello-world` recipe | Agents, memory, advanced recipes |
-| **A developer with a project** who wants AI help | **`npx copilotforge init`** → answer 5 questions → done | The wizard picks everything for you |
+| **A developer with a project** who wants AI help | **`npx copilotforge init`** → answer a few questions → done | The wizard picks everything for you |
 | **A developer who just wants code recipes** | [cookbook/CHEATSHEET.md](../cookbook/CHEATSHEET.md) | Skills, agents, and memory entirely |
 | **Someone interested in AI research / experiments** | `auto-research` + `knowledge-wiki` recipes | You don't need the wizard or agents |
 | **A team lead** setting up AI for a team | Full [GETTING-STARTED.md](GETTING-STARTED.md) walkthrough | You'll use everything — no shortcuts |
