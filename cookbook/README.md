@@ -126,6 +126,13 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 | [`template-creator.ts`](./template-creator.ts) | TypeScript | Generate project templates (README, issues, PRs, docs) with structured Copilot prompts |
 | [`template-creator.py`](./template-creator.py) | Python | Same template generation pipeline in Python |
 
+### Copilot CLI Hooks
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`copilot-hooks.ts`](./copilot-hooks.ts) | TypeScript | Generate hooks.json + scripts for session logging, safety checks, and audit trails |
+| [`copilot-hooks.py`](./copilot-hooks.py) | Python | Same Copilot hooks generator in Python |
+
 ### Delegation & Skills
 
 | Recipe | Language | What It Does |
