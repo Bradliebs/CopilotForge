@@ -164,6 +164,23 @@ CopilotForge won't overwrite your changes on re-runs — it skips files that alr
 
 ---
 
+
+### Can I use CopilotForge in a monorepo?
+
+Yes. Copy the Planner skill to your repo root, or into each package that needs its own team. Each package can have its own FORGE.md and forge-memory/ — they work independently.
+
+### My repo is huge — will the wizard be slow?
+
+No. The wizard only reads configuration files (package.json, requirements.txt, etc.) to detect your stack. It doesn't scan all your source code.
+
+### Can different packages have different FORGE.md files?
+
+Yes. Each directory with a FORGE.md gets its own team configuration. The Planner scopes its work to the directory where it was triggered.
+
+### Does CopilotForge work with Git submodules?
+
+Yes, but the Planner only scaffolds within the repo where the skill is installed. Submodules are treated as separate repos.
+
 ## Compatibility
 
 ### Does this work with GitHub Copilot?
@@ -228,3 +245,4 @@ MIT — use it however you want. Modify it, redistribute it, use it in commercia
 - [Getting Started Guide](GETTING-STARTED.md)
 - [How It Works](HOW-IT-WORKS.md)
 - [Main README](../README.md)
+

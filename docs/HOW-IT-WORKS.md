@@ -305,6 +305,19 @@ Go and C# recipes are available for core categories as well.
 
 ---
 
+
+## What is MCP?
+
+**MCP stands for Model Context Protocol** — it's a standard way for AI assistants to use external tools and capabilities.
+
+Think of it like **USB for AI**: just as USB lets you plug in a keyboard, mouse, or storage device into a computer, MCP lets you plug in capabilities (a database, file system, API, code analyzer) into an AI assistant. The assistant can then use those tools to do more powerful work.
+
+CopilotForge includes an MCP recipe showing how to build one. You can find examples in:
+- **TypeScript:** cookbook/mcp-server.ts
+- **Python:** cookbook/mcp-server.py
+
+If you're curious about how it works under the hood, these recipes show the structure and how to connect your tool to an AI assistant.
+
 ## How Re-Runs Work
 
 CopilotForge is designed to be run multiple times on the same project. Here's how it handles that:
@@ -369,3 +382,4 @@ Everything is plain markdown and code. No hidden config, no binaries, no magic. 
 ---
 
 **← Back to [README](../README.md)** | **→ Recipe index: [cookbook/README.md](../cookbook/README.md)**
+
