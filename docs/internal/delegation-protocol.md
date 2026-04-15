@@ -17,7 +17,7 @@ In Phase 1, the Planner did everything: intake, generation, validation. Phase 2 
 User
   │
   ▼
-Planner (wizard intake — 5 questions)
+Planner (wizard intake — 6 questions)
   │
   ▼
 Confirm summary with user

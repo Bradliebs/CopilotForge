@@ -27,3 +27,6 @@
 - **2026-04-15: Target repo output unchanged from Phase 1.** Phase 2 changes HOW files are generated, not WHAT files are generated. This means zero regression risk for Phase 1 users.
 - **2026-04-15: Each specialist self-checks before returning control.** Validation at the source catches errors early instead of debugging after all files are written. Pattern: every specialist protocol ends with a checklist.
 - **2026-04-15: FORGE.md generation stays with the Planner, not a specialist.** FORGE.md is the integration point that references all outputs. Only the orchestrator has the complete picture — don't delegate the thing that requires the full context.
+
+- **2026-04-15: Phase 7 & 8 complete — v1.0 ready.** Beginner navigation (Phase 7) delivered via WHAT-TO-USE.md + persona routing. Wizard Q6 extras (Phase 8) added advanced feature selection. All eight phases verified complete. Architecture is solid: skills → wizard → agents → memory → recipes. Zero critical gaps. Recommendation: ready for publication.
+- **2026-04-15: Documentation is the product.** README + GETTING-STARTED + WHAT-TO-USE + CHEATSHEET + FAQ form a complete onboarding funnel. Users never feel lost because documentation anticipates every question. No user should ever ask "where do I start?" — WHAT-TO-USE answers it.

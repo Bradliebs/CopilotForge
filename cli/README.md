@@ -8,24 +8,24 @@ CopilotForge scaffolds [GitHub Copilot](https://github.com/features/copilot) ski
 
 ```bash
 cd your-project
-npx copilotforge init
+npx @bradliebs/copilotforge init
 ```
 
 Then open your AI assistant (GitHub Copilot Chat, Claude Code, etc.) and say:
 
 > "set up my project"
 
-Answer 5 questions and CopilotForge generates a complete Copilot-ready structure for your project.
+Answer a few questions and CopilotForge generates a complete Copilot-ready structure for your project.
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
-| `npx copilotforge init` | Set up CopilotForge in your project |
-| `npx copilotforge init --full` | Set up with starter templates included |
-| `npx copilotforge doctor` | Check if setup is correct |
-| `npx copilotforge uninstall` | Remove CopilotForge files |
-| `npx copilotforge --version` | Show version |
+| `npx @bradliebs/copilotforge init` | Set up CopilotForge in your project |
+| `npx @bradliebs/copilotforge init --full` | Set up with starter templates included |
+| `npx @bradliebs/copilotforge doctor` | Check if setup is correct |
+| `npx @bradliebs/copilotforge uninstall` | Remove CopilotForge files |
+| `npx @bradliebs/copilotforge --version` | Show version |
 
 ## What It Does
 
@@ -50,9 +50,9 @@ cookbook/hello-world.py                ← Starter recipe (Python)
 
 ## How It Works
 
-1. **CLI copies files** — `npx copilotforge init` puts the planner skill into your repo
+1. **CLI copies files** — `npx @bradliebs/copilotforge init` puts the planner skill into your repo
 2. **Wizard runs in chat** — Open Copilot Chat and say "set up my project"
-3. **5 questions** — Project name, stack, memory prefs, testing prefs, skill level
+3. **6 questions** — Project name, stack, memory prefs, testing prefs, skill level, extras shopping list
 4. **Full scaffolding** — Skills, agents, memory, and cookbook recipes generated for your stack
 
 ## Zero Dependencies
@@ -66,8 +66,8 @@ CopilotForge uses only Node.js built-ins. No runtime dependencies to install, au
 
 ## Learn More
 
-- [Getting Started Guide](https://github.com/BradLiebworthy/CopilotForge/blob/main/docs/GETTING-STARTED.md)
-- [Repository](https://github.com/BradLiebworthy/CopilotForge)
+- [Getting Started Guide](https://github.com/Bradliebs/CopilotForge/blob/main/docs/GETTING-STARTED.md)
+- [Repository](https://github.com/Bradliebs/CopilotForge)
 
 ## License
 

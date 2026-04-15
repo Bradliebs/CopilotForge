@@ -56,17 +56,17 @@ function printHelp() {
   ${colors.bold(colors.red('\uD83D\uDD25 CopilotForge'))} ${colors.dim('\u2014 AI team scaffolding in one command')}
 
   ${colors.bold('Usage:')}
-    npx copilotforge init          Set up CopilotForge in your project
-    npx copilotforge init --full   Set up with starter templates included
-    npx copilotforge doctor        Check if setup is correct
-    npx copilotforge uninstall     Remove CopilotForge files
-    npx copilotforge --version     Show version
+    npx @bradliebs/copilotforge init          Set up CopilotForge in your project
+    npx @bradliebs/copilotforge init --full   Set up with starter templates included
+    npx @bradliebs/copilotforge doctor        Check if setup is correct
+    npx @bradliebs/copilotforge uninstall     Remove CopilotForge files
+    npx @bradliebs/copilotforge --version     Show version
 
   ${colors.bold('Quick start:')}
     cd your-project
-    npx copilotforge init
+    npx @bradliebs/copilotforge init
     ${colors.dim('# Then open Copilot Chat and say: "set up my project"')}
 
-  ${colors.dim('Learn more: https://github.com/BradLiebworthy/CopilotForge')}
+  ${colors.dim('Learn more: https://github.com/Bradliebs/CopilotForge')}
 `);
 }

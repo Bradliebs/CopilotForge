@@ -4,10 +4,10 @@ Your project is pre-configured with CopilotForge. Here's what to do:
 
 1. **Open your AI assistant** (GitHub Copilot Chat, Claude Code, etc.)
 2. **Say:** "set up my project"  
-3. **Answer 5 questions** about what you're building
+3. **Answer a few questions** about what you're building
 4. **Watch it create** skills, agents, and recipes for your project!
 
-> 📖 Full guide: [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md)
+> 📖 Full guide: [docs/GETTING-STARTED.md](../docs/GETTING-STARTED.md)
 
 ## Clean up this repo
 
@@ -20,7 +20,7 @@ After setting up, you can:
 ## Next Steps
 
 1. **Quick start:** Run the wizard with "set up my project"
-2. **Learn more:** Check out [GETTING-STARTED.md](docs/GETTING-STARTED.md)
-3. **Questions?** See the [FAQ](docs/FAQ.md)
+2. **Learn more:** Check out [GETTING-STARTED.md](../docs/GETTING-STARTED.md)
+3. **Questions?** See the [FAQ](../docs/FAQ.md)
 
 Happy building! 🚀

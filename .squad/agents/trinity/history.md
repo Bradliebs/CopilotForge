@@ -30,6 +30,8 @@
 - **2026-04-15: Jargon leak remediation — two-layer prompt architecture.** Agent definitions that serve dual purposes (LLM system prompt + user reference) need explicit layering. User-visible sections (Role, Scope, Boundaries) must be jargon-free. LLM-consumed sections can contain internal delegation details but should be clearly marked (e.g., `### Internal Delegation Protocol` with an HTML comment). This prevents beginners from encountering internal plumbing while preserving the orchestration information the LLM needs.
 - **Cross-references between agents create coupling leaks.** When agent A's Boundaries section says "I don't handle X (agent-B)", it exposes agent-B's name to anyone reading agent A. Describe capabilities functionally ("I don't handle skill generation") instead of by agent name. Internal agents still know their own identity from their System Prompt — they don't need to name each other.
 
+- **Phase 8 added Question 6 (Extras shopping list) to the wizard.** Fixed 6 stale references across user-facing and internal docs. Rule: user-facing docs use "a few questions" (future-proof); internal/test docs update to "6 questions" (precise).
+
 
 ## 2026-04-15 --- Phase 2.1: Jargon Remediation
 Duration: 239s | Tool Calls: 31 | Status: COMPLETE

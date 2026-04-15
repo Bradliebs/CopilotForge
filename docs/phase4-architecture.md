@@ -20,7 +20,7 @@ Today, memory is **write-only**. The Planner scaffolds `forge-memory/decisions.m
 | Component | Phase 3 (Today) | Phase 4 (Target) |
 |---|---|---|
 | Memory read-back | None — memory is write-only | Planner reads memory before wizard starts |
-| Wizard behavior | Same 5 questions every run | Adaptive — skips known answers, shows summary |
+| Wizard behavior | Same questions every run | Adaptive — skips known answers, shows summary |
 | Convention learning | Static patterns from wizard answers | Dynamic extraction from generated output |
 | Cross-session context | Decisions append, nothing compounds | History log + preferences file + summarization |
 | Per-agent memory | delegates have no learned context | Each delegate reads relevant memory sections |
@@ -368,7 +368,7 @@ A per-session activity log that records what was done and what changed.
 ### Session 3 — 2026-04-16
 
 **Trigger:** User requested "add auth patterns"
-**Mode:** Returning user (adaptive wizard — skipped 4/5 questions)
+**Mode:** Returning user (adaptive wizard — skipped most questions)
 **delegates invoked:** cookbook generator, memory generator
 **Files created:**
 - cookbook/auth-middleware.ts
@@ -660,7 +660,7 @@ The `Memory health` row reflects the parse result from Section 1:
 |---|---|
 | Memory read-back protocol | Planner reads `forge-memory/` before wizard |
 | FORGE-MEMORY context block | Structured memory passed to delegates |
-| Adaptive wizard | Returning users see summary + options, not 5 questions |
+| Adaptive wizard | Returning users see summary + options, not the same questions again |
 | Partial memory handling | Missing answers are asked; known answers are pre-filled |
 | Conflict resolution | Contradictions between memory and user input are resolved explicitly |
 | Convention learning | Pattern extraction after each run with confidence levels |
@@ -731,9 +731,9 @@ All architectural decisions made in this contract, with rationale.
 
 ### D4-07: Adaptive wizard shows four options for returning users
 
-**Decision:** Returning users see a summary of known context and four action choices (add, change, re-scaffold, start fresh) instead of the 5-question wizard.
+**Decision:** Returning users see a summary of known context and four action choices (add, change, re-scaffold, start fresh) instead of asking all questions again.
 
-**Rationale:** Asking the same 5 questions on every run is the antithesis of "learning." If the system already knows the answers, proving it by showing them builds trust. Four options cover the major returning-user intents: extending, tweaking, regenerating, and resetting.
+**Rationale:** Asking the same questions on every run is the antithesis of "learning." If the system already knows the answers, proving it by showing them builds trust. Four options cover the major returning-user intents: extending, tweaking, regenerating, and resetting.
 
 ### D4-08: Per-agent memory is instruction-filtered, not file-filtered
 

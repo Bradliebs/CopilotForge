@@ -38,12 +38,12 @@ That's it. No npm install, no CLI tools, no framework knowledge needed.
 
 ```bash
 cd your-project
-npx copilotforge init
+npx @bradliebs/copilotforge init
 ```
 
 That's it. One command copies everything you need into your project.
 
-> 💡 **Want starter templates too?** Use `npx copilotforge init --full` to include example agents, memory files, and starter recipes.
+> 💡 **Want starter templates too?** Use `npx @bradliebs/copilotforge init --full` to include example agents, memory files, and starter recipes.
 
 ### Option B — Manual Copy
 

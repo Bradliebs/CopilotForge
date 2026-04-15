@@ -7,7 +7,7 @@
 
 ## Happy Path Scenarios
 
-### HP-01: Full Wizard — All 5 Questions Answered
+### HP-01: Full Wizard — All 6 Questions Answered
 
 **Input:**
 1. What are you building? → "A task management API with user authentication, team workspaces, and real-time notifications"

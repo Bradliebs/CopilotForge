@@ -4,6 +4,9 @@
     Validates all cookbook recipes against CopilotForge standards.
 
 .DESCRIPTION
+    ⚠️  REQUIRES PowerShell Core 7+ (pwsh). This script uses modern PowerShell
+    syntax and will NOT work with Windows PowerShell 5.1 (powershell.exe).
+    
     Checks every .ts and .py file in cookbook/ for:
     - Header comment present
     - Source attribution (Adapted from: or Inspired by:)
@@ -16,6 +19,9 @@
 
 .EXAMPLE
     pwsh tests/docs/validate-recipes.ps1
+    
+.NOTES
+    ⚠️  Use 'pwsh' not 'powershell' to run this script!
 #>
 
 $ErrorActionPreference = "Stop"
@@ -202,7 +208,7 @@ $Checks = @(
                 }
                 return $true
             }
-        }
+        }  # End Check script block
         Required = $true
     }
     @{

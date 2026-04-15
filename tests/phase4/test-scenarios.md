@@ -17,7 +17,7 @@ How the Planner loads and uses orge-memory/ on startup.
 **Precondition:** No orge-memory/ directory exists.
 **Action:** Trigger the Planner skill.
 **Expected:**
-- Wizard asks all 5 questions normally (project, stack, memory, testing, skill level).
+- Wizard asks all 6 questions normally (project, stack, memory, testing, skill level, extras).
 - No "Welcome back" message shown.
 - No context summary shown.
 - After scaffolding, orge-memory/ created (if memory=yes).
@@ -234,7 +234,7 @@ How the wizard adapts its question flow based on memory state.
 **Action:** Trigger the Planner skill.
 **Expected:**
 - Standard welcome message (no "Welcome back").
-- All 5 questions asked in order.
+- All 6 questions asked in order.
 - No mention of memory, context, or prior sessions.
 - Identical to Phase 1-3 wizard flow.
 
