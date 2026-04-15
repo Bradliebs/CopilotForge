@@ -23,3 +23,8 @@
 - **Jargon leak fix (2026-04-15):** Scrubbed internal specialist agent names (skill-writer, agent-writer, memory-writer, cookbook-writer) and the word "specialist" from all user-facing templates. Moved 4 specialist agent templates from `templates/agents/` to `templates/internal/agents/` — they're internal to CopilotForge and should never be scaffolded into user repos. FORGE.md Team Roster now shows only user-facing agents (Planner, Reviewer, Tester). Quick Actions use plain language instead of referencing internal agent names. Planner template describes what it does, not how it delegates internally — internal delegation details are wrapped in HTML comments for LLM consumption only.
 - **User-facing vs internal separation pattern:** `templates/agents/` = gets scaffolded into user repos. `templates/internal/agents/` = CopilotForge's own delegation plumbing. This two-layer structure keeps beginners from seeing internal architecture they don't need.
 - **Jargon leak prevention rule:** Never reference internal agent names in content that ends up in user repos. Describe capabilities ("generates skill definitions") not mechanisms ("delegates to skill-writer"). Internal names belong in docs/delegation-protocol.md and HTML comments only.
+
+## 2026-04-15 --- Phase 2.1: Jargon Remediation
+Duration: 633s | Tool Calls: 65 | Status: COMPLETE
+
+Separated specialist agent templates from user-facing scaffolding. Moved internal agents to templates/internal/agents/. Scrubbed templates/FORGE.md and templates/agents/planner.md of specialist terminology. Validator: PASS.

@@ -1,39 +1,26 @@
 # CopilotForge — Now
 
 ## Current Focus
-
 **CopilotForge Phase 2** — Wizard agent orchestrator with specialist delegation system
+**Status:** Phase 2.1 jargon remediation delivered. Specialist terminology scrubbed from user-facing templates.
 
-**Status:** Implemented and delivered. Ready for team review.
+## Phase 2.1 Complete
+Eliminated specialist agent names from user-visible content:
+- Moved internal templates (skill-writer, agent-writer, memory-writer, cookbook-writer) to templates/internal/agents/
+- Scrubbed FORGE.md user control panel: Team Roster now shows only user-facing agents
+- Applied two-layer architecture to planner.md and internal agent files
+- Fixed UTF-8 BOM in validator scripts
+- Validator: PASS — zero jargon leaks
 
-**Key Outcome:** Phase 2 transforms the Planner from monolithic SKILL.md into a wizard orchestrator that transparently delegates file generation to 4 specialist agents (skill-writer, agent-writer, memory-writer, cookbook-writer).
+## Principles Applied
+- User-facing content describes *what* CopilotForge does
+- Internal content (Internal Delegation Protocol) describes *how* it does it
+- Boundary: templates/ (user) vs templates/internal/ (plumbing)
 
-## Known Issues
-
-### CRITICAL: Jargon Leak in User-Facing Templates
-
-Tank's Phase 2 validator found 24 failures. Specialist agent names (skill-writer, gent-writer, memory-writer, cookbook-writer) and the term specialist appear in user-facing files:
-
-- 	emplates/FORGE.md (user's project control panel)
-- 	emplates/agents/planner.md (user-visible agent)
-- All 4 	emplates/agents/{specialist}.md files
-
-**Impact:** Beginners see internal delegation terminology with no way to understand it.
-
-**Required Fix (Phase 2.1):** Scrub specialist names from user-facing content. Internal names should only appear in docs/delegation-protocol.md and internal configuration.
-
-**Owners:** Neo (agent templates), Trinity (FORGE.md template)
-
-**Target:** Fix before Phase 2 team commit
-
-## Next Phase Gates
-
-- [ ] Jargon leak remediation complete
-- [ ] Team consensus on 3 re-run sub-decisions (Tank: 2a, 2b, 2c)
-- [ ] Approved for team merge and Phase 3 planning
+## Next Phase
+**Phase 3:** Continuous refinement and team consensus on delegation architecture. Address Tank's sub-decision items (2a, 2b, 2c).
 
 ## Team Members
-
 - **Morpheus** — Lead Architect
 - **Trinity** — Prompt Engineer
 - **Neo** — Developer
@@ -42,4 +29,4 @@ Tank's Phase 2 validator found 24 failures. Specialist agent names (skill-writer
 
 ---
 
-*Last Updated: 2026-04-15T11:30:00Z*
+*Last Updated: 2026-04-15T12:10:00Z*

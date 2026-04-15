@@ -25,3 +25,9 @@
 - **2026-04-15 — Re-run behavior needs team decision.** Defined 7 re-run principles in rerun-scenarios.md. Key undecided: should deleted generated files be re-created? Tank recommends yes-with-warning. Also: memory=no on re-run should NEVER delete existing forge-memory/. Filed in decisions inbox.
 - **2026-04-15 — Jargon leak fix VALIDATED.** Neo and Trinity's fix confirmed clean: zero jargon leaks in user-facing templates (FORGE.md, planner.md, reviewer.md, tester.md). Specialist templates correctly moved to templates/internal/agents/ (4 files). planner.md has clean two-layer structure with Internal Delegation Protocol subsection hidden from users. Both Phase 2 validator and independent manual scan agree: CLEAN.
 - **2026-04-15 — Validator scripts need UTF-8 BOM for PS 5.1.** Both validate-scaffold.ps1 and validate-delegation.ps1 used Unicode chars (✓, ✗, ⚠, ═) without UTF-8 BOM. Windows PowerShell 5.1 defaults to ANSI encoding, causing cascading parse failures. Fix: added BOM to both files. Any new .ps1 files with Unicode must include BOM.
+
+
+## 2026-04-15 --- Phase 2.1: Jargon Validation
+Duration: 212s | Tool Calls: 20 | Status: PASS
+
+Validated Phase 2.1 jargon fix. Ran Phase 2 validator and manual scan. Fixed UTF-8 BOM in validator scripts. Result: Zero jargon leaks, no regressions.

@@ -26,3 +26,12 @@
 - **Memory-writer is gated on activation.** It only runs when `memory=yes`. Other specialists always run. This is the only conditional specialist in the delegation chain.
 - **Append-only memory on re-runs.** Both `decisions.md` and `patterns.md` use append-only semantics. Contradicting patterns get a note, not a deletion. This preserves project history and avoids destructive re-scaffolding.
 - **Template planner.md now points to the canonical agent.** The `templates/agents/planner.md` file is marked deprecated with a redirect to `.copilot/agents/planner.md`. Keeps backward compat without duplication drift.
+
+- **2026-04-15: Jargon leak remediation — two-layer prompt architecture.** Agent definitions that serve dual purposes (LLM system prompt + user reference) need explicit layering. User-visible sections (Role, Scope, Boundaries) must be jargon-free. LLM-consumed sections can contain internal delegation details but should be clearly marked (e.g., `### Internal Delegation Protocol` with an HTML comment). This prevents beginners from encountering internal plumbing while preserving the orchestration information the LLM needs.
+- **Cross-references between agents create coupling leaks.** When agent A's Boundaries section says "I don't handle X (agent-B)", it exposes agent-B's name to anyone reading agent A. Describe capabilities functionally ("I don't handle skill generation") instead of by agent name. Internal agents still know their own identity from their System Prompt — they don't need to name each other.
+
+
+## 2026-04-15 --- Phase 2.1: Jargon Remediation
+Duration: 239s | Tool Calls: 31 | Status: COMPLETE
+
+Applied two-layer architecture to agent definitions. Scrubbed .copilot/agents/ files of specialist terminology. Added Internal Delegation Protocol section. Removed internal agent names from user-visible sections.
