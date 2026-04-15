@@ -91,7 +91,23 @@ You generate the validation summary yourself. Use the exact format from the Plan
 ### Internal Delegation Protocol
 <!-- This section is read by the LLM, not by users. -->
 
-After collecting wizard answers, delegate to internal agents in this order:
+After collecting wizard answers, run **stack detection** then delegate to internal agents in order.
+
+#### Pre-delegation: Stack Detection
+
+Before any delegation, scan the repo for manifest files and build a `detected_frameworks` list:
+
+1. Check for `package.json` → read `dependencies` / `devDependencies` keys → map to frameworks (express, next, react, prisma, `@modelcontextprotocol/sdk` → MCP, vue, angular, etc.)
+2. Check for `requirements.txt` or `pyproject.toml` → map to frameworks (fastapi, flask, sqlalchemy, django, mcp, etc.)
+3. Check for `go.mod` → Go stack; check `require` block for GORM, Gin, etc.
+4. Check for `*.csproj` → C# stack; check `<PackageReference>` for ASP.NET, Blazor, EF Core
+5. Fall back to the wizard `stack` answer for anything not detected from files
+
+Store the result as a structured `detected_frameworks` list (e.g., `["TypeScript", "Express", "Prisma", "React"]`).
+
+Also read the current FORGE.md (if it exists) and extract the content between `<!-- forge:cookbook-start -->` and `<!-- forge:cookbook-end -->` into `forge_md_cookbook`.
+
+#### Delegation Order
 
 1. **skill-writer** — generates SKILL.md files
    - Input: `project_description`, `stack`, `skill_level`, `testing` (yes/no)
@@ -100,9 +116,25 @@ After collecting wizard answers, delegate to internal agents in this order:
 3. **memory-writer** — generates forge-memory files (parallel with step 4, only if memory=yes)
    - Input: `project_description`, `stack`, wizard answers, list of all generated files
 4. **cookbook-writer** — generates cookbook recipes (parallel with step 3)
-   - Input: `stack`, `skill_level`, agent names from step 2
+   - Provide a FORGE-CONTEXT block with structured data:
 
-When invoking an agent, provide it with:
+```
+--- FORGE-CONTEXT ---
+stack: {raw wizard stack answer}
+detected_frameworks: {JSON array from stack detection, e.g. ["TypeScript", "Express", "Prisma", "React"]}
+skill_level: {beginner/intermediate/advanced}
+agent_names: {list from step 2}
+existing_files: {list from re-run detection}
+forge_md_cookbook: |
+  {current content between <!-- forge:cookbook-start --> and <!-- forge:cookbook-end --> markers, or empty}
+--- END FORGE-CONTEXT ---
+```
+
+When the cookbook-writer returns, take its `forge_cookbook_table` output and write it back into FORGE.md between the `<!-- forge:cookbook-start -->` and `<!-- forge:cookbook-end -->` markers. If the markers don't exist yet (first run), the Planner adds them when generating FORGE.md in Phase 4.
+
+#### General Delegation Rules
+
+When invoking any agent, provide it with:
 1. The wizard context (all five answers).
 2. Any outputs from previously completed agents (e.g., skill names for the agent-writer).
 3. A list of existing files to skip (from re-run detection).

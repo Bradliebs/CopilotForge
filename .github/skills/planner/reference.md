@@ -250,6 +250,73 @@ The Planner is idempotent on structure. Running it again should:
 
 ---
 
+## Cookbook Recipe Catalog
+
+### Recipe Categories
+
+Every recipe category has language-specific variants. The cookbook writer selects the right variant based on the project's detected stack.
+
+| Category | Description | TypeScript | Python | Go | C# |
+|---|---|---|---|---|---|
+| Error handling | Try/catch patterns, custom error types, graceful failure recovery | `error-handling.ts` | `error-handling.py` | `error-handling.go` | `error-handling.cs` |
+| MCP integration | MCP server with tool definitions for the Copilot ecosystem | `mcp-server.ts` | `mcp-server.py` | — | — |
+| API client | HTTP client with auth headers, retry logic, typed responses | `api-client.ts` | `api-client.py` | `api-client.go` | `api-client.cs` |
+| Auth patterns | Authentication/authorization middleware | `auth-middleware.ts` | `auth-middleware.py` | `auth-middleware.go` | `auth-middleware.cs` |
+| Database | ORM query patterns — CRUD, transactions, error handling | `db-query.ts` (Prisma) | `db-query.py` (SQLAlchemy) | `db-query.go` (GORM) | `db-query.cs` (EF Core) |
+| Component scaffold | Typed UI component with props interface and common patterns | `component.tsx` (React) | — | — | `component.razor` (Blazor) |
+| Route handler | Web route with input validation, middleware, error responses | `route-handler.ts` (Express) | `route-handler.py` (FastAPI) | `route-handler.go` (net/http) | `route-handler.cs` (ASP.NET) |
+
+### Stack Detection Algorithm
+
+The Planner runs stack detection before delegating to the cookbook writer. Detection sources, checked in order:
+
+1. **`package.json`** — Read `dependencies` and `devDependencies` keys:
+   - `express` → Express | `next` → Next.js | `react` → React | `@prisma/client` → Prisma
+   - `@modelcontextprotocol/sdk` → MCP (TypeScript) | `vue` → Vue | `@angular/core` → Angular
+2. **`requirements.txt` / `pyproject.toml`** — Read dependency names:
+   - `fastapi` → FastAPI | `flask` → Flask | `sqlalchemy` → SQLAlchemy | `django` → Django
+   - `mcp` → MCP (Python)
+3. **`go.mod`** — Presence confirms Go. Check `require` block:
+   - `gorm.io/gorm` → GORM | `github.com/gin-gonic/gin` → Gin
+4. **`*.csproj`** — Presence confirms C#. Check `<PackageReference>` elements:
+   - `Microsoft.AspNetCore.*` → ASP.NET | `Microsoft.AspNetCore.Components` → Blazor
+   - `Microsoft.EntityFrameworkCore` → EF Core
+5. **Fallback** — Use the wizard `stack` answer to infer language and frameworks.
+
+All detected frameworks are passed to the cookbook writer. Recipes are generated for **every** detected framework, not just the primary one.
+
+### Template vs. Concrete Recipes
+
+- **Template recipes** are category-level patterns (e.g., "error handling for TypeScript"). They teach a universal pattern adapted to the language. Every project gets at least one.
+- **Concrete recipes** are framework-specific (e.g., "Prisma CRUD queries", "FastAPI route with Pydantic validation"). They are only generated when the specific framework is detected. Concrete recipes import directly from the framework and use its idioms.
+
+The distinction matters for skip logic: template recipes use generic filenames (`error-handling.ts`), concrete recipes use framework-qualified names when there could be ambiguity (`db-query.ts` implies Prisma because Prisma was detected).
+
+### FORGE.md Cookbook Section Format
+
+The cookbook section in FORGE.md is fenced by HTML comment markers for safe updates on re-runs:
+
+```markdown
+## Cookbook Recipes
+
+<!-- forge:cookbook-start -->
+| Recipe | Path | Description |
+|---|---|---|
+| Error Handling | `cookbook/error-handling.ts` | Try/catch patterns with custom error types |
+| MCP Server | `cookbook/mcp-server.ts` | MCP server with tool definitions for Copilot |
+| API Client | `cookbook/api-client.ts` | HTTP client with auth, retry, typed responses |
+| Route Handler | `cookbook/route-handler.ts` | Express route with validation and error handling |
+| Database Queries | `cookbook/db-query.ts` | Prisma CRUD, transactions, and error handling |
+<!-- forge:cookbook-end -->
+```
+
+**Merge rules:**
+- On re-runs, new recipe rows are **added** between the markers.
+- Existing rows are **never removed** — even if the recipe category would not be selected on a fresh run.
+- Duplicate detection is by `Path` column — if the path already exists in the table, skip it.
+
+---
+
 ## FORGE.md Contract
 
 FORGE.md is the user's control panel. It must:

@@ -245,19 +245,33 @@ Reusable conventions for this project. Updated as the team learns what works.
 
 #### 4d. Cookbook — `cookbook/`
 
-Generate at least one code recipe based on the stack. Recipes are copy-paste-ready code files with comments explaining what they do.
+Generate code recipes based on the project's detected stack. Recipes are copy-paste-ready code files with comments explaining what they do. The cookbook auto-selects recipes based on the frameworks and packages found in your project — the more specific your stack, the more targeted the recipes.
 
-**Choose recipes based on the stack:**
+**Recipe categories** — each category has stack-specific variants:
 
-| Stack includes | Generate recipe |
-|---|---|
-| TypeScript / JavaScript | `cookbook/api-session.ts` — HTTP client with auth |
-| Python | `cookbook/api-client.py` — requests wrapper with retry |
-| React / Next.js | `cookbook/component-template.tsx` — typed component scaffold |
-| FastAPI / Express | `cookbook/route-template.{ext}` — route handler pattern |
-| Any | `cookbook/README.md` — index of recipes with descriptions |
+| Category | What it teaches | Example stacks |
+|---|---|---|
+| Error handling | Try/catch patterns, custom error types, graceful failures | All languages |
+| MCP integration | Building an MCP server with tool definitions for the Copilot ecosystem | TypeScript, Python |
+| API client | HTTP client with auth, retry, typed responses | All languages |
+| Auth patterns | Middleware for authentication and authorization | All languages |
+| Database | ORM query patterns — CRUD, transactions, error handling | Prisma, SQLAlchemy, GORM, EF Core |
+| Component scaffold | Typed UI component with props and common patterns | React, Blazor |
+| Route handler | Web route with validation, middleware, error responses | Express, FastAPI, net/http, ASP.NET |
+
+**How recipes are selected:**
+
+Recipes are auto-selected based on what's detected in your project:
+- If you have `package.json` with Express → you get an Express route handler recipe
+- If you have `requirements.txt` with FastAPI and SQLAlchemy → you get both a FastAPI route and a SQLAlchemy database recipe
+- If you have MCP-related packages → you get an MCP server recipe (high-value for Copilot workflows)
+- You always get an error handling recipe and an API client recipe for your primary language
+
+The goal is: every recipe matches something you actually use. No generic filler.
 
 Always generate `cookbook/README.md` listing all recipes with one-line descriptions.
+
+The cookbook section in FORGE.md is tracked between `<!-- forge:cookbook-start -->` and `<!-- forge:cookbook-end -->` markers. On re-runs, new recipes are added without removing existing ones.
 
 Adjust verbosity based on skill level:
 - **beginner**: Heavy comments explaining every section
