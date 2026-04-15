@@ -86,6 +86,16 @@ In about a minute, your repo gets a full set of AI-ready files:
 
 **Open `FORGE.md` to see the full picture.**
 
+### From Setup to Building
+
+After the wizard scaffolds your project, it outputs a **ready-to-use prompt** you can copy into any AI assistant. Three ways to start building:
+
+1. **Copy the generated prompt** — customized with your project type, stack, and first goal
+2. **Use the one-liner:** "Read FORGE.md and let's start building"
+3. **Just start talking** — describe what you want to build; the AI reads FORGE.md automatically
+
+This bridges the gap between describing your project and actually building it.
+
 ---
 
 ## What Gets Created
@@ -172,7 +182,7 @@ This is the most important answer. CopilotForge uses it to pick the right code r
 - "Go, Gin, GORM"
 - "C#, ASP.NET Core, Entity Framework"
 
-CopilotForge also scans your repo for config files (`package.json`, `requirements.txt`, `go.mod`, `.csproj`) to auto-detect frameworks. The more specific you are, the better the output.
+CopilotForge supports **TypeScript, Python, Go, C#, Rust, PHP, Java/Kotlin, Ruby, and Elixir**. It scans your repo for config files (`package.json`, `requirements.txt`, `go.mod`, `.csproj`, `Cargo.toml`, `composer.json`, `pom.xml`/`build.gradle`, `Gemfile`, `mix.exs`) to auto-detect frameworks. The more specific you are, the better the output.
 
 **CopilotForge works with brand-new empty repos.** If no config files are found, the wizard asks you to describe your stack and works from there.
 
@@ -347,7 +357,26 @@ The `cookbook/` folder contains ready-to-use code recipes for common tasks. Each
 4. Search for `TODO` — those are the spots you fill in with your actual values
 5. Run it using the instructions in the header
 
-Recipes come in TypeScript and Python. The wizard picks which ones to generate based on your stack.
+### Available Recipes
+
+| Recipe | Languages | What It Does |
+|--------|-----------|--------------|
+| **hello-world** | TS + PY | Simplest possible Copilot SDK recipe (start here!) |
+| **ralph-loop** | TS + PY | Autonomous dev loop: pick task → implement → validate → commit |
+| **error-handling** | TS + PY | Custom error types, retry with backoff, graceful failure |
+| **api-client** | TS + PY | HTTP client with auth, retry, timeout, typed responses |
+| **auth-middleware** | TS + PY | JWT authentication and role-based access control |
+| **db-query** | TS + PY | ORM patterns — CRUD, transactions, error handling |
+| **route-handler** | TS + PY | Web routes with validation and error responses |
+| **mcp-server** | TS + PY | Building a tool server for the Copilot ecosystem |
+| **session-example** | TS + PY | Create sessions, handle timeouts, clean up resources |
+| **memory-reader** | TS + PY | Read and parse CopilotForge memory files programmatically |
+| **managing-local-files** | TS + PY | File organization and management patterns |
+| **multiple-sessions** | TS + PY | Managing multiple concurrent Copilot sessions |
+| **delegation-example** | TS | How the Planner delegates to specialist agents |
+| **skill-creation-example** | TS | How to create new skills programmatically |
+
+Recipes come in TypeScript and Python (some advanced recipes are TypeScript-only). The wizard picks which ones to generate based on your stack.
 
 📖 **Full recipe index:** [cookbook/README.md](cookbook/README.md)
 
@@ -413,38 +442,43 @@ Oracle_Prime/
 │       └── ...                  # Internal agents (you don't need these)
 │
 ├── .github/
+│   ├── ISSUE_TEMPLATE/           # GitHub issue templates
+│   │   ├── bug_report.md        # Bug report template
+│   │   └── feature_request.md   # Feature request template
+│   ├── PULL_REQUEST_TEMPLATE.md  # PR template
 │   └── skills/
 │       └── planner/
 │           └── SKILL.md         # ⭐ The main skill — copy this into your repo
 │
 ├── cookbook/                     # Code recipe library
 │   ├── README.md                # Recipe index
-│   ├── error-handling.ts        # Error patterns (TypeScript)
-│   ├── error-handling.py        # Error patterns (Python)
-│   ├── api-client.ts            # HTTP client (TypeScript)
-│   ├── api-client.py            # HTTP client (Python)
-│   ├── auth-middleware.ts       # JWT auth (TypeScript)
-│   ├── auth-middleware.py       # JWT auth (Python)
-│   ├── db-query.ts              # Prisma CRUD (TypeScript)
-│   ├── db-query.py              # SQLAlchemy CRUD (Python)
-│   ├── route-handler.ts         # Express routes (TypeScript)
-│   ├── route-handler.py         # FastAPI routes (Python)
-│   ├── mcp-server.ts            # MCP tool server (TypeScript)
-│   ├── mcp-server.py            # MCP tool server (Python)
-│   ├── session-example.ts       # Session management (TypeScript)
-│   ├── session-example.py       # Session management (Python)
-│   ├── memory-reader.ts         # Memory file parser (TypeScript)
-│   └── memory-reader.py         # Memory file parser (Python)
+│   ├── hello-world.ts/.py       # Start here — simplest Copilot SDK recipe
+│   ├── ralph-loop.ts/.py        # Autonomous dev loop
+│   ├── error-handling.ts/.py    # Error patterns
+│   ├── api-client.ts/.py        # HTTP client with retry and auth
+│   ├── auth-middleware.ts/.py   # JWT auth
+│   ├── db-query.ts/.py          # ORM CRUD patterns
+│   ├── route-handler.ts/.py     # Web routes with validation
+│   ├── mcp-server.ts/.py        # MCP tool server
+│   ├── session-example.ts/.py   # Session management
+│   ├── memory-reader.ts/.py     # Memory file parser
+│   ├── managing-local-files.ts/.py  # File organization patterns
+│   ├── multiple-sessions.ts/.py # Concurrent Copilot sessions
+│   ├── delegation-example.ts    # Planner delegation patterns
+│   └── skill-creation-example.ts # Creating new skills programmatically
 │
-├── templates/                   # Internal templates (used during scaffolding)
+├── templates/                   # Internal scaffolding templates ({{placeholder}} syntax)
 │   ├── FORGE.md                 # FORGE.md template
 │   ├── agents/                  # Agent definition templates
 │   ├── cookbook/                 # Recipe templates with placeholders
 │   └── forge-memory/            # Memory file templates
+│   # Not user-facing — used by the Planner during project setup to generate your actual files
 │
 ├── docs/                        # Documentation
+│   ├── FAQ.md                   # Frequently asked questions
 │   ├── GETTING-STARTED.md       # Full walkthrough with examples
-│   └── HOW-IT-WORKS.md          # How CopilotForge works under the hood
+│   ├── HOW-IT-WORKS.md          # How CopilotForge works under the hood
+│   └── internal/                # Internal architecture docs (for contributors)
 │
 ├── tests/                       # Validation scripts and test scenarios
 ├── copilot_forge_framework.svg  # Architecture diagram
@@ -453,7 +487,7 @@ Oracle_Prime/
 
 ---
 
-## Contributing
+## Contributing & Community
 
 CopilotForge is built on plain markdown and code. Contributions welcome!
 
@@ -461,6 +495,15 @@ CopilotForge is built on plain markdown and code. Contributions welcome!
 - **Improve a skill:** Edit files in `.github/skills/`
 - **Fix docs:** PRs for documentation improvements are always welcome
 - **Report issues:** Open an issue describing what went wrong
+
+| Resource | What It Is |
+|----------|------------|
+| [LICENSE](LICENSE) | MIT license — use CopilotForge however you want |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute — guidelines, workflow, and standards |
+| [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | Contributor Covenant — our community standards |
+| [CHANGELOG.md](CHANGELOG.md) | Version history — what changed and when |
+| [Issue templates](.github/ISSUE_TEMPLATE/) | Templates for filing bug reports and feature requests |
+| [PR template](.github/PULL_REQUEST_TEMPLATE.md) | Template for pull requests |
 
 See [`docs/`](docs/) for detailed technical documentation.
 
