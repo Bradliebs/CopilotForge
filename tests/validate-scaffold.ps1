@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     CopilotForge Phase 1 — Scaffold Validation Script (PowerShell)
     Owner: Tank (Tester)

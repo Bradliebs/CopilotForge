@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     CopilotForge Phase 2 — Delegation Validation Script (PowerShell)
     Owner: Tank (Tester)
