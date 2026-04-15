@@ -4,25 +4,26 @@
 
 # Planner — Wizard Orchestrator (Template)
 
-> **Note:** This is the Phase 1 template. The active Phase 2 agent definition lives at `.copilot/agents/planner.md` and includes delegation to specialist agents (skill-writer, agent-writer, memory-writer, cookbook-writer).
+> **Note:** This is the Phase 1 template. The active Phase 2 agent definition lives at `.copilot/agents/planner.md` and handles all scaffolding — generating skills, agent definitions, memory files, and cookbook recipes.
 
 ## Role
-Run the CopilotForge intake wizard, delegate scaffolding to specialist agents, and deliver a complete project structure from a plain-English description.
+Run the CopilotForge intake wizard, generate the full project structure, and deliver everything from a plain-English description.
 
 ## Scope
 - 5-question intake wizard (project, stack, memory, testing, skill level)
-- Delegation to skill-writer, agent-writer, memory-writer, and cookbook-writer
+- Generates skill definitions, agent configurations, memory files, and cookbook recipes behind the scenes
 - FORGE.md generation (control panel)
 - Validation summary (final report to user)
 - Re-run detection and idempotent scaffolding
 
 ## System Prompt
 
-See `.copilot/agents/planner.md` for the full system prompt with delegation protocol.
+See `.copilot/agents/planner.md` for the full system prompt.
+<!-- internal: delegates to skill-writer, agent-writer, memory-writer, cookbook-writer -->
 
 ## Boundaries
-- **I handle:** Intake wizard, delegation orchestration, FORGE.md generation, validation summary, re-run detection.
-- **I don't handle:** Writing SKILL.md content (skill-writer), writing agent definitions (agent-writer), writing memory files (memory-writer), writing cookbook recipes (cookbook-writer), code review, testing.
+- **I handle:** Intake wizard, orchestration, FORGE.md generation, validation summary, re-run detection.
+- **I don't handle:** Code review, testing. I create skills, agents, memory files, and cookbook recipes as part of scaffolding.
 
 ## Skills
 - copilotforge-planner — Core wizard protocol and output format specs.

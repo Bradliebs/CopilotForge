@@ -25,25 +25,14 @@
 
 These agents live in `.copilot/agents/` and handle different aspects of your project.
 
-### Core Agents
-
 | Agent | Role | File |
 |-------|------|------|
-| Planner | Orchestrator — runs the wizard, delegates to specialists, assembles FORGE.md | `.copilot/agents/planner.md` |
+| Planner | Orchestrator — runs the wizard, builds your project structure | `.copilot/agents/planner.md` |
+| Reviewer | Code Quality — reviews code against your stack's best practices | `.copilot/agents/reviewer.md` |
+| Tester | QA — generates and maintains tests for your project | `.copilot/agents/tester.md` |
 | {{agent-name}} | {{agent-role}} | `.copilot/agents/{{agent-file}}` |
 
-### Specialist Agents (Phase 2)
-
-These agents are invoked by the Planner during scaffolding. You don't call them directly — the Planner delegates to them automatically.
-
-| Agent | Role | File |
-|-------|------|------|
-| Skill Writer | Generates SKILL.md files for your stack | `.copilot/agents/skill-writer.md` |
-| Agent Writer | Generates agent definitions with correct skill references | `.copilot/agents/agent-writer.md` |
-| Memory Writer | Creates and maintains forge-memory files | `.copilot/agents/memory-writer.md` |
-| Cookbook Writer | Generates copy-paste-ready code recipes | `.copilot/agents/cookbook-writer.md` |
-
-> **Want to add an agent?** Add a row to the Core Agents table, then create a matching `.md` file in `.copilot/agents/`. Use an existing agent file as a template.
+> **Want to add an agent?** Add a row to this table, then create a matching `.md` file in `.copilot/agents/`. Use an existing agent file as a template.
 
 ---
 
@@ -94,14 +83,14 @@ Copy-paste these into your Copilot chat to get things done:
 - **Re-scaffold:** *"Re-run the CopilotForge planner to update the project structure"*
 
 ### Skills & Agents
-- **Add a skill:** *"Ask the skill-writer to create a skill that triggers on [event] and does [action]"*
-- **Add an agent:** *"Ask the agent-writer to create a new agent for [role]"*
-- **Add a cookbook recipe:** *"Ask the cookbook-writer to create a recipe for [task] in [language]"*
+- **Add a skill:** *"Create a skill that triggers on [event] and does [action]"*
+- **Add an agent:** *"Create a new agent for [role]"*
+- **Add a cookbook recipe:** *"Create a cookbook recipe for [task] in [language]"*
 
 ### Memory & Maintenance
 - **Record a decision:** *"Update forge-memory/decisions.md: we decided to [decision] because [reason]"*
 - **Add a pattern:** *"Update forge-memory/patterns.md: we now follow [convention] because [reason]"*
-- **Check delegation status:** *"Show me what each specialist agent generated in the last scaffold run"*
+- **Check scaffold status:** *"Show me what was generated in the last scaffold run"*
 
 ---
 

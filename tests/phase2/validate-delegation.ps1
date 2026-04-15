@@ -97,6 +97,7 @@ $specialistAgents = @(
 
 $agentTemplateDirs = @(
     (Join-Path $ProjectRoot "templates\agents"),
+    (Join-Path $ProjectRoot "templates\internal\agents"),
     (Join-Path $ProjectRoot ".copilot\agents"),
     (Join-Path $ProjectRoot ".github\agents")
 )
@@ -225,25 +226,37 @@ if (-not $delegationFound) {
 Write-Section "Specialist Templates"
 
 $templateAgentsDir = Join-Path $ProjectRoot "templates\agents"
+$internalAgentsDir = Join-Path $ProjectRoot "templates\internal\agents"
+
 if (Test-Path $templateAgentsDir -PathType Container) {
     Write-Pass "Templates agents directory exists"
 
     $templateFiles = Get-ChildItem -Path $templateAgentsDir -Filter "*.md" -ErrorAction SilentlyContinue
     $templateCount = ($templateFiles | Measure-Object).Count
 
-    if ($templateCount -ge 4) {
-        Write-Pass "At least 4 agent templates found ($templateCount total)"
+    # Internal specialist templates count
+    $internalFiles = @()
+    if (Test-Path $internalAgentsDir -PathType Container) {
+        $internalFiles = Get-ChildItem -Path $internalAgentsDir -Filter "*.md" -ErrorAction SilentlyContinue
+    }
+    $totalCount = $templateCount + ($internalFiles | Measure-Object).Count
+
+    if ($totalCount -ge 4) {
+        Write-Pass "At least 4 agent templates found ($totalCount total, $templateCount user-facing + $(($internalFiles | Measure-Object).Count) internal)"
     } else {
-        Write-Warn "Expected 4+ agent templates (planner + 3 base + 4 specialists), found $templateCount"
+        Write-Warn "Expected 4+ agent templates, found $totalCount"
     }
 
-    # Check each specialist has a template
+    # Check each specialist has a template (user-facing OR internal)
     foreach ($specialist in $specialistAgents) {
         $tplPath = Join-Path $templateAgentsDir "$($specialist.Name).md"
+        $intPath = Join-Path $internalAgentsDir "$($specialist.Name).md"
         if (Test-Path $tplPath) {
             Write-Pass "Specialist template exists: templates\agents\$($specialist.Name).md"
+        } elseif (Test-Path $intPath) {
+            Write-Pass "Specialist template exists (internal): templates\internal\agents\$($specialist.Name).md"
         } else {
-            Write-Fail "Missing specialist template: templates\agents\$($specialist.Name).md"
+            Write-Fail "Missing specialist template: $($specialist.Name).md"
         }
     }
 } else {
@@ -364,7 +377,8 @@ foreach ($searchDir in $agentTemplateDirs) {
         $content = Get-Content $af.FullName -Raw
 
         # Look for skill references (common patterns)
-        $skillRefs = [regex]::Matches($content, '\.github[/\\]skills[/\\]([^\s\)\]`"''\/\\]+)')
+        $skillRefPattern = '\.github[/\\]skills[/\\]([^\s\)\]`"\/\\]+)'
+        $skillRefs = [regex]::Matches($content, $skillRefPattern)
         foreach ($ref in $skillRefs) {
             $refSkill = $ref.Groups[1].Value -replace '[.,;:!?)]+$', ''
             # Skip template placeholders like {{name}} or {name}
@@ -385,8 +399,9 @@ foreach ($searchDir in $agentTemplateDirs) {
 if (Test-Path $forgeTemplatePath) {
     $forgeTplContent = Get-Content $forgeTemplatePath -Raw
 
-    # Extract referenced paths
-    $pathMatches = [regex]::Matches($forgeTplContent, '(?:\.copilot|\.github|forge-memory|cookbook)[/\\][^\s\)\]`"''{}]+')
+    # Extract referenced paths (use alternation instead of char class for PS5.1 compat)
+    $pathRefPattern = '(?:\.copilot|\.github|forge-memory|cookbook)(?:/|\\)\S+'
+    $pathMatches = [regex]::Matches($forgeTplContent, $pathRefPattern)
     $templatePaths = @()
     foreach ($match in $pathMatches) {
         $refPath = $match.Value -replace '[.,;:!?)]+$', ''
