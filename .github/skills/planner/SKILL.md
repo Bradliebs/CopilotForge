@@ -44,6 +44,8 @@ CopilotForge turns a plain-English project description into a working set of Cop
 forge-memory/
   decisions.md           ← what was built and why
   patterns.md            ← reusable conventions
+  preferences.md         ← your settings and overrides
+  history.md             ← session activity log
 cookbook/
   {recipe}.{ext}         ← SDK/code recipes for your stack
 FORGE.md                 ← human-readable control panel
@@ -53,39 +55,123 @@ FORGE.md                 ← human-readable control panel
 
 ## Instructions
 
-When this skill is triggered, follow every step below in order. Do not skip steps. Do not assume answers — ask each question and wait for the user's response.
+When this skill is triggered, follow every step below in order. Do not skip steps (though Step 0 may shorten the wizard for returning users). Do not assume answers — ask each question and wait for the user's response, unless memory provides the answer.
+
+### Step 0 — Check for Existing Memory
+
+Before greeting or asking questions, check if this repo already has CopilotForge memory:
+
+1. Check if `forge-memory/decisions.md` exists.
+2. Check if `forge-memory/patterns.md` exists.
+3. Check if `forge-memory/preferences.md` exists.
+4. Check if `FORGE.md` exists.
+
+**If memory files exist (returning user):**
+
+Read whatever memory files are present. If any file is missing or unreadable, skip it gracefully — use only what's available.
+
+- Read `forge-memory/decisions.md` — extract the most recent 5 decisions (entries under `### {date}` headings)
+- Read `forge-memory/patterns.md` — extract all active patterns (headings under `## Stack Conventions` and `## Project-Specific Patterns`)
+- Read `forge-memory/preferences.md` — extract verbosity level, stack preferences, and any user overrides
+- Read `FORGE.md` — extract the Project section (description, stack, settings) and the Skills/Agents tables
+
+Present a context summary to the user:
+
+> 👋 **Welcome back!** I found your project context:
+> - **Project:** {project description from FORGE.md or last decision}
+> - **Stack:** {stack from patterns.md or FORGE.md}
+> - **Last run:** {date of most recent decision}
+> - **Decisions:** {count} recorded
+> - **Patterns:** {count} active conventions
+> - **Agents:** {agent names from FORGE.md Agents table}
+>
+> What would you like to do? *(add a skill, add an agent, update recipes, or describe what's changed)*
+
+Then skip to Step 2 (Confirm & Generate) with pre-populated answers from memory.
+Only ask questions for information that's **missing** from memory — see Step 1 adaptive logic below.
+
+**If no memory files exist (first-time user):**
+
+Proceed to Step 1 as normal (the full greeting and 5-question wizard).
+
+**If memory files exist but are corrupted or incomplete:**
+
+Treat any readable data as valid context. For anything unreadable, fall back to asking the question. Never crash or abort because of bad memory — degrade gracefully and note the issue in the validation summary.
+
+---
 
 ### Step 1 — Greet and Explain
+
+**First-time users** (no memory found in Step 0):
 
 Say exactly this (adjust tone for friendliness, keep the meaning):
 
 > **Welcome to CopilotForge!** I'll ask you five quick questions about your project, then scaffold a complete set of Copilot skills, agent definitions, memory files, and code recipes into this repo. Takes about two minutes. Let's go.
 
-### Step 2 — Run the Wizard
+**Returning users** (memory found in Step 0):
+
+Skip this greeting — the welcome-back summary from Step 0 replaces it. Proceed directly to the adaptive wizard questions below. Only ask questions whose answers are **missing** from memory.
+
+### Step 1a — Run the Wizard (Adaptive)
 
 Ask each question one at a time. Wait for the user's answer before asking the next. If the user gives a single block of answers covering multiple questions, accept them and move on.
 
+**For returning users:** Each question checks memory first. If the answer is already known, show it and ask for confirmation instead of asking from scratch. This makes re-runs fast — most questions become one-word confirmations.
+
 **Question 1 — Project Description**
+
+*If already in memory (from FORGE.md or decisions.md):*
+> Your project: **{project description from memory}**
+> Still accurate? *(yes / or tell me what's changed)*
+
+*If not in memory:*
 > What are you building? Describe your project in a sentence or two.
 > *(Example: "A REST API for a pet adoption platform" or "A React dashboard for monitoring CI pipelines")*
 
 **Question 2 — Tech Stack**
+
+*If already in memory (from patterns.md or FORGE.md):*
+> Your stack: **{stack from memory}**
+> Still using this stack? *(yes / or tell me what's changed)*
+
+*If not in memory:*
 > What's your stack? List languages, frameworks, and key tools.
 > *(Example: "TypeScript, Next.js, Prisma, PostgreSQL" or "Python, FastAPI, SQLAlchemy")*
 
 **Question 3 — Memory**
+
+*If memory files already exist:*
+Skip this question entirely — memory is already enabled. Use `yes`.
+
+*If no memory files exist:*
 > Do you want memory across sessions? This creates `forge-memory/` files so agents remember decisions and patterns between conversations.
 > *(yes / no — default: **yes**)*
 
 If the user skips or says nothing, default to **yes**.
 
 **Question 4 — Test Automation**
+
+*If already in memory (from preferences.md or FORGE.md settings):*
+> Test automation is currently **{enabled/disabled}**.
+> Keep this setting? *(yes / change)*
+
+*If not in memory but test-related files exist* (e.g., `tests/`, `__tests__/`, `*.test.*`, `*.spec.*`, `jest.config.*`, `pytest.ini`, `.github/skills/testing/`):
+> I see you already have test files in this repo. I'll keep test automation **enabled**.
+> *(Say "no" if you want to skip the tester agent and testing skill)*
+
+*If not in memory and no test files found:*
 > Do you want test automation? This generates a tester agent and testing skill with conventions for your stack.
 > *(yes / no — default: **yes**)*
 
 If the user skips or says nothing, default to **yes**.
 
 **Question 5 — Skill Level**
+
+*If already in memory (from preferences.md):*
+> Your verbosity level is set to **{level from memory}**.
+> Keep this? *(yes / change)*
+
+*If not in memory:*
 > What's your experience level? This controls how verbose the generated files are.
 > - **beginner** — extra comments, explanations in every file
 > - **intermediate** — standard detail, assumes you know your stack
@@ -95,7 +181,7 @@ If the user skips or says nothing, default to **yes**.
 
 If the user skips or says nothing, default to **beginner**.
 
-### Step 3 — Confirm Before Scaffolding
+### Step 2 — Confirm Before Scaffolding
 
 After collecting all five answers, present a summary and ask for confirmation:
 
@@ -111,13 +197,13 @@ After collecting all five answers, present a summary and ask for confirmation:
 
 Wait for confirmation. If the user says "change X," adjust and re-confirm. Do not scaffold until the user confirms.
 
-### Step 4 — Scaffold the Project
+### Step 3 — Scaffold the Project
 
 Create all files described below. Use the user's answers to customize content. Every generated file must be valid markdown (or valid code for cookbook recipes).
 
 ---
 
-#### 4a. Skills — `.github/skills/`
+#### 3a. Skills — `.github/skills/`
 
 Generate SKILL.md files based on the project description and stack. At minimum, create:
 
@@ -167,7 +253,7 @@ source: "generated by CopilotForge"
 
 ---
 
-#### 4b. Agents — `.copilot/agents/`
+#### 3b. Agents — `.copilot/agents/`
 
 Generate agent definition files. At minimum:
 
@@ -201,7 +287,7 @@ Each agent file must follow this format:
 
 ---
 
-#### 4c. Memory — `forge-memory/`
+#### 3c. Memory — `forge-memory/`
 
 **If memory = yes**, create:
 
@@ -243,7 +329,7 @@ Reusable conventions for this project. Updated as the team learns what works.
 
 ---
 
-#### 4d. Cookbook — `cookbook/`
+#### 3d. Cookbook — `cookbook/`
 
 Generate code recipes based on the project's detected stack. Recipes are copy-paste-ready code files with comments explaining what they do. The cookbook auto-selects recipes based on the frameworks and packages found in your project — the more specific your stack, the more targeted the recipes.
 
@@ -280,7 +366,7 @@ Adjust verbosity based on skill level:
 
 ---
 
-#### 4e. FORGE.md — Control Panel
+#### 3e. FORGE.md — Control Panel
 
 Create `FORGE.md` at the repo root. This is the human-readable dashboard. Format:
 
@@ -321,6 +407,8 @@ Create `FORGE.md` at the repo root. This is the human-readable dashboard. Format
 |---|---|
 | `forge-memory/decisions.md` | Architectural decisions log |
 | `forge-memory/patterns.md` | Reusable project conventions |
+| `forge-memory/preferences.md` | Your settings and overrides |
+| `forge-memory/history.md` | Session activity log |
 
 ## What's Next
 
@@ -332,7 +420,7 @@ Create `FORGE.md` at the repo root. This is the human-readable dashboard. Format
 
 ---
 
-### Step 5 — Validation Summary
+### Step 4 — Validation Summary
 
 After all files are created, print a plain-English summary. This is the last thing the user sees. Format:
 
@@ -342,7 +430,7 @@ After all files are created, print a plain-English summary. This is the last thi
 > - **{N} skills** — {list names with one-line descriptions}
 > - **{N} agents** — {list names with one-line descriptions}
 > - **{N} cookbook recipes** — {list names}
-> - **{N} memory files** — decisions.md, patterns.md
+> - **{N} memory files** — decisions.md, patterns.md, preferences.md, history.md
 > - **1 control panel** — FORGE.md
 >
 > **What each file does:**
@@ -356,15 +444,16 @@ After all files are created, print a plain-English summary. This is the last thi
 
 This skill works in:
 - **VS Code GitHub Copilot** — place in `.github/skills/planner/SKILL.md`
-- **Claude Code** — paste the Instructions section as a prompt
+- **Claude Code** — paste the Instructions section (Steps 0–4) as a prompt
 - **Any LLM** — copy Step 2–5 into a chat session
 
 No CLI, no dependencies, no lock-in. It's just markdown instructions that any language model can execute.
 
 ## Anti-Patterns
 
-- ❌ Scaffolding before the user confirms the summary (Step 3)
-- ❌ Skipping questions — always ask all five, even if answers seem obvious
+- ❌ Scaffolding before the user confirms the summary (Step 2)
+- ❌ Skipping questions without checking memory first — always either ask or confirm from memory
+- ❌ Ignoring memory files when they exist — always read them before starting the wizard
 - ❌ Generating empty or placeholder files — every file must have real, usable content
 - ❌ Hardcoding a single stack — recipes and conventions must adapt to the user's answers
 - ❌ Creating `forge-memory/` when the user said no to memory

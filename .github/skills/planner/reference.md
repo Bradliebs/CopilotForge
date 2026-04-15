@@ -243,10 +243,28 @@ If the user says "stop", "cancel", or "never mind" — stop immediately. Do not 
 
 ### Multiple runs
 The Planner is idempotent on structure. Running it again should:
+- Read existing memory first and pre-populate the wizard
 - Skip existing files (never overwrite)
 - Create any new files that don't exist yet
 - Update FORGE.md if the user wants changes (ask first)
 - Append to decisions.md (never delete entries)
+- Update preferences.md with any changed settings
+- Add a new session entry to history.md
+
+### Corrupted or partial memory
+If memory files exist but are malformed or partially readable:
+- Use whatever data can be extracted
+- Skip unreadable sections gracefully
+- Proceed as if the missing data doesn't exist
+- Note the issue in the validation summary so the user knows
+- Never crash, abort, or throw an error because of bad memory
+
+### User says "start fresh"
+If the user explicitly requests a fresh start ("start fresh", "reset everything", "start over"):
+- Bypass all memory read-back
+- Run the full 5-question wizard as if no memory exists
+- Record this as a decision in decisions.md: "Full reset requested — previous context ignored"
+- Regenerate all files (with user confirmation before overwriting)
 
 ---
 
@@ -328,3 +346,81 @@ FORGE.md is the user's control panel. It must:
 5. Live at the repo root — not nested in any directory
 
 FORGE.md is the entry point. If someone clones the repo and wants to understand the AI setup, FORGE.md tells the full story.
+
+---
+
+## Memory System
+
+CopilotForge has a memory system that lets it learn from previous runs. The second time you use CopilotForge, it remembers what it did the first time — your project description, stack choices, conventions, and preferences. This makes re-runs faster and more accurate.
+
+### Memory Lifecycle
+
+Memory follows a four-phase cycle on every CopilotForge run:
+
+```
+1. CREATE (first run)    → Memory files are generated from wizard answers
+2. READ (subsequent run) → Memory files are read before the wizard starts
+3. GENERATE              → Scaffolding respects existing conventions from memory
+4. WRITE BACK            → New decisions, patterns, and preferences are saved
+```
+
+On the first run, only phases 1, 3, and 4 apply. On subsequent runs, all four phases apply.
+
+### Memory Files
+
+| File | Purpose | Created | Updated |
+|---|---|---|---|
+| `forge-memory/decisions.md` | Chronological log of what was built and why | First run | Append-only on re-runs |
+| `forge-memory/patterns.md` | Reusable conventions (naming, structure, stack rules) | First run | Additive merge on re-runs |
+| `forge-memory/preferences.md` | User preferences extracted from wizard answers | First run | Changed fields updated on re-runs |
+| `forge-memory/history.md` | Session activity log with dates and summaries | First run | New entry prepended on re-runs |
+
+Templates for all memory files live in `templates/forge-memory/`.
+
+### How Memory Affects the Wizard (Adaptive Questions)
+
+When memory files exist, the wizard becomes adaptive:
+
+| Question | Without Memory | With Memory |
+|---|---|---|
+| Q1 (Project) | Ask from scratch | Show stored answer, ask "Still accurate?" |
+| Q2 (Stack) | Ask from scratch | Show stored stack, ask "Still using this?" |
+| Q3 (Memory) | Ask yes/no | Skip entirely (already enabled) |
+| Q4 (Testing) | Ask yes/no | Show current setting, ask "Keep this?" — or infer from test files |
+| Q5 (Skill level) | Ask from scratch | Show stored level, ask "Keep this?" |
+
+A returning user can confirm all 5 questions with a single "yes" instead of re-typing everything.
+
+### How Memory Affects Generation (Convention Application)
+
+During scaffolding, memory context is passed to all generation steps via the FORGE-CONTEXT block:
+
+- **Naming conventions** from `patterns.md` → applied to all generated file and directory names
+- **File structure patterns** from `patterns.md` → respected when creating new directories
+- **Stack conventions** from `patterns.md` → used for recipe selection and code style
+- **User preferences** from `preferences.md` → override defaults (verbosity, framework choices)
+- **User overrides** from `preferences.md` → hard constraints that always apply (e.g., "use httpx instead of requests")
+- **Recent decisions** from `decisions.md` → provide context about what's already been done to avoid duplication
+
+### Memory Safety
+
+Memory is designed to degrade gracefully:
+
+| Scenario | Behavior |
+|---|---|
+| Memory file is missing | Skip it, use defaults for those fields |
+| Memory file is malformed / corrupt | Extract whatever is readable, ignore the rest |
+| Memory file is empty | Treat as if it doesn't exist |
+| All memory files are missing | Full first-time wizard (no degradation needed) |
+| Some memory files exist, others don't | Use what's available, ask for what's missing |
+| User says "start fresh" | Bypass all memory reads, run full wizard, log the reset |
+
+Memory never causes the wizard to crash or produce invalid output. If memory is unreadable, the system falls back to asking questions — the worst case is the same experience as a first-time user.
+
+### How to Reset Memory
+
+Users can reset CopilotForge memory in three ways:
+
+1. **"Start fresh" command** — Tell the wizard "start fresh" or "reset everything." It will ignore all memory and run the full 5-question wizard. The reset is logged in decisions.md.
+2. **Delete memory files** — Remove the `forge-memory/` directory. CopilotForge will treat the next run as a first-time setup.
+3. **Edit memory files** — Memory files are plain markdown. Users can edit, delete entries, or add overrides directly. CopilotForge reads whatever is there on the next run.
