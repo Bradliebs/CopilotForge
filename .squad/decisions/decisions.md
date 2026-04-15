@@ -73,3 +73,67 @@ Beginners who open `.copilot/agents/` files should see clean, functional descrip
 
 **Functional descriptions over internal names.** Describe what an agent does ("generates skill definitions"), not what it's called ("skill-writer"). Internal names belong only in clearly-marked system sections.
 
+### 2026-04-15T15:10: Build transition UX
+**By:** Brad Liebs (via Copilot) / Squad (autonomous decision)
+**What:** After the wizard scaffolds files, it should end with a clear copy-paste prompt the user can immediately paste into their AI assistant to start building. Example: "Start building my [project-name] — use the agents in .copilot/agents/ and the recipes in cookbook/ to scaffold the initial codebase." Also add a "Next Steps" section to the generated FORGE.md.
+**Why:** Identified gap — wizard creates configuration but doesn't bridge to "now build it." Beginners get stuck after scaffolding. Option A (copy-paste prompt) chosen as lowest-risk, most beginner-friendly approach.
+# Decision: Phase 4 Memory Reader, Summarizer, Convention Extractor
+
+**Source:** Neo (Developer)
+**Date:** 2026-04-15
+**Status:** Implemented
+
+## What
+Delivered Phase 4 memory read-side infrastructure:
+
+1. **Memory Reader Spec** (	emplates/utils/memory-reader.md) — Full algorithm for loading decisions, patterns, preferences, and history into a structured FORGE-MEMORY context block.
+2. **Memory Summarizer Spec** (	emplates/utils/memory-summarizer.md) — Compression strategy for when memory files grow too large. Archive-before-summarize, idempotent, restorable.
+3. **Convention Extractor Spec** (	emplates/utils/convention-extractor.md) — Post-scaffolding pattern discovery: naming, imports, error handling, structure, code style. Three-tier confidence: observed → confirmed → established.
+4. **FORGE.md Memory Status** — Updated template with live memory metrics, recent decisions, and active conventions using forge:memory markers.
+5. **Cookbook Recipes** — memory-reader.ts and memory-reader.py with full parsing, query helpers, and context block formatting. Template versions in 	emplates/cookbook/.
+6. **cookbook/README.md** — Added Memory category.
+
+## Key Design Decisions
+- Memory reader never crashes: missing/malformed files are skipped with warnings.
+- Convention confidence promotes over time (observed → confirmed → established) but never demotes.
+- Summarizer always archives before compressing. Idempotent. User can restore from archive.
+- No jargon leaks in any user-facing file.
+
+## Files Created
+- 	emplates/utils/memory-reader.md
+- 	emplates/utils/memory-summarizer.md
+- 	emplates/utils/convention-extractor.md
+- cookbook/memory-reader.ts
+- cookbook/memory-reader.py
+- 	emplates/cookbook/memory-reader.ts
+- 	emplates/cookbook/memory-reader.py
+
+## Files Updated
+- 	emplates/FORGE.md — Memory Status section with merge markers
+- cookbook/README.md — Memory category added
+# Phase 4 Validator: Jargon Leaks in Specs and Architecture Doc
+
+**Source:** Tank (Tester)
+**Date:** 2026-04-15
+**Status:** Identified — Requires Remediation
+
+## Finding
+
+Phase 4 validator detected 7 jargon leaks in user-facing files:
+
+1. `templates/utils/memory-reader.md` — contains "specialist" (1 instance)
+2. `templates/utils/convention-extractor.md` — contains "specialist" (1 instance)
+3. `docs/phase4-architecture.md` — contains "cookbook-writer", "skill-writer", "agent-writer", "memory-writer", "specialist"
+
+## Impact
+
+These are internal delegation terms that beginners shouldn't see. Same class of bug as the Phase 2 jargon leak (24 failures). The architecture doc at `docs/phase4-architecture.md` is an internal doc so may be acceptable, but the utility spec templates will be copied into user repos and must be clean.
+
+## Recommendation
+
+- **Templates (memory-reader.md, convention-extractor.md):** Replace "specialist" with neutral phrasing. These are user-facing.
+- **docs/phase4-architecture.md:** Decide if this is internal-only (exempt from jargon check) or user-facing (needs scrubbing). If internal, the validator should skip it or the file should be in an internal directory.
+
+## Owner
+
+Neo (templates), Trinity (architecture doc)
