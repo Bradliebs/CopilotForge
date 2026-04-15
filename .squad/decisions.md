@@ -221,6 +221,58 @@ Phase 3 delivers the full cookbook catalog (29 recipes across 7 categories), fil
 
 ---
 
+### Architecture: Phase 4 Memory & Iteration
+
+**Source:** Morpheus
+**Date:** 2026-04-16
+**Status:** Draft — Pending Team Consensus
+
+Phase 4 delivers the memory read-back loop that makes CopilotForge learn across sessions. The Planner reads existing `forge-memory/` files before the wizard, adapts its behavior based on known context, extracts conventions from generated output, and compounds context across sessions. Full specification at `docs/phase4-architecture.md`.
+
+**Key Design Decisions:**
+
+1. **Memory is advisory, never blocking (D4-01).** If memory parsing fails, the system degrades to the full wizard. A broken `decisions.md` never prevents scaffolding. Rationale: zero friction for beginners is more important than perfect memory.
+
+2. **FORGE-MEMORY extends FORGE-CONTEXT (D4-02).** Memory data is a new section in the existing inter-specialist context block, not a parallel mechanism. Rationale: one contract, not two.
+
+3. **Confidence levels as inline HTML comments (D4-03).** Pattern confidence (`observed`/`confirmed`/`established`) is tracked via HTML comments invisible to casual readers. Rationale: machine metadata shouldn't clutter the user's conventions file.
+
+4. **Memory clearing archives, never deletes (D4-04).** "Start fresh" renames files to `.bak.{date}`. Rationale: follows the Phase 1 principle of never destroying user data.
+
+5. **Two new memory files: history.md + preferences.md (D4-05).** Session activity log and user preferences are distinct concerns from decisions and patterns. Rationale: each file has its own read/write/summarize lifecycle.
+
+6. **500-line memory budget with in-place summarization (D4-06).** Total memory context capped at ~500 lines. Older entries summarized in-place when exceeded. Rationale: memory must not crowd out generation instructions in the context window.
+
+7. **Adaptive wizard for returning users (D4-07).** Returning users see a project summary + four action choices instead of 5 questions. Rationale: re-asking known answers is the opposite of learning.
+
+8. **Per-agent memory via instruction filtering (D4-08).** All specialists get the full FORGE-MEMORY block; each reads only relevant sections per Planner instructions. Rationale: one memory block is simpler than per-specialist files.
+
+9. **Summarization is the sole exception to append-only (D4-09).** When decisions exceed the budget, older entries are compressed to one-liners. Logged as a decision itself. Rationale: unbounded append creates unusable files.
+
+10. **Memory versioning via line-1 HTML comment (D4-10).** Version comment on the first line of each memory file enables future format migration. Rationale: cheap insurance for forward compatibility.
+
+**Deferred to Phase 5:**
+- Custom specialist agents (user-defined)
+- Plugin system for cookbook recipes
+- CI/CD integration
+- Memory sharing across repos
+- Memory archival to `forge-memory/archive/`
+- Angular component recipes, Go/C# MCP recipes
+- User-defined skill types in wizard
+
+**Files Created/Updated:**
+- docs/phase4-architecture.md — Full architecture contract
+- .copilot/agents/memory-writer.md — Updated (pending implementation)
+- .copilot/agents/planner.md — Updated (pending implementation)
+- .copilot/agents/skill-writer.md — Updated (pending implementation)
+- .copilot/agents/agent-writer.md — Updated (pending implementation)
+- .copilot/agents/cookbook-writer.md — Updated (pending implementation)
+- .github/skills/planner/SKILL.md — Updated (pending implementation)
+- templates/forge-memory/history.md — Created (pending implementation)
+- templates/forge-memory/preferences.md — Created (pending implementation)
+
+---
+
 ## Governance
 
 - All meaningful changes require team consensus

@@ -113,9 +113,9 @@ bash tests/phase2/validate-delegation.sh /path/to/project
 | `phase2/rerun-scenarios.md` | Detailed re-run behavior matrix for every generated file |
 | `phase2/beginner-checklist.md` | Phase 2 beginner QA checklist (extends Phase 1) |
 
-### Running Both Phases
+### Running All Phases
 
-Always run Phase 1 validation first to catch regressions:
+Always run earlier phases first to catch regressions:
 
 ```bash
 # Phase 1 (scaffold structure):
@@ -123,7 +123,51 @@ bash tests/validate-scaffold.sh /path/to/project
 
 # Phase 2 (delegation correctness):
 bash tests/phase2/validate-delegation.sh /path/to/project
+
+# Phase 3 (cookbook layer):
+bash tests/phase3/validate-cookbook.sh /path/to/project
+
+# Phase 4 (memory & iteration):
+bash tests/phase4/validate-memory.sh /path/to/project
 ```
+
+## Phase 4 — Memory & Iteration Testing
+
+Phase 4 adds cross-session memory: preferences, history, convention learning,
+adaptive wizard flows, and memory summarization. The test suite validates all
+memory files, read-back behavior, and beginner-friendliness.
+
+### What Phase 4 Tests Cover
+
+| Area | What it catches |
+|------|----------------|
+| Memory read-back | Missing/corrupt memory files, fallback behavior, large memory |
+| Adaptive wizard | Skip logic, override handling, "start fresh" flow |
+| Convention learning | Pattern confidence, conflicts, append-only safety |
+| Cross-session compounding | History growth, summarization triggers, archive creation |
+| Memory safety | No secrets in memory, corruption resilience, concurrent writes |
+| FORGE.md memory surface | Memory markers, accurate counts, selective updates |
+| Jargon leaks | No internal agent names in memory templates or recipes |
+| Beginner experience | Welcome message clarity, preferences readability |
+
+### How to Run Phase 4 Validation
+
+```bash
+# After Phase 4 files are created:
+bash tests/phase4/validate-memory.sh /path/to/project
+
+# Windows:
+.\tests\phase4\validate-memory.ps1 -ProjectRoot C:\path\to\project
+```
+
+### Phase 4 File Index
+
+| File | Purpose |
+|------|---------|
+| `phase4/test-scenarios.md` | 58 test scenarios across 8 categories |
+| `phase4/validate-memory.ps1` | PowerShell validation for Phase 4 memory output |
+| `phase4/validate-memory.sh` | Bash version of the same validator |
+| `phase4/beginner-checklist.md` | Phase 4 beginner QA checklist |
 
 ---
 
@@ -141,3 +185,11 @@ bash tests/phase2/validate-delegation.sh /path/to/project
 | `phase2/validate-delegation.sh` | Phase 2 Bash validation script |
 | `phase2/rerun-scenarios.md` | Re-run behavior matrix |
 | `phase2/beginner-checklist.md` | Phase 2 beginner QA checklist |
+| `phase3/test-scenarios.md` | Phase 3 test scenarios (106 checks) |
+| `phase3/validate-cookbook.ps1` | Phase 3 PowerShell validation script |
+| `phase3/validate-cookbook.sh` | Phase 3 Bash validation script |
+| `phase3/beginner-checklist.md` | Phase 3 beginner QA checklist |
+| `phase4/test-scenarios.md` | Phase 4 test scenarios (58 scenarios) |
+| `phase4/validate-memory.ps1` | Phase 4 PowerShell validation script |
+| `phase4/validate-memory.sh` | Phase 4 Bash validation script |
+| `phase4/beginner-checklist.md` | Phase 4 beginner QA checklist |

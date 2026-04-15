@@ -28,3 +28,5 @@
 Duration: 633s | Tool Calls: 65 | Status: COMPLETE
 
 Separated specialist agent templates from user-facing scaffolding. Moved internal agents to templates/internal/agents/. Scrubbed templates/FORGE.md and templates/agents/planner.md of specialist terminology. Validator: PASS.
+
+- **Phase 4 memory read-side delivered (2026-04-15):** Created 3 specs (memory-reader, memory-summarizer, convention-extractor) under templates/utils/. Created 2 cookbook recipes (memory-reader.ts, memory-reader.py) with template versions. Updated FORGE.md with live memory status section using forge:memory markers. Updated cookbook/README.md with Memory category. Memory reader parses decisions, patterns, preferences, and history into a structured FORGE-MEMORY context block. Convention extractor uses 3-tier confidence (observed/confirmed/established). Summarizer archives before compressing and is idempotent.

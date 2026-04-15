@@ -101,6 +101,12 @@ Edit between the `forge:cookbook` markers to add or remove recipes.
 |--------|----------|--------------|
 | `delegation-example.ts` | TypeScript | Planner delegation flow |
 | `skill-creation-example.ts` | TypeScript | Programmatic SKILL.md creation |
+
+### Memory
+| Recipe | Language | What it does |
+|--------|----------|--------------|
+| `memory-reader.ts` | TypeScript | Read and parse forge-memory files |
+| `memory-reader.py` | Python | Same memory reader in Python |
 <!-- forge:cookbook-end -->
 
 > **Want to add a recipe?** Add a row between the `<!-- forge:cookbook-start -->` and `<!-- forge:cookbook-end -->` markers above, then drop the recipe file in `cookbook/`. Include a header comment explaining what it does and all necessary imports.
@@ -108,15 +114,30 @@ Edit between the `forge:cookbook` markers to add or remove recipes.
 ---
 
 ## 🧠 Memory Status
+<!-- forge:memory-start -->
 
 CopilotForge stores project memory in `forge-memory/` so agents remember decisions across sessions.
 
-| File | Purpose | Last Updated |
-|------|---------|--------------|
-| `decisions.md` | What was decided and why | {{date}} |
-| `patterns.md` | Reusable conventions and patterns | {{date}} |
+| Metric | Value |
+|--------|-------|
+| Last run | {{last_run_date}} |
+| Sessions | {{session_count}} |
+| Decisions | {{decisions_count}} |
+| Patterns | {{patterns_count}} active |
+| Preferences | {{preferences_status}} |
 
-> **Tip:** Agents update memory automatically, but you can edit these files directly too. They're just markdown.
+### Recent Decisions
+{{#each recent_decisions}}
+- **{{date}}:** {{title}}
+{{/each}}
+
+### Active Conventions
+{{#each conventions}}
+- **{{category}}:** {{summary}}
+{{/each}}
+
+> 💡 Edit `forge-memory/patterns.md` to update conventions. Edit `forge-memory/preferences.md` to change generation preferences.
+<!-- forge:memory-end -->
 
 ---
 

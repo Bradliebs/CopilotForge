@@ -31,3 +31,12 @@
 Duration: 212s | Tool Calls: 20 | Status: PASS
 
 Validated Phase 2.1 jargon fix. Ran Phase 2 validator and manual scan. Fixed UTF-8 BOM in validator scripts. Result: Zero jargon leaks, no regressions.
+
+
+- **2026-04-15 — Phase 4 test suite created.** Four deliverables: test-scenarios.md (58 scenarios across 8 categories), validate-memory.ps1 (UTF-8 BOM, 10 check categories), validate-memory.sh (bash equivalent), and beginner-checklist.md (Phase 4 memory UX checklist). Updated tests/README.md with Phase 4 section and file index.
+- **2026-04-15 — Phase 4 baseline run: 38 PASS, 7 FAIL.** All 10 new files exist. SKILL.md, planner.md, memory-writer.md, FORGE.md all pass structural checks. Recipe quality (headers, imports, error handling, TODO) all pass for both .ts and .py. Template placeholders pass. README completeness passes. 7 jargon leaks detected: 2 in utility spec templates (specialist), 5 in docs/phase4-architecture.md (all 4 agent names + specialist). Filed in decisions inbox for Neo/Trinity to remediate.
+
+## 2026-04-15 --- Phase 4: Test Suite Creation
+Duration: ~5min | Tool Calls: 25+ | Status: COMPLETE (7 jargon fails pending remediation)
+
+Created Phase 4 test suite covering memory read-back, adaptive wizard, convention learning, cross-session compounding, memory safety, FORGE.md surface, jargon leaks, and beginner experience. Validator confirms Phase 4 implementation is structurally sound — only jargon scrubbing remains.

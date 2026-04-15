@@ -55,6 +55,13 @@
 | [`route-handler.ts`](./route-handler.ts) | TypeScript | Express routes with Zod validation, error middleware, typed request/response |
 | [`route-handler.py`](./route-handler.py) | Python | FastAPI routes with Pydantic models, dependency injection, proper status codes |
 
+### Memory
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`memory-reader.ts`](./memory-reader.ts) | TypeScript | Read and parse forge-memory files — decisions, patterns, preferences, history |
+| [`memory-reader.py`](./memory-reader.py) | Python | Same memory reader in Python — dataclass models, query helpers, context formatter |
+
 ### Delegation & Skills
 
 | Recipe | Language | What It Does |
