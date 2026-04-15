@@ -1,5 +1,56 @@
 # CopilotForge Squad Decisions
 
+## Phase 9: Final Polish — v1.0 Release Candidate
+
+### 2026-04-15T22:18:39Z: Final Polish Complete — Stale Refs, Validator, QA Pass
+**By:** Squad (Trinity, Neo, Tank, Morpheus) + Coordinator  
+**Status:** Complete  
+
+Comprehensive remediation and QA validation for v1.0 release. All items resolved.
+
+---
+
+### 2026-04-16: Decision: Fixed Phase 8 Wizard Question Count References
+
+**Date:** 2026-04-16  
+**Author:** Trinity (Prompt Engineer)  
+**Status:** COMPLETE  
+**Impact:** Documentation accuracy across 6 files
+
+Fixed stale "five questions" references across user-facing docs, internal architecture docs, and test scenarios. Applied three-tier strategy: generic phrasing for promotional content (survives future changes), specific numbers for internal specs, and accurate counts for test cases. Verified with sweep search — ZERO stale references remaining.
+
+---
+
+### 2026-04-16: Decision: PowerShell Core Required for Recipe Validator
+
+**Date:** 2026-04-16  
+**Author:** Neo  
+**Status:** Implemented  
+
+Script `tests/docs/validate-recipes.ps1` requires PowerShell Core 7+ (pwsh), not Windows PowerShell 5.1. Modern syntax (multi-line elseif with backtick continuation in nested script blocks within hash tables) is not compatible with PS 5.1. Rather than downgrade syntax, clarified requirement in script header. Verified: 40/40 recipes pass when run with `pwsh -File validate-recipes.ps1`.
+
+---
+
+### 2026-04-15: Tank QA Findings — Final Validation Pass
+
+**Date:** 2026-04-15  
+**Tester:** Tank  
+**Status:** SHIPPING (blocking issues fixed)
+
+Full validation sweep: 24 PASS, 4 FAIL, 3 WARN. Blocking issues: 3 broken links in `.github/TEMPLATE_INSTRUCTIONS.md` (missing `../` prefix to docs/ links). All failures remediated by Coordinator before merge. QA verdict: SHIP IT.
+
+---
+
+### 2026-04-15: CopilotForge v1.0 Completeness Review
+
+**Date:** 2026-04-15  
+**Reviewer:** Morpheus (Lead)  
+**Status:** ✅ READY FOR V1.0
+
+Architecture complete. All promised features implemented and integrated. Five entry points guide users (README, GETTING-STARTED, WHAT-TO-USE, CHEATSHEET, FAQ). Memory system allows re-runs without data loss. Conflict detection prevents overwriting user changes. Beginner navigation (Phase 7) and Wizard Q6 (Phase 8) fully implemented. Production-safe. Ready for npm publish as v1.0.0.
+
+---
+
 ## Phase 6: Beginner Deep Polish
 
 ### 2026-04-15T16:57: Phase 6 Completion — 12/12 Items Delivered
