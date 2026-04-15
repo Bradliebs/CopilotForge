@@ -428,7 +428,7 @@ Create `FORGE.md` at the repo root. This is the human-readable dashboard. Format
 
 ### Step 4 — Validation Summary
 
-After all files are created, print a plain-English summary. This is the last thing the user sees. Format:
+After all files are created, print a plain-English summary of everything that was generated. Format:
 
 > **✅ CopilotForge scaffolding complete!**
 >
@@ -446,12 +446,49 @@ After all files are created, print a plain-English summary. This is the last thi
 
 ---
 
+### Step 5 — Start Building
+
+After the validation summary, output a build-transition prompt. This bridges "I described my project" → "now build it" — especially helpful for beginners who just finished the wizard and aren't sure what to do next.
+
+Customize the prompt using the user's actual wizard answers:
+- Replace `{project type}` with the type of project from Q1 (e.g., "REST API," "React dashboard," "CLI tool")
+- Replace `{stack}` with the Q2 answer (e.g., "TypeScript, Next.js, Prisma")
+- Replace `{first feature or goal}` with the primary goal extracted from Q1 (e.g., "the pet adoption endpoints," "the CI monitoring dashboard")
+
+Output this as the very last thing the wizard shows:
+
+> ---
+>
+> ## 🚀 Ready to Build!
+>
+> Your project is set up. Here's a prompt you can copy and paste to start building:
+>
+> ---
+>
+> **Copy this prompt and give it to your AI assistant:**
+>
+> > I have a {project type} project using {stack}. The project structure is already
+> > scaffolded — see FORGE.md for the team configuration and forge-memory/ for
+> > context. Start by reading FORGE.md, then help me build {first feature or goal
+> > from Question 1}.
+>
+> ---
+>
+> Or just say: **"Read FORGE.md and let's start building."**
+>
+> 💡 **Tip:** Your AI assistant will read FORGE.md and forge-memory/ to understand
+> your project's conventions, team setup, and goals — no need to re-explain anything.
+
+The copy-paste prompt references FORGE.md and forge-memory/ — the artifacts the wizard just created. The one-liner alternative is for users who want to keep it simple. Both work because the AI assistant reads the project's memory files to understand context automatically.
+
+---
+
 ## Portability
 
 This skill works in:
 - **VS Code GitHub Copilot** — place in `.github/skills/planner/SKILL.md`
-- **Claude Code** — paste the Instructions section (Steps 0–4) as a prompt
-- **Any LLM** — copy Step 2–5 into a chat session
+- **Claude Code** — paste the Instructions section (Steps 0–5) as a prompt
+- **Any LLM** — copy Steps 0–5 into a chat session
 
 No CLI, no dependencies, no lock-in. It's just markdown instructions that any language model can execute.
 
@@ -466,3 +503,4 @@ No CLI, no dependencies, no lock-in. It's just markdown instructions that any la
 - ❌ Using jargon without explanation when skill level is "beginner"
 - ❌ Generating agent files that reference skills which don't exist
 - ❌ Forgetting the validation summary — the user needs to know what was created
+- ❌ Skipping the build-transition prompt — the user needs a clear next step after scaffolding
