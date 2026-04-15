@@ -11,7 +11,10 @@ WHEN TO USE THIS:
 
 HOW TO RUN:
     1. pip install copilot-sdk   (or your preferred SDK)
-    2. Set your API key: export COPILOT_API_KEY="your-key-here"
+    2. Set your API key:
+         bash/zsh:     export COPILOT_API_KEY="your-key-here"
+         PowerShell:   $env:COPILOT_API_KEY="your-key-here"
+         Windows cmd:  set COPILOT_API_KEY=your-key-here
     3. python cookbook/hello-world.py
 
 PREREQUISITES:

@@ -19,6 +19,9 @@ triggers:
   - "I want agents for this project"
 ---
 
+<!-- 👋 Human? This file contains instructions for AI assistants, not for you.
+     For the human-friendly guide, see docs/GETTING-STARTED.md -->
+
 # CopilotForge Planner
 
 > Drop this file into any repo at `.github/skills/planner/SKILL.md`. When triggered, it walks you through five questions and scaffolds a complete Copilot-ready project structure — skills, agents, memory, and cookbook recipes. No CLI. No framework. Just markdown.

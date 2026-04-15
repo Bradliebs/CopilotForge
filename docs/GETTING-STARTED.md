@@ -1,10 +1,13 @@
 # 🚀 Getting Started with CopilotForge
 
-> A complete walkthrough from zero to a fully scaffolded project. We'll set up a task management app with Next.js and Prisma as our running example.
+> A complete walkthrough from zero to a fully scaffolded (auto-generated) project. We'll set up a task management app with Next.js and Prisma as our running example.
 
 **Time needed:** About 5 minutes.
 
-**What you need:** A project repo and an AI coding assistant (GitHub Copilot Chat, Claude Code, or any LLM).
+**What you need:**
+- ✅ A code editor with an AI assistant (GitHub Copilot Chat, Claude Code, Cursor, or similar)
+- ✅ A project folder — can be an existing project or a brand-new empty folder
+- ✅ That's it — no packages, no installs, no command line required
 
 ---
 
@@ -24,6 +27,8 @@
 - [Troubleshooting](#troubleshooting)
 
 ---
+
+> 🆕 **Starting from an empty repo?** That works too! Skip ahead to [Step 1](#step-1--add-the-planner-skill) — the wizard handles empty repos automatically. When it asks about your stack, just tell it what language you plan to use (e.g., "Python" or "JavaScript"). No config files needed.
 
 ## The Example Project
 

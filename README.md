@@ -4,6 +4,10 @@
 
 CopilotForge turns a plain-English description of your project into a working set of AI-powered tools — all inside your repo. You tell it what you're building, answer five quick questions, and it creates everything: coding assistants that know your stack, code review checklists, test helpers, ready-to-use code recipes, and a memory system that gets smarter over time. No install. No command line. Just drop one file into your repo and start talking.
 
+It creates **skills** (instruction files for your AI), **agents** (AI team members defined in markdown), **recipes** (copy-paste code examples), and a **memory** system (plain-text files that remember your decisions). "Scaffolding" just means auto-generating these files into your project.
+
+**Zero dependencies.** No `npm install`, no `pip install`, no package manager. Copy one folder into your repo and start talking to your AI assistant.
+
 ---
 
 ## What It Does (30-Second Version)
@@ -19,10 +23,12 @@ CopilotForge turns a plain-English description of your project into a working se
 ## What You'll Need
 
 - **An AI coding assistant** — [GitHub Copilot](https://github.com/features/copilot), [Claude Code](https://claude.ai), [Cursor](https://cursor.sh), or similar
-- **A code project** — new or existing, any language
-- **Git** — recommended but not required
+- **A code project** — new or existing, any language (even an empty folder works)
+- **Git** — recommended but not required (Git tracks changes to your files; if you don't have it, grab it from [git-scm.com](https://git-scm.com))
 
 That's it. No npm install, no CLI tools, no framework knowledge needed.
+
+> 💡 **For cookbook recipes only:** If you want to run the code examples, you'll need Node.js 18+ (for TypeScript recipes) or Python 3.10+ (for Python recipes). CopilotForge itself needs nothing installed.
 
 ---
 
@@ -95,6 +101,8 @@ After the wizard scaffolds your project, it outputs a **ready-to-use prompt** yo
 3. **Just start talking** — describe what you want to build; the AI reads FORGE.md automatically
 
 This bridges the gap between describing your project and actually building it.
+
+> **Stuck?** Jump to [Troubleshooting](docs/FAQ.md#troubleshooting) or open an issue in this repo.
 
 ---
 
@@ -373,7 +381,7 @@ The `cookbook/` folder contains ready-to-use code recipes for common tasks. Each
 | **memory-reader** | TS + PY | Read and parse CopilotForge memory files programmatically |
 | **managing-local-files** | TS + PY | File organization and management patterns |
 | **multiple-sessions** | TS + PY | Managing multiple concurrent Copilot sessions |
-| **delegation-example** | TS | How the Planner delegates to specialist agents |
+| **delegation-example** | TS | How the Planner delegates to focused agents |
 | **skill-creation-example** | TS | How to create new skills programmatically |
 
 Recipes come in TypeScript and Python (some advanced recipes are TypeScript-only). The wizard picks which ones to generate based on your stack.
@@ -512,3 +520,7 @@ See [`docs/`](docs/) for detailed technical documentation.
 ## License
 
 MIT — use it however you want.
+
+---
+
+> 🤔 **Stuck?** Check the [Getting Started guide](docs/GETTING-STARTED.md) or [open an issue](../../issues).

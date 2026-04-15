@@ -240,7 +240,7 @@ MIT — use it however you want. Modify it, redistribute it, use it in commercia
 
 ---
 
-**Still have questions?** Open an issue on the [CopilotForge repo](https://github.com/yourusername/copilotforge) or check the full docs:
+**Still have questions?** Open an issue on the CopilotForge repository or check the full docs:
 
 - [Getting Started Guide](GETTING-STARTED.md)
 - [How It Works](HOW-IT-WORKS.md)

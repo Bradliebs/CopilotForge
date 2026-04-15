@@ -11,7 +11,10 @@
  *
  * HOW TO RUN:
  *   1. npm install @github/copilot-sdk
- *   2. Set your API key: export COPILOT_API_KEY="your-key-here"
+ *   2. Set your API key:
+ *        bash/zsh:     export COPILOT_API_KEY="your-key-here"
+ *        PowerShell:   $env:COPILOT_API_KEY="your-key-here"
+ *        Windows cmd:  set COPILOT_API_KEY=your-key-here
  *   3. npx ts-node cookbook/hello-world.ts
  *
  * PREREQUISITES:

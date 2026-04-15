@@ -382,5 +382,13 @@ Everything is plain markdown and code. No hidden config, no binaries, no magic. 
 
 ---
 
+## What Should I Do Now?
+
+- **Ready to try it?** Head to the [Getting Started guide](GETTING-STARTED.md) for a 5-minute walkthrough
+- **Already set up?** Tell your AI assistant: *"Read FORGE.md and let's start building"*
+- **Just browsing?** Check the [Recipe Index](../cookbook/README.md) to see what code examples are available
+
+---
+
 **← Back to [README](../README.md)** | **→ Recipe index: [cookbook/README.md](../cookbook/README.md)**
 
