@@ -98,6 +98,13 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 | [`managing-local-files.ts`](./managing-local-files.ts) | TypeScript | Organize files by metadata — extension, date, size — with dry-run mode |
 | [`managing-local-files.py`](./managing-local-files.py) | Python | Same file organization pattern in Python |
 
+### Blog & Discussion Writer
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`blog-writer.ts`](./blog-writer.ts) | TypeScript | Multi-step blog generator — brainstorm topics from PRs/issues, outline, draft, and refine |
+| [`blog-writer.py`](./blog-writer.py) | Python | Same blog writing pipeline in Python |
+
 ### Session Persistence
 
 | Recipe | Language | What It Does |
@@ -111,6 +118,13 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 |--------|----------|--------------|
 | [`pr-visualization.ts`](./pr-visualization.ts) | TypeScript | Interactive CLI tool — detect GitHub repo, fetch PRs, generate age charts via Copilot |
 | [`pr-visualization.py`](./pr-visualization.py) | Python | Same PR visualization pattern in Python |
+
+### Template Creator
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`template-creator.ts`](./template-creator.ts) | TypeScript | Generate project templates (README, issues, PRs, docs) with structured Copilot prompts |
+| [`template-creator.py`](./template-creator.py) | Python | Same template generation pipeline in Python |
 
 ### Delegation & Skills
 
