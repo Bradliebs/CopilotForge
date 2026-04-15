@@ -6,10 +6,59 @@
 
 ## Recipes
 
+### Session Management
+
 | Recipe | Language | What It Does |
 |--------|----------|--------------|
 | [`session-example.ts`](./session-example.ts) | TypeScript | Basic session management — create sessions, send messages, handle timeouts, clean up |
 | [`session-example.py`](./session-example.py) | Python | Same session pattern in Python |
+
+### Error Handling
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`error-handling.ts`](./error-handling.ts) | TypeScript | Custom error hierarchy, retry with exponential backoff, graceful degradation |
+| [`error-handling.py`](./error-handling.py) | Python | Custom exception hierarchy, retry decorator, structured error responses |
+
+### MCP Integration
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`mcp-server.ts`](./mcp-server.ts) | TypeScript | MCP server with tools (file search, data lookup, status check), Zod validation |
+| [`mcp-server.py`](./mcp-server.py) | Python | MCP server using FastMCP with tool decorators, type hints, error handling |
+
+### API Clients
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`api-client.ts`](./api-client.ts) | TypeScript | Typed HTTP client (native fetch) — retry, auth, timeout, response parsing |
+| [`api-client.py`](./api-client.py) | Python | Async HTTP client (httpx) — retry, auth, timeout, typed responses |
+
+### Auth & Middleware
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`auth-middleware.ts`](./auth-middleware.ts) | TypeScript | Express JWT middleware — verify tokens, role-based access, token generation |
+| [`auth-middleware.py`](./auth-middleware.py) | Python | FastAPI JWT dependency — verify tokens, role extraction, HTTP error responses |
+
+### Database Patterns
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`db-query.ts`](./db-query.ts) | TypeScript | Prisma CRUD, transactions, error handling, connection management |
+| [`db-query.py`](./db-query.py) | Python | SQLAlchemy async CRUD, transactions, session management, error handling |
+
+### Route Handlers
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`route-handler.ts`](./route-handler.ts) | TypeScript | Express routes with Zod validation, error middleware, typed request/response |
+| [`route-handler.py`](./route-handler.py) | Python | FastAPI routes with Pydantic models, dependency injection, proper status codes |
+
+### Delegation & Skills
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
 | [`delegation-example.ts`](./delegation-example.ts) | TypeScript | Full delegation flow — how the Planner orchestrates specialist agents programmatically |
 | [`skill-creation-example.ts`](./skill-creation-example.ts) | TypeScript | Create custom SKILL.md files programmatically from code |
 

@@ -50,14 +50,60 @@ Skills live in `.github/skills/` and teach agents how to handle specific trigger
 
 ## 📖 Cookbook Index
 
+<!-- forge:cookbook-start -->
 Recipes in `cookbook/` are copy-paste-runnable code examples for common tasks.
+Edit between the `forge:cookbook` markers to add or remove recipes.
 
+### Session Management
 | Recipe | Language | What it does |
 |--------|----------|--------------|
 | `session-example.ts` | TypeScript | Basic session management with error handling |
 | `session-example.py` | Python | Same session pattern in Python |
 
-> **Want to add a recipe?** Drop a new file in `cookbook/`. Include a header comment explaining what it does and all necessary imports.
+### Error Handling
+| Recipe | Language | What it does |
+|--------|----------|--------------|
+| `error-handling.ts` | TypeScript | Custom error hierarchy, retry, graceful degradation |
+| `error-handling.py` | Python | Custom exception hierarchy, retry decorator |
+
+### MCP Integration
+| Recipe | Language | What it does |
+|--------|----------|--------------|
+| `mcp-server.ts` | TypeScript | MCP server with tools, Zod validation |
+| `mcp-server.py` | Python | MCP server using FastMCP with tool decorators |
+
+### API Clients
+| Recipe | Language | What it does |
+|--------|----------|--------------|
+| `api-client.ts` | TypeScript | Typed HTTP client — calls {{api_base_url}} |
+| `api-client.py` | Python | Async HTTP client (httpx) — calls {{api_base_url}} |
+
+### Auth & Middleware
+| Recipe | Language | What it does |
+|--------|----------|--------------|
+| `auth-middleware.ts` | TypeScript | Express JWT middleware using {{auth_secret}} |
+| `auth-middleware.py` | Python | FastAPI JWT dependency using {{auth_secret}} |
+
+### Database Patterns
+| Recipe | Language | What it does |
+|--------|----------|--------------|
+| `db-query.ts` | TypeScript | Prisma CRUD against {{db_connection_string}} |
+| `db-query.py` | Python | SQLAlchemy CRUD against {{db_connection_string}} |
+
+### Route Handlers
+| Recipe | Language | What it does |
+|--------|----------|--------------|
+| `route-handler.ts` | TypeScript | Express routes with Zod validation |
+| `route-handler.py` | Python | FastAPI routes with Pydantic models |
+
+### Delegation & Skills
+| Recipe | Language | What it does |
+|--------|----------|--------------|
+| `delegation-example.ts` | TypeScript | Planner delegation flow |
+| `skill-creation-example.ts` | TypeScript | Programmatic SKILL.md creation |
+<!-- forge:cookbook-end -->
+
+> **Want to add a recipe?** Add a row between the `<!-- forge:cookbook-start -->` and `<!-- forge:cookbook-end -->` markers above, then drop the recipe file in `cookbook/`. Include a header comment explaining what it does and all necessary imports.
 
 ---
 
