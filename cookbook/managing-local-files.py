@@ -31,6 +31,11 @@ EXPECTED OUTPUT:
     [DRY RUN] report.pdf → documents/report.pdf
       Reason: Grouped by extension: .pdf
     [FileManager] Preview complete (42 operations)
+
+PLATFORM NOTES:
+    - Windows: Uses backslashes for file paths by default; adjust os.sep as needed
+    - macOS/Linux: Uses forward slashes; supports symlinks in directory operations
+    - Cross-platform: Use os.path.join() for all path construction
 """
 
 from __future__ import annotations

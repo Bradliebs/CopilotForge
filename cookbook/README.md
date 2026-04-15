@@ -133,6 +133,20 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 | [`copilot-hooks.ts`](./copilot-hooks.ts) | TypeScript | Generate hooks.json + scripts for session logging, safety checks, and audit trails |
 | [`copilot-hooks.py`](./copilot-hooks.py) | Python | Same Copilot hooks generator in Python |
 
+### Auto-Research (Autonomous Experiments)
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`auto-research.ts`](./auto-research.ts) | TypeScript | Autonomous experiment loop — modify code, evaluate, keep/discard, log results. Inspired by Karpathy's autoresearch |
+| [`auto-research.py`](./auto-research.py) | Python | Same auto-research harness in Python |
+
+### Knowledge Wiki (Personal Knowledge Base)
+
+| Recipe | Language | What It Does |
+|--------|----------|--------------|
+| [`knowledge-wiki.ts`](./knowledge-wiki.ts) | TypeScript | Personal knowledge wiki — ingest sources, search, lint, maintain a compounding knowledge base with AI |
+| [`knowledge-wiki.py`](./knowledge-wiki.py) | Python | Same knowledge wiki manager in Python |
+
 ### Delegation & Skills
 
 | Recipe | Language | What It Does |

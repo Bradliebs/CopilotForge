@@ -33,6 +33,11 @@
  *   [FileManager] Preview complete (3 operations)
  *   [FileManager] Apply changes? (yes/no): yes
  *   [FileManager] Organized 42 files into 8 subdirectories
+ *
+ * PLATFORM NOTES:
+ *   - Windows: Uses backslashes for file paths by default; adjust path.sep as needed
+ *   - macOS/Linux: Uses forward slashes; supports symlinks in directory operations
+ *   - Cross-platform: Use path.join() for all path construction
  */
 
 // --- Imports ---

@@ -380,14 +380,13 @@ The `cookbook/` folder contains ready-to-use code recipes for common tasks. Each
 
 | Category | What You Get |
 |----------|-------------|
-| **Error Handling** | Custom error types, retry with backoff, graceful failure |
-| **API Clients** | HTTP client with auth, retry, timeout, typed responses |
-| **Auth & Middleware** | JWT authentication, role-based access control |
-| **Database** | ORM patterns — CRUD, transactions, error handling (Prisma, SQLAlchemy) |
-| **Route Handlers** | Web routes with validation and error responses (Express, FastAPI) |
-| **MCP Integration** | Building a tool server for the Copilot ecosystem |
-| **Session Management** | Create sessions, handle timeouts, clean up resources |
-| **Memory** | Read and parse CopilotForge memory files programmatically |
+| **Basics** | Hello world, error handling, session management |
+| **API & Web** | HTTP clients, auth middleware, route handlers, validation |
+| **Data** | Database CRUD, transactions, error handling (Prisma, SQLAlchemy) |
+| **Integration** | MCP tool servers, file management, memory reader |
+| **Advanced** | Auto-research loops, autonomous development cycles, knowledge wikis |
+| **Extensibility** | Copilot CLI hooks, delegation patterns, skill creation |
+| **Content** | Blog generators, template creators, PR visualization |
 
 ### How to Use a Recipe
 
@@ -399,20 +398,28 @@ The `cookbook/` folder contains ready-to-use code recipes for common tasks. Each
 
 ### Available Recipes
 
+**22+ recipes across core categories:**
+
 | Recipe | Languages | What It Does |
 |--------|-----------|--------------|
 | **hello-world** | TS + PY | Simplest possible Copilot SDK recipe (start here!) |
 | **ralph-loop** | TS + PY | Autonomous dev loop: pick task → implement → validate → commit |
+| **session-example** | TS + PY | Create sessions, handle timeouts, clean up resources |
+| **multiple-sessions** | TS + PY | Managing multiple concurrent Copilot sessions |
+| **persisting-sessions** | TS + PY | Save and restore conversations with custom IDs and history |
 | **error-handling** | TS + PY | Custom error types, retry with backoff, graceful failure |
 | **api-client** | TS + PY | HTTP client with auth, retry, timeout, typed responses |
 | **auth-middleware** | TS + PY | JWT authentication and role-based access control |
 | **db-query** | TS + PY | ORM patterns — CRUD, transactions, error handling |
 | **route-handler** | TS + PY | Web routes with validation and error responses |
 | **mcp-server** | TS + PY | Building a tool server for the Copilot ecosystem |
-| **session-example** | TS + PY | Create sessions, handle timeouts, clean up resources |
 | **memory-reader** | TS + PY | Read and parse CopilotForge memory files programmatically |
 | **managing-local-files** | TS + PY | File organization and management patterns |
-| **multiple-sessions** | TS + PY | Managing multiple concurrent Copilot sessions |
+| **blog-writer** | TS + PY | Multi-step blog generator from PRs and issues |
+| **template-creator** | TS + PY | Generate project templates (README, docs, issues) |
+| **pr-visualization** | TS + PY | Interactive CLI to visualize PR activity and age |
+| **copilot-hooks** | TS + PY | Copilot CLI session hooks for logging and safety checks |
+| **auto-research** | TS + PY | Autonomous experiment loops inspired by Karpathy |
 | **delegation-example** | TS | How the Planner delegates to focused agents |
 | **skill-creation-example** | TS | How to create new skills programmatically |
 
@@ -494,16 +501,22 @@ Oracle_Prime/
 │   ├── README.md                # Recipe index
 │   ├── hello-world.ts/.py       # Start here — simplest Copilot SDK recipe
 │   ├── ralph-loop.ts/.py        # Autonomous dev loop
+│   ├── session-example.ts/.py   # Session management
+│   ├── multiple-sessions.ts/.py # Concurrent Copilot sessions
+│   ├── persisting-sessions.ts/.py # Save/restore conversations
 │   ├── error-handling.ts/.py    # Error patterns
 │   ├── api-client.ts/.py        # HTTP client with retry and auth
 │   ├── auth-middleware.ts/.py   # JWT auth
 │   ├── db-query.ts/.py          # ORM CRUD patterns
 │   ├── route-handler.ts/.py     # Web routes with validation
 │   ├── mcp-server.ts/.py        # MCP tool server
-│   ├── session-example.ts/.py   # Session management
 │   ├── memory-reader.ts/.py     # Memory file parser
-│   ├── managing-local-files.ts/.py  # File organization patterns
-│   ├── multiple-sessions.ts/.py # Concurrent Copilot sessions
+│   ├── managing-local-files.ts/.py # File organization patterns
+│   ├── blog-writer.ts/.py       # Multi-step blog generator
+│   ├── template-creator.ts/.py  # Project template generator
+│   ├── pr-visualization.ts/.py  # PR visualization tool
+│   ├── copilot-hooks.ts/.py     # CLI session hooks
+│   ├── auto-research.ts/.py     # Autonomous experiment loops
 │   ├── delegation-example.ts    # Planner delegation patterns
 │   └── skill-creation-example.ts # Creating new skills programmatically
 │

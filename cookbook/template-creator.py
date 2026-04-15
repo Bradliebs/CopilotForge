@@ -48,6 +48,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -617,8 +618,6 @@ def detect_project_info(project_dir: str) -> dict[str, str]:
     pyproject_path = Path(project_dir) / "pyproject.toml"
     if pyproject_path.exists():
         try:
-            import re
-
             content = pyproject_path.read_text(encoding="utf-8")
             name_match = re.search(r'^name\s*=\s*"(.+)"', content, re.MULTILINE)
             desc_match = re.search(r'^description\s*=\s*"(.+)"', content, re.MULTILINE)
@@ -628,7 +627,8 @@ def detect_project_info(project_dir: str) -> dict[str, str]:
                 "description": desc_match.group(1) if desc_match else "",
                 "stack": "Python",
             }
-        except Exception:
+        except (IOError, ValueError) as e:
+            # Log the error but continue to fallback
             pass
 
     return {

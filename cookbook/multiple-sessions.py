@@ -35,6 +35,11 @@ EXPECTED OUTPUT:
       - javascript-helper: 1 messages, last active 14:32:01
     [Cleanup] All sessions destroyed
     [Manager] Stopped after cleaning up 0 session(s)
+
+PLATFORM NOTES:
+    - Windows: Use backslashes in paths or os.path.join() (both shown in code)
+    - macOS/Linux: Forward slashes work natively
+    - Environment variables: Use $env:VAR (PowerShell) or export VAR (bash)
 """
 
 from __future__ import annotations

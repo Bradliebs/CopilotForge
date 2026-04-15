@@ -30,6 +30,11 @@
  *   TypeScript: tsconfig.json created with target ES2022
  *   Go: Module initialized with: go mod init myapp
  *   [Cleanup] All 3 sessions destroyed
+ *
+ * PLATFORM NOTES:
+ *   - Windows: Use backslashes in paths or path.join() (both shown in code)
+ *   - macOS/Linux: Forward slashes work natively
+ *   - Environment variables: Use $env:VAR (PowerShell) or export VAR (bash)
  */
 
 // --- Imports ---
