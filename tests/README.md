@@ -169,6 +169,40 @@ bash tests/phase4/validate-memory.sh /path/to/project
 | `phase4/validate-memory.sh` | Bash version of the same validator |
 | `phase4/beginner-checklist.md` | Phase 4 beginner QA checklist |
 
+## Documentation Validation
+
+The docs suite validates CopilotForge's beginner-friendly documentation
+(README.md, docs/GETTING-STARTED.md, docs/HOW-IT-WORKS.md) for structure,
+jargon leaks, link integrity, and beginner-friendliness.
+
+### What Doc Validation Covers
+
+| Area | What it catches |
+|------|----------------|
+| File existence | Missing docs = broken onboarding |
+| README structure | Missing Quick Start, FAQ, or key sections |
+| Jargon leaks | Internal terms (specialist, FORGE-CONTEXT, etc.) in user-facing docs |
+| Link integrity | Broken relative links between docs |
+| Minimum content | Docs too short to be useful |
+| Beginner signals | Missing direct-address language, trigger examples, wizard Q&A |
+
+### How to Run Doc Validation
+
+```bash
+bash tests/docs/validate-docs.sh
+
+# Windows:
+.\tests\docs\validate-docs.ps1
+```
+
+### Doc Test File Index
+
+| File | Purpose |
+|------|---------|
+| `docs/doc-quality-checklist.md` | Manual 30-item review checklist |
+| `docs/validate-docs.ps1` | PowerShell doc validation (UTF-8 BOM) |
+| `docs/validate-docs.sh` | Bash doc validation |
+
 ---
 
 ## File Index
@@ -193,3 +227,6 @@ bash tests/phase4/validate-memory.sh /path/to/project
 | `phase4/validate-memory.ps1` | Phase 4 PowerShell validation script |
 | `phase4/validate-memory.sh` | Phase 4 Bash validation script |
 | `phase4/beginner-checklist.md` | Phase 4 beginner QA checklist |
+| `docs/doc-quality-checklist.md` | Manual 30-item doc review checklist |
+| `docs/validate-docs.ps1` | Documentation validation script (PowerShell) |
+| `docs/validate-docs.sh` | Documentation validation script (Bash) |

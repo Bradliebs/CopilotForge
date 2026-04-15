@@ -40,3 +40,5 @@ Validated Phase 2.1 jargon fix. Ran Phase 2 validator and manual scan. Fixed UTF
 Duration: ~5min | Tool Calls: 25+ | Status: COMPLETE (7 jargon fails pending remediation)
 
 Created Phase 4 test suite covering memory read-back, adaptive wizard, convention learning, cross-session compounding, memory safety, FORGE.md surface, jargon leaks, and beginner experience. Validator confirms Phase 4 implementation is structurally sound — only jargon scrubbing remains.
+
+- **2026-04-15 — Doc validation suite created.** Three deliverables: doc-quality-checklist.md (30-item manual review checklist), validate-docs.ps1 (UTF-8 BOM, 6 check categories), validate-docs.sh (bash equivalent). Checks file existence, README structure, jargon leaks (strips code blocks first), relative link integrity, minimum content thresholds, and beginner friendliness signals. Baseline run: 10 FAIL / 6 WARN — all expected because Trinity hasn't committed docs yet. Updated tests/README.md with doc validation section and file index.
