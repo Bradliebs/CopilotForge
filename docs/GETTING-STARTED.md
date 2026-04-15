@@ -16,6 +16,8 @@
 - [Step 3 — Answer the Questions](#step-3--answer-the-questions)
 - [Step 4 — Confirm and Generate](#step-4--confirm-and-generate)
 - [Step 5 — Explore What Was Created](#step-5--explore-what-was-created)
+- [From Planning to Building](#from-planning-to-building)
+- [Why This Works](#why-this-works)
 - [Testing That It Worked](#testing-that-it-worked)
 - [Customizing the Output](#customizing-the-output)
 - [Running It Again (Memory in Action)](#running-it-again-memory-in-action)
@@ -253,6 +255,40 @@ taskflow/
 | `patterns.md` | Coding conventions — TypeScript strict mode, Prisma naming, file structure |
 | `preferences.md` | Your wizard settings — verbosity, stack, testing preference |
 | `history.md` | When CopilotForge ran and what it did |
+
+---
+
+## From Planning to Building
+
+After the wizard finishes, you'll see a ready-to-use prompt. This is the bridge between
+describing your project and actually building it.
+
+**Option 1: Copy the prompt**
+The wizard generates a custom prompt based on your answers. Copy it, paste it into your
+AI assistant, and you're building.
+
+**Option 2: The one-liner**
+If you prefer to keep it simple:
+> Read FORGE.md and let's start building.
+
+Your AI assistant reads FORGE.md and forge-memory/ to understand your project — no need
+to re-explain your stack, conventions, or goals.
+
+**Option 3: Just start talking**
+You can also just describe what you want to build next. The AI will check FORGE.md
+automatically if the Planner skill is active.
+
+---
+
+## Why This Works
+
+The wizard created three things your AI assistant uses:
+- **FORGE.md** — your project's "control panel" (team, skills, preferences)
+- **forge-memory/** — decisions, patterns, and conventions from this session
+- **cookbook/** — ready-to-use code recipes for your stack
+
+When you say "Read FORGE.md and let's start building," your AI loads all of this
+context in one go. It's like handing a new team member a complete onboarding document.
 
 ---
 

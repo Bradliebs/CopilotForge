@@ -172,3 +172,21 @@ This is just markdown. Change anything you want:
 **Editing FORGE.md is safe** — it's a reference file. Changes here don't break your agents or recipes. They just update what Copilot knows about your project.
 
 CopilotForge reads this file to understand your project. The more accurate it is, the better your agents work.
+
+---
+
+## What's Next
+
+Your project is ready. Here's how to start building:
+
+1. **Start building** — Copy this prompt and give it to your AI assistant:
+   > Read FORGE.md and help me build {{first_goal}}.
+
+2. **Add features** — When you need something new, just describe it:
+   > I need user authentication with email/password login.
+
+3. **Check your memory** — Your AI reads `forge-memory/` automatically. Past decisions carry forward.
+
+4. **Edit this file** — FORGE.md is your control panel. Add agents, change skills, adjust preferences — all in plain markdown.
+
+💡 **You never need to start over.** Every conversation builds on the last one.

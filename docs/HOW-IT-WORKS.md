@@ -63,6 +63,7 @@ The metadata includes trigger phrases — words you can say to activate the wiza
 4. **Detects your stack** — Scans manifest files (`package.json`, `requirements.txt`, `go.mod`, `.csproj`) to identify your frameworks.
 5. **Generates files** — Creates skills, agents, recipes, memory files, and the FORGE.md control panel.
 6. **Reports results** — Shows a summary of everything that was created.
+7. **Outputs a build-transition prompt** — After scaffolding, the wizard outputs a ready-to-use prompt you can copy into any AI assistant. This bridges the gap between describing your project and building it — no context re-entry needed.
 
 ### Why it's just a markdown file
 
