@@ -115,6 +115,16 @@ This bridges the gap between describing your project and actually building it.
 
 ---
 
+## Not Sure Where to Start?
+
+| I want to... | Go here |
+|--------------|---------|
+| **Set up my project with AI** | [Quick Start](#quick-start) (above) — one command does everything |
+| **Browse code recipes** | [Cookbook Cheatsheet](cookbook/CHEATSHEET.md) — find a recipe by goal |
+| **Understand what I actually need** | [What Should I Use?](docs/WHAT-TO-USE.md) — pick your path |
+| **Follow a step-by-step tutorial** | [Getting Started](docs/GETTING-STARTED.md) — full walkthrough |
+| **Understand how it works inside** | [How It Works](docs/HOW-IT-WORKS.md) — the technical details |
+
 ## Installation
 
 | Method | Command | Best For |

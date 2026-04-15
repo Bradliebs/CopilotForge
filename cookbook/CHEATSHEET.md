@@ -25,6 +25,7 @@
 | **Visualize PR activity** | PR Visualization | `pr-visualization.ts` / `.py` |
 | **Add Copilot CLI hooks** | Copilot Hooks | `copilot-hooks.ts` / `.py` |
 | **Run autonomous experiments** | Auto-Research | `auto-research.ts` / `.py` |
+| **Build a personal knowledge base** | Knowledge Wiki | `knowledge-wiki.ts` / `.py` |
 | **Build an autonomous dev loop** | Ralph Loop | `ralph-loop.ts` / `.py` |
 | **See delegation in action** | Delegation Example | `delegation-example.ts` |
 | **Create custom skills** | Skill Creation | `skill-creation-example.ts` |
@@ -145,6 +146,45 @@ These recipes show advanced patterns. Build custom tools.
     - What: Create SKILL.md files programmatically
     - When: Generating skills for new domains
     - Files: `skill-creation-example.ts` (TypeScript only)
+
+---
+
+## What Are These? (Plain English)
+
+Not sure what some of these recipes are? Here's what they do in everyday terms:
+
+| Recipe | Think of it as... |
+|--------|-------------------|
+| **Hello World** | Your first "it works!" moment — like turning on a new gadget for the first time |
+| **Ralph Loop** | A robot that works through your TODO list while you sleep — picks a task, does it, moves on |
+| **Auto-Research** | A tireless experimenter — tries changes to your code, keeps what works, throws away what doesn't |
+| **Knowledge Wiki** | Your personal Wikipedia — you feed it articles and notes, it organizes everything and connects the dots |
+| **MCP Server** | A custom toolbox for AI — lets your AI assistant use tools YOU built (search files, look up data, etc.) |
+| **Copilot Hooks** | Automatic actions during AI sessions — like security cameras that log what happens and block dangerous commands |
+| **Blog Writer** | Turns your code changes into blog posts — reads your PRs and writes about what you built |
+| **Template Creator** | A document factory — generates README files, issue templates, and project docs in bulk |
+| **PR Visualization** | A dashboard for your pull requests — shows charts of what's open, how old they are, who's reviewing |
+| **Delegation Example** | A behind-the-scenes look at how AI agents hand off work to each other (for the curious) |
+
+> 💡 **Still confused?** Every recipe has a header comment that explains exactly what it does, when to use it, and how to run it. Just open the file and read the top.
+
+---
+
+## When Would I Use X vs Y?
+
+**auto-research vs ralph-loop?**
+- Use **auto-research** when you want to *optimize* something — make code faster, find better settings, improve a score
+- Use **ralph-loop** when you want to *build* things — work through a task list, implement features, fix bugs
+
+**knowledge-wiki vs forge-memory?**
+- **knowledge-wiki** is for YOU — a personal research tool for any topic (articles, papers, notes)
+- **forge-memory** is for your PROJECT — it remembers coding decisions so the AI wizard gets smarter over time
+- They're different tools for different jobs. You might use both or neither.
+
+**session-example vs multiple-sessions vs persisting-sessions?**
+- **session-example**: One conversation at a time (start here)
+- **multiple-sessions**: Many conversations at once (like a support desk handling multiple customers)
+- **persisting-sessions**: Save conversations and come back to them later (like chat history)
 
 ---
 

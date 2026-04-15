@@ -11,6 +11,13 @@
 
 ---
 
+> ### 📍 Is This the Right Guide for You?
+>
+> - **Want a quick overview first?** → [README](../README.md)
+> - **Just want to browse code recipes?** → [Cookbook Cheatsheet](../cookbook/CHEATSHEET.md)
+> - **Not sure what you need?** → [What Should I Use?](WHAT-TO-USE.md)
+> - **Ready for a full walkthrough? Keep reading!** This guide walks you through setting up CopilotForge on a real project, step by step.
+
 ## Table of Contents
 
 - [The Example Project](#the-example-project)

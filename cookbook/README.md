@@ -51,6 +51,8 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 
 ### MCP Integration
 
+> 🔧 **What's MCP?** A way to give AI assistants custom tools — like file search, data lookup, or status checks. Think of it as a plugin system for AI.
+
 | Recipe | Language | What It Does |
 |--------|----------|--------------|
 | [`mcp-server.ts`](./mcp-server.ts) | TypeScript | MCP server with tools (file search, data lookup, status check), Zod validation |
@@ -100,6 +102,8 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 
 ### Blog & Discussion Writer
 
+> ✍️ **What's the Blog Writer?** A multi-step pipeline that reads your PRs and code changes, then writes blog posts about them. Great for developer blogs and release notes.
+
 | Recipe | Language | What It Does |
 |--------|----------|--------------|
 | [`blog-writer.ts`](./blog-writer.ts) | TypeScript | Multi-step blog generator — brainstorm topics from PRs/issues, outline, draft, and refine |
@@ -128,6 +132,8 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 
 ### Copilot CLI Hooks
 
+> 🔗 **What are Hooks?** Automatic commands that run during AI sessions — like logging what happened, blocking dangerous operations, or sending alerts. Think of them as event triggers.
+
 | Recipe | Language | What It Does |
 |--------|----------|--------------|
 | [`copilot-hooks.ts`](./copilot-hooks.ts) | TypeScript | Generate hooks.json + scripts for session logging, safety checks, and audit trails |
@@ -135,12 +141,16 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 
 ### Auto-Research (Autonomous Experiments)
 
+> 🧪 **What's Auto-Research?** An AI that experiments on your code automatically — tries changes, measures results, keeps improvements. Inspired by [Karpathy's autoresearch](https://github.com/karpathy/autoresearch).
+
 | Recipe | Language | What It Does |
 |--------|----------|--------------|
 | [`auto-research.ts`](./auto-research.ts) | TypeScript | Autonomous experiment loop — modify code, evaluate, keep/discard, log results. Inspired by Karpathy's autoresearch |
 | [`auto-research.py`](./auto-research.py) | Python | Same auto-research harness in Python |
 
 ### Knowledge Wiki (Personal Knowledge Base)
+
+> 📚 **What's a Knowledge Wiki?** A personal encyclopedia that an AI builds and maintains for you. Drop in articles, notes, or documents — it organizes everything with cross-references. Inspired by [Karpathy's wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
 
 | Recipe | Language | What It Does |
 |--------|----------|--------------|
