@@ -10,6 +10,30 @@ Comprehensive remediation and QA validation for v1.0 release. All items resolved
 
 ---
 
+### 2026-04-16: Decision: CLI `init` Defaults to Full Scaffold
+
+**Date:** 2026-04-16  
+**Author:** Neo (Developer)  
+**Status:** Implemented  
+
+Users running `npx copilotforge init` for the first time only got 2 files (SKILL.md + reference.md). The full scaffold required `--full`, but nobody knew that flag existed. First impressions matter — a sparse output made CopilotForge look incomplete.
+
+**Decision:** Flip the default — `init` now creates the full scaffold (10 files including a new `docs/GETTING-STARTED.md`). A `--minimal` flag preserves the old 2-file behavior for advanced users who want only the planner skill.
+
+**Rationale:**
+- Principle of least surprise: Users expect `init` to set up everything they need
+- Discoverability: The `--full` flag was invisible to new users
+- No breaking change: All existing code paths preserved; only the flag logic inverted
+- Added value: New `GETTING_STARTED_MD` template gives users immediate orientation
+
+**Files Changed:**
+- `cli/src/init.js` — `--full` → `--minimal` flag logic, updated success output
+- `cli/src/templates.js` — Added `GETTING_STARTED_MD` template
+- `cli/bin/copilotforge.js` — Updated help text
+- `cli/README.md` — Updated documentation
+
+---
+
 ### 2026-04-16: Decision: Fixed Phase 8 Wizard Question Count References
 
 **Date:** 2026-04-16  
