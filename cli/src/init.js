@@ -24,7 +24,7 @@ const CORE_FILES = [
   path.join('.github', 'skills', 'planner', 'reference.md'),
 ];
 
-// Extra files installed by `init --full`
+// Extra files installed by default (skipped with --minimal)
 const FULL_FILES = [
   { dest: 'FORGE.md', content: templates.FORGE_MD },
   {
@@ -54,7 +54,7 @@ const FULL_FILES = [
 ];
 
 async function run(args) {
-  const full = args.includes('--full');
+  const minimal = args.includes('--minimal');
   const cwd = process.cwd();
 
   banner();
@@ -86,8 +86,8 @@ async function run(args) {
     createdFiles.push(rel);
   }
 
-  // --full: write additional template files
-  if (full) {
+  // Default: write all template files (skip with --minimal)
+  if (!minimal) {
     console.log();
     for (const entry of FULL_FILES) {
       const dest = path.join(cwd, entry.dest);
@@ -98,6 +98,16 @@ async function run(args) {
         success(`Created ${entry.dest}`);
         createdFiles.push(entry.dest);
       }
+    }
+
+    // Create getting-started guide
+    const gsDest = path.join(cwd, 'docs', 'GETTING-STARTED.md');
+    if (exists(gsDest)) {
+      warn('Skipped docs/GETTING-STARTED.md (already exists)');
+    } else {
+      writeFile(gsDest, templates.GETTING_STARTED_MD);
+      success('Created docs/GETTING-STARTED.md');
+      createdFiles.push(path.join('docs', 'GETTING-STARTED.md'));
     }
   }
 
@@ -125,10 +135,11 @@ async function run(args) {
   info('What to do next:');
   info(`${colors.bold('1.')} Open your AI assistant (GitHub Copilot Chat, Claude Code, etc.)`);
   info(`${colors.bold('2.')} Say: ${colors.cyan('"set up my project"')}`);
-  info(`${colors.bold('3.')} Answer 5 quick questions about what you're building`);
-  info(`${colors.bold('4.')} It will create skills, agents, and recipes for your project!`);
+  info(`${colors.bold('3.')} Answer a few questions about what you're building`);
+  info(`${colors.bold('4.')} Your AI assistant creates skills, agents, and recipes — customized for your stack!`);
   console.log();
-  info(`${colors.dim('\uD83D\uDCD6 Full guide: docs/GETTING-STARTED.md')}`);
+  info(`${colors.dim('\uD83D\uDCD6 Quick guide: docs/GETTING-STARTED.md')}`);
+  info(`${colors.dim('\uD83D\uDCCB Control panel: FORGE.md')}`);
   separator();
 }
 

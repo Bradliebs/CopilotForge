@@ -18,7 +18,7 @@ Find yourself in this table. Follow your path. Ignore everything else.
 | I am... | Start here | Skip everything else |
 |---------|-----------|---------------------|
 | **A total beginner** who's never used AI coding tools | [README Quick Start](../README.md#quick-start) → then try the `hello-world` recipe | Agents, memory, advanced recipes |
-| **A developer with a project** who wants AI help | **`npx @bradliebs/copilotforge init`** → answer a few questions → done | The wizard picks everything for you |
+| **A developer with a project** who wants AI help | **`npx copilotforge init`** → answer a few questions → done | The wizard picks everything for you |
 | **A developer who just wants code recipes** | [cookbook/CHEATSHEET.md](../cookbook/CHEATSHEET.md) | Skills, agents, and memory entirely |
 | **Someone interested in AI research / experiments** | `auto-research` + `knowledge-wiki` recipes | You don't need the wizard or agents |
 | **A team lead** setting up AI for a team | Full [GETTING-STARTED.md](GETTING-STARTED.md) walkthrough | You'll use everything — no shortcuts |
@@ -36,7 +36,7 @@ What do you want to do?
 │   └─ → cookbook/CHEATSHEET.md (pick a recipe, run it)
 │
 ├─ "Set up AI help for my project"
-│   └─ → npx @bradliebs/copilotforge init (the wizard handles everything)
+│   └─ → npx copilotforge init (the wizard handles everything)
 │
 ├─ "Run experiments / optimize code automatically"
 │   └─ → cookbook/auto-research.ts (or .py)
@@ -121,7 +121,7 @@ This is your permission slip to skip things. Seriously.
 
 Three safe starting points — pick any one:
 
-1. **Just run the wizard.** Type `npx @bradliebs/copilotforge init` and answer the questions. It figures everything out.
+1. **Just run the wizard.** Type `npx copilotforge init` and answer the questions. It figures everything out.
 2. **Try the simplest recipe.** Open `cookbook/hello-world.ts` (or `.py`). Copy it. Run it. See what happens.
 3. **Ask your AI assistant.** Paste this into your AI chat: *"Read FORGE.md and help me get started with CopilotForge."*
 

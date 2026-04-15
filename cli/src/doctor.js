@@ -21,7 +21,7 @@ function run() {
     success('.github/skills/planner/SKILL.md exists');
     checks++;
   } else {
-    warn('.github/skills/planner/SKILL.md not found (run: npx @bradliebs/copilotforge init)');
+    warn('.github/skills/planner/SKILL.md not found (run: npx copilotforge init)');
     issues++;
   }
 
@@ -29,7 +29,7 @@ function run() {
     success('.github/skills/planner/reference.md exists');
     checks++;
   } else {
-    warn('.github/skills/planner/reference.md not found (run: npx @bradliebs/copilotforge init)');
+    warn('.github/skills/planner/reference.md not found (run: npx copilotforge init)');
     issues++;
   }
 
@@ -82,7 +82,7 @@ function run() {
     );
   } else {
     info(
-      `${colors.yellow('Status: Incomplete')} \u2014 run ${colors.cyan('npx @bradliebs/copilotforge init')} first`
+      `${colors.yellow('Status: Incomplete')} \u2014 run ${colors.cyan('npx copilotforge init')} first`
     );
   }
 

@@ -8,7 +8,7 @@ CopilotForge scaffolds [GitHub Copilot](https://github.com/features/copilot) ski
 
 ```bash
 cd your-project
-npx @bradliebs/copilotforge init
+npx copilotforge init
 ```
 
 Then open your AI assistant (GitHub Copilot Chat, Claude Code, etc.) and say:
@@ -21,24 +21,19 @@ Answer a few questions and CopilotForge generates a complete Copilot-ready struc
 
 | Command | Description |
 |---------|-------------|
-| `npx @bradliebs/copilotforge init` | Set up CopilotForge in your project |
-| `npx @bradliebs/copilotforge init --full` | Set up with starter templates included |
-| `npx @bradliebs/copilotforge doctor` | Check if setup is correct |
-| `npx @bradliebs/copilotforge uninstall` | Remove CopilotForge files |
-| `npx @bradliebs/copilotforge --version` | Show version |
+| `npx copilotforge init` | Set up CopilotForge in your project (full scaffold) |
+| `npx copilotforge init --minimal` | Set up with planner skill only (2 files) |
+| `npx copilotforge doctor` | Check if setup is correct |
+| `npx copilotforge uninstall` | Remove CopilotForge files |
+| `npx copilotforge --version` | Show version |
 
 ## What It Does
 
-The `init` command copies two files into your project:
+The `init` command scaffolds the full CopilotForge structure into your project:
 
 ```
 .github/skills/planner/SKILL.md       ← The wizard skill
 .github/skills/planner/reference.md   ← Reference material
-```
-
-With `--full`, you also get starter templates:
-
-```
 FORGE.md                              ← Project control panel
 .copilot/agents/planner.md            ← Planner agent
 forge-memory/decisions.md             ← Architecture decisions
@@ -46,13 +41,21 @@ forge-memory/patterns.md              ← Coding patterns
 forge-memory/preferences.md           ← User preferences
 cookbook/hello-world.ts                ← Starter recipe (TypeScript)
 cookbook/hello-world.py                ← Starter recipe (Python)
+docs/GETTING-STARTED.md               ← Quick-start guide
+```
+
+With `--minimal`, you get only the planner skill (2 files):
+
+```
+.github/skills/planner/SKILL.md       ← The wizard skill
+.github/skills/planner/reference.md   ← Reference material
 ```
 
 ## How It Works
 
-1. **CLI copies files** — `npx @bradliebs/copilotforge init` puts the planner skill into your repo
+1. **CLI scaffolds files** — `npx copilotforge init` puts the full structure into your repo
 2. **Wizard runs in chat** — Open Copilot Chat and say "set up my project"
-3. **6 questions** — Project name, stack, memory prefs, testing prefs, skill level, extras shopping list
+3. **A few questions** — Project name, stack, memory prefs, testing prefs, skill level, extras shopping list
 4. **Full scaffolding** — Skills, agents, memory, and cookbook recipes generated for your stack
 
 ## Zero Dependencies

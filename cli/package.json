@@ -1,5 +1,5 @@
 {
-  "name": "@bradliebs/copilotforge",
+  "name": "copilotforge",
   "version": "1.0.0",
   "description": "One command to set up AI-powered coding assistants in any project",
   "bin": {
@@ -27,9 +27,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Bradliebs/CopilotForge"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
   },
   "license": "MIT",
   "engines": {

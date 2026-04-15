@@ -72,7 +72,7 @@ Let's add CopilotForge to it.
 ### Option A — Quick Install (Recommended)
 
 ```bash
-npx @bradliebs/copilotforge init
+npx copilotforge init
 ```
 
 Done! This copies everything you need into your project automatically.
