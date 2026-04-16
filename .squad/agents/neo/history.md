@@ -39,3 +39,21 @@ Separated specialist agent templates from user-facing scaffolding. Moved interna
 - **Ralph Loop + plan template added to CLI init (2026-04-16):** Added 3 new embedded templates — RALPH_LOOP_TS (~100 lines), RALPH_LOOP_PY (~107 lines), IMPLEMENTATION_PLAN_MD. These are concise starter versions of the full cookbook recipes, with TODO markers where users plug in real logic. The plan template uses the `- [ ] task-id — Title` format that the ralph-loop parsers expect. Doctor now notes IMPLEMENTATION_PLAN.md as optional. Total embedded templates: 11. Key lesson: template literals containing TS/PY backticks and `${}` syntax require careful JS escaping — a Python build script was cleaner than manual string editing.
 
 - **Status command — Terminal Command Center (2026-04-16):** Created `cli/src/status.js` (~270 lines) — a zero-dependency terminal dashboard that reads CopilotForge project files and displays a unified status view. Scans IMPLEMENTATION_PLAN.md (task progress), forge-memory/ (decisions/patterns/preferences counts via `##` headings), .github/skills/ (SKILL.md dirs), .copilot/agents/ (.md files), cookbook/ (file count), and git (branch, today's commits, last commit time). Every section degrades gracefully to a "not found" message. Uses the existing utils.js banner/colors/separator pattern. Added `status` case to copilotforge.js router and help text. Inspired by command-center-lite — personal dashboard concept adapted for terminal-first workflows. Key pattern: consistent column alignment via a pad() helper that left-pads all emoji+label combos to LABEL_W characters.
+
+## 2026-04-16 15:58 - Command Center Build
+
+Built Electron dashboard at C:\AI Projects\copilotforge-command-center
+Build successful, ready for testing.
+
+
+## 2026-04-16T16:08:21Z — Command Center build complete
+
+Built CopilotForge Command Center at C:\AI Projects\copilotforge-command-center.
+- 6 widgets: RalphWidget, PlanWidget, SquadWidget, GitWidget, MemoryWidget, NotesWidget
+- electron/watcher.cjs + electron/readers.cjs (file parsing + live watch)
+- IPC: forge:selectDirectory, getData, pauseRalph, resumeRalph, appendMemory, onUpdate
+- Fixed: removed old WorkIQ/ElevenLabs/GitHub integration requires from main.cjs
+- Fixed: stdio:'pipe' on git execSync to suppress stderr noise
+- Fixed: merged two app.whenReady() calls into one
+- Committed as 93179e5 on copilotforge-command-center repo
+- Dev command: npm run dev:electron
