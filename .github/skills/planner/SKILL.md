@@ -209,6 +209,9 @@ If the user skips or says nothing, default to **beginner**.
 > | 📋 **Template factory** | Generates README files, issue templates, and project docs in bulk |
 > | 📊 **PR dashboard** | Charts showing what pull requests are open, how old they are, who's reviewing |
 > | 🏠 **Command center** | A terminal dashboard showing your project at a glance — plan progress, skills, agents, git status, all in one view |
+> | 🏗️ **Copilot Studio** | Build enterprise agents using Copilot Studio's VS Code extension — clone, edit YAML, sync to cloud. Requires a Power Platform environment |
+> | 💻 **Code Apps** | Create Power Apps with React and TypeScript code — full IDE, Power Platform connectors, publish with one command |
+> | 🧩 **Custom agents** | Create `.agent.md` custom agent profiles for GitHub Copilot — define tools, MCP servers, and specialized prompts |
 >
 > Type the ones you want (e.g., "task automation, wiki") or say **"none"** to skip.
 > *(You can always add these later — see `cookbook/CHEATSHEET.md`)*
@@ -216,7 +219,7 @@ If the user skips or says nothing, default to **beginner**.
 **Default suggestions by experience level** (from Question 5):
 - **beginner** → Suggest "none" with reassurance: *"These are optional — I'd recommend starting simple. You can always add them later."*
 - **intermediate** → Suggest "task automation" as a starting point: *"Task automation pairs well with most projects. Want to add it? Command center is also popular — shows project status at a glance."*
-- **advanced** → Suggest "task automation, auto-experiments": *"These two are popular with experienced devs. Want them?"*
+- **advanced** → Suggest "task automation, auto-experiments, custom agents": *"These three are popular with experienced devs. Custom agents let you create specialized Copilot profiles. Want them?"*
 
 If the user skips or says nothing, default to **none** (no extras).
 
@@ -392,6 +395,9 @@ Generate code recipes based on the project's detected stack. Recipes are copy-pa
 | Blog writer | PR-to-blog pipeline — reads code changes, writes blog posts | TypeScript, Python |
 | Template factory | Document generator — README, issue templates, project docs | TypeScript, Python |
 | PR dashboard | Pull request analytics — charts, age tracking, reviewer stats | TypeScript, Python |
+| Copilot Studio | Enterprise agent builder — clone, edit YAML, sync to Copilot Studio | Guide + YAML example |
+| Code Apps | Power Apps with React/TypeScript — scaffold, connect, publish | TypeScript + Guide |
+| Custom agents | GitHub Copilot `.agent.md` profiles — tools, MCP, specialized prompts | Guide + Example |
 
 **How recipes are selected:**
 
@@ -412,6 +418,9 @@ The goal is: every recipe matches something you actually use. No generic filler.
 - Template factory → `template-creator.{ext}`
 - PR dashboard → `pr-visualization.{ext}`
 - Command center → `command-center.{ext}`
+- Copilot Studio → `copilot-studio-guide.md` + `copilot-studio-agent.yaml`
+- Code Apps → `code-apps-guide.md` + `code-apps-setup.ts`
+- Custom agents → `copilot-agents-guide.md` + `copilot-agents-example.agent.md`
 
 Extras recipes are only generated if explicitly selected. They are never auto-included.
 
