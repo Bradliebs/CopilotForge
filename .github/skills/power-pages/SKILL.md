@@ -29,6 +29,19 @@ You want to build a website that external users (customers, partners, or the pub
 - Power Platform environment with Dataverse enabled
 - A Dataverse table containing the data or content the site will display (e.g., a Products table, a FAQ table, or a case intake form)
 
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 ## What Gets Generated
 - `.github/skills/power-pages/SKILL.md` — this file; Power Pages site design conventions and Liquid templating patterns
 - `.copilot/agents/studio-agent.md` — agent definition scoped to Path I with Power Pages and Dataverse preamble

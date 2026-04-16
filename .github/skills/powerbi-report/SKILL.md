@@ -29,6 +29,19 @@ You have data in a database, file, or online service and want to turn it into a 
 - Power BI Desktop installed (free download from [powerbi.microsoft.com](https://powerbi.microsoft.com)) — recommended for data modeling
 - Access to your data source (database connection string, file path, or API credentials)
 
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 ## What Gets Generated
 - `.github/skills/powerbi-report/SKILL.md` — this file; data model design conventions and DAX formula patterns
 - `.copilot/agents/powerbi-agent.md` — agent definition pre-wired to this skill

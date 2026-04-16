@@ -29,6 +29,19 @@ You want a custom screen-based app — forms, galleries, navigation — with a b
 - Power Platform environment (created by your admin or your own developer environment — free developer environments are available at [make.powerapps.com](https://make.powerapps.com))
 - Basic familiarity with Power Apps Studio (drag-and-drop canvas)
 
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 ## What Gets Generated
 - `.github/skills/canvas-agent/SKILL.md` — this file; canvas app design patterns and Power Fx formula conventions
 - `.copilot/agents/canvas-agent.md` — agent definition pre-wired to this skill

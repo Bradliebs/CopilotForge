@@ -29,6 +29,19 @@ You want employees to ask questions about company documents stored in SharePoint
 - SharePoint administrator access (or site collection administrator on the target site)
 - Teams administrator access for deploying the agent to Teams channels
 
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 ## What Gets Generated
 - `.github/skills/sharepoint-agent/SKILL.md` — this file; SharePoint knowledge source configuration and Teams deployment patterns
 - `.copilot/agents/studio-agent.md` — agent definition scoped to Path H with SharePoint knowledge source preamble

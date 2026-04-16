@@ -31,6 +31,19 @@ This skill serves two purposes:
 **This skill never asks questions.** It reads the FORGE-CONTEXT block, applies the routing table, and either writes a `BUILD_PATH` or surfaces a single tiebreaker question when the answer is genuinely ambiguous.
 
 ---
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 
 ## Section 1 — Routing Table
 

@@ -31,6 +31,19 @@ You are a developer comfortable with TypeScript who wants to build a custom UI c
 - VS Code with the Power Platform Tools extension (recommended for IntelliSense and deployment shortcuts)
 - Basic TypeScript knowledge (interfaces, classes, and type annotations)
 
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 ## What Gets Generated
 - `.github/skills/pcf-component/SKILL.md` — this file; PCF lifecycle conventions and TypeScript interface requirements
 - `.copilot/agents/pcf-agent.md` — agent definition pre-wired to this skill

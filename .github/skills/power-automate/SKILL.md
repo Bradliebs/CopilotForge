@@ -29,6 +29,19 @@ You want to automate a repeating business process — like routing invoice appro
 - Power Platform environment
 - AI Builder add-on credits (required for AI Builder models — ask your Microsoft 365 admin to confirm availability)
 
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 ## What Gets Generated
 - `.github/skills/power-automate/SKILL.md` — this file; flow design patterns and trigger selection guide
 - `.copilot/agents/automate-agent.md` — agent definition pre-wired to this skill

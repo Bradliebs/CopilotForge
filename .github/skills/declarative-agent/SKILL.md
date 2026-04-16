@@ -29,6 +29,19 @@ You have a Microsoft 365 Copilot license and want to add a custom agent that kno
 - Teams administrator access (or permission from your admin to sideload apps)
 - Familiarity with JSON is helpful but not required
 
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 ## What Gets Generated
 - `.github/skills/declarative-agent/SKILL.md` — this file; declarative agent manifest conventions and knowledge source configuration
 - `.copilot/agents/declarative-agent.md` — agent definition pre-wired to this skill

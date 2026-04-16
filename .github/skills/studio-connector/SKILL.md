@@ -30,6 +30,19 @@ You already have (or are building) a Copilot Studio agent and want it to call an
 - An OpenAPI (Swagger) 2.0 spec for the API, or enough documentation to build one
 - Modern browser (Edge or Chrome recommended)
 
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 ## What Gets Generated
 - `.github/skills/studio-connector/SKILL.md` — this file; connector authoring conventions and authentication patterns
 - `.copilot/agents/studio-agent.md` — agent definition including connector action invocation guidance

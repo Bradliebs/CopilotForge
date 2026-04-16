@@ -39,6 +39,19 @@ Compass runs between Question 1 and specialist delegation. It classifies signals
 | J | Developer Project | false |
 
 ---
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 
 ## Instructions
 

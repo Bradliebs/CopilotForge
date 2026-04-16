@@ -41,6 +41,19 @@ When a user says "run the plan" (or any trigger above), you become an autonomous
 - A summary logged to `forge-memory/decisions.md` (if the forge-memory directory exists)
 
 ---
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 
 ## Instructions
 

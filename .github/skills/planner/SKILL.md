@@ -55,6 +55,19 @@ FORGE.md                 ← human-readable control panel
 ```
 
 ---
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 
 ## Instructions
 
@@ -111,6 +124,40 @@ Present a context summary to the user:
   - **Choice 1:** Keep stored `BUILD_PATH` and `PATH_NAME`. Skip path detection. Proceed to Step 2 with pre-populated answers.
   - **Choice 2:** Clear stored `BUILD_PATH`. Proceed to Q1, then run path detection on the new answer.
   - **Choice 3:** Clear all forge-memory. Run the full first-time wizard from Step 1.
+
+### Path-Change Conflict Detection
+
+**Trigger:** forge-compass returns a BUILD_PATH that DIFFERS from what's stored in
+forge-memory/preferences.md (BUILD_PATH field).
+
+**When detected**, present this three-choice flow:
+
+> I noticed you may be working on a different type of project than last time.
+> Your memory says **[stored PATH_NAME]** (Path [stored letter]) but your description
+> suggests **[new PATH_NAME]** (Path [new letter]).
+>
+> How would you like to proceed?
+> 1. **Use new path** — Update my memory and scaffold for [new PATH_NAME]
+> 2. **Keep existing path** — Stay with [stored PATH_NAME] as before
+> 3. **Wipe memory** — Start fresh with a clean slate
+
+**On choice 1:** Update FORGE-CONTEXT BUILD_PATH + PATH_NAME. Set PREREQUISITES_CONFIRMED=false.
+Proceed with new path routing. memory-writer will persist the change.
+
+**On choice 2:** Keep stored BUILD_PATH. Proceed with existing path. No FORGE-CONTEXT changes.
+
+**On choice 3:** Wipe forge-memory/preferences.md. Reset all FORGE-CONTEXT fields to defaults.
+Restart wizard from Q1.
+
+**Returning Power Platform user (same path):**
+If stored BUILD_PATH matches detected BUILD_PATH, skip all questions and say:
+> Welcome back! I see you're still working on [PATH_NAME]. Picking up where we left off.
+> Do you want to scaffold something new, or continue an existing project?
+
+**Path J returning user (no Power Platform):**
+If stored BUILD_PATH = J (or missing), and no PP signals detected:
+> Welcome back! Ready to scaffold your next developer project?
+(No path change dialog — this is the existing v1.5.0 flow, unchanged.)
 
 Then skip to Step 2 (Confirm & Generate) with pre-populated answers from memory.
 Only ask questions for information that's **missing** from memory — see Step 1 adaptive logic below.

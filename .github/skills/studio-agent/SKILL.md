@@ -29,6 +29,19 @@ You want to build a chatbot or virtual assistant using Microsoft Copilot Studio'
 - Modern browser (Edge or Chrome recommended)
 - No coding knowledge required
 
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 ## What Gets Generated
 - `.github/skills/studio-agent/SKILL.md` — this file; Copilot Studio authoring conventions and topic design patterns
 - `.copilot/agents/studio-agent.md` — agent definition pre-wired to this skill
