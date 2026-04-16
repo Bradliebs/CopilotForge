@@ -38,7 +38,7 @@ The skills and agents work with any language — they're instructions, not code.
 
 Optional advanced features you can add during wizard setup. They generate specialized code recipes in your `cookbook/` folder:
 
-- **Task automation** (task-loop) — An AI dev loop that works through your TODO list autonomously
+- **Task automation** — The Ralph Loop: an AI dev loop that works through your plan autonomously (powered by `task-loop.{ext}`)
 - **Auto-experiments** (auto-research) — An AI that tries code changes, measures results, keeps improvements
 - **Knowledge wiki** (knowledge-wiki) — Builds a searchable personal wiki from your notes and docs
 - **CLI hooks** (copilot-hooks) — Automatic actions during Copilot CLI sessions (logging, safety checks)
@@ -52,9 +52,9 @@ You don't need any of them to use CopilotForge. They're power-ups you can add an
 
 Run `npx copilotforge status` in your terminal. It reads your plan, memory, skills, agents, and git status, then shows everything in a single dashboard view. For a customizable version, check `cookbook/command-center.ts` — it has a widget system you can extend with your own data sources.
 
-### What is Planning Mode?
+### What is The Ralph Loop?
 
-Planning Mode is what happens when you select "Task automation" in Q6. The wizard generates an `IMPLEMENTATION_PLAN.md` — a checklist of tasks derived from your project description. The task-loop recipe then works through the plan autonomously: pick a task, implement it, validate, commit, repeat. You can edit the plan at any time to add, remove, or reorder tasks. Ralph always re-reads the file from disk, so changes take effect immediately.
+The Ralph Loop is what happens when you select "Task automation" in Q6. The wizard generates an `IMPLEMENTATION_PLAN.md` — a checklist of tasks derived from your project description. The Ralph Loop then works through the plan autonomously: pick a task, implement it, validate, commit, repeat. You can edit the plan at any time to add, remove, or reorder tasks. Ralph always re-reads the file from disk, so changes take effect immediately. (The code that powers it lives in `cookbook/task-loop.ts` / `.py`.)
 
 ### I got an error during scaffolding — what do I do?
 

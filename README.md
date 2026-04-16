@@ -106,12 +106,12 @@ Inspired by [command-center-lite](https://github.com/brittanyellich/command-cent
 
 Want a custom dashboard? See `cookbook/command-center.ts` for an extensible recipe with a widget system you can plug your own data sources into.
 
-### 🔄 Planning Mode — Let AI Build Your Project
+### 🔄 The Ralph Loop — Let AI Build Your Project
 
 Select **Task automation** in Question 6 and CopilotForge generates two things:
 
 1. **`IMPLEMENTATION_PLAN.md`** — A step-by-step build plan derived from your project description
-2. **`cookbook/task-loop.ts`** (or `.py`) — The autonomous execution engine
+2. **`cookbook/task-loop.ts`** (or `.py`) — The Ralph Loop engine (the code that drives it)
 
 The Ralph Loop reads your plan, picks the next task, implements it, runs validation, commits the result, and moves to the next task. No human intervention between steps.
 
@@ -323,7 +323,7 @@ Default is **beginner**.
 
 Optional add-ons you can generate right now or add later:
 
-- **Task automation** (task-loop) — AI works through your TODO list autonomously
+- **Task automation** — The Ralph Loop: AI works through your TODO list autonomously (powered by `task-loop.{ext}`)
 - **Auto-experiments** (auto-research) — AI tries code changes, measures results, keeps improvements
 - **Knowledge wiki** (knowledge-wiki) — Build a searchable personal wiki from your notes
 - **CLI hooks** (copilot-hooks) — Automatic actions during Copilot CLI sessions
@@ -483,7 +483,7 @@ The `cookbook/` folder contains ready-to-use code recipes for common tasks. Each
 | Recipe | Languages | What It Does |
 |--------|-----------|--------------|
 | **hello-world** | TS + PY | Simplest possible Copilot SDK recipe (start here!) |
-| **task-loop** | TS + PY | Autonomous dev loop: pick task → implement → validate → commit |
+| **task-loop** | TS + PY | The Ralph Loop: pick task → implement → validate → commit |
 | **session-example** | TS + PY | Create sessions, handle timeouts, clean up resources |
 | **multiple-sessions** | TS + PY | Managing multiple concurrent Copilot sessions |
 | **persisting-sessions** | TS + PY | Save and restore conversations with custom IDs and history |
@@ -581,7 +581,7 @@ Oracle_Prime/
 ├── cookbook/                     # Code recipe library
 │   ├── README.md                # Recipe index
 │   ├── hello-world.ts/.py       # Start here — simplest Copilot SDK recipe
-│   ├── task-loop.ts/.py          # Autonomous dev loop
+│   ├── task-loop.ts/.py          # The Ralph Loop (autonomous plan executor)
 │   ├── session-example.ts/.py   # Session management
 │   ├── multiple-sessions.ts/.py # Concurrent Copilot sessions
 │   ├── persisting-sessions.ts/.py # Save/restore conversations

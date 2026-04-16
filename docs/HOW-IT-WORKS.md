@@ -12,6 +12,7 @@
 - [What Are Agents?](#what-are-agents)
 - [The Memory System](#the-memory-system)
 - [The Cookbook](#the-cookbook)
+- [The Ralph Loop](#the-ralph-loop)
 - [How Re-Runs Work](#how-re-runs-work)
 - [Architecture Diagram](#architecture-diagram)
 
@@ -59,7 +60,7 @@ The metadata includes trigger phrases — words you can say to activate the wiza
 
 1. **Checks for memory** — Looks for existing `forge-memory/` files. If found, it's a returning user.
 2. **Runs the wizard** — Asks six questions (or fewer, if memory has the answers).
-3. **Confirms with you** — Shows a summary and waits for your "yes."
+3. **Confirms with you** — Shows a summary of what it will create and waits for your go-ahead. (In autonomous mode with --yes, this step is skipped.)
 4. **Detects your stack** — Scans manifest files (`package.json`, `requirements.txt`, `go.mod`, `.csproj`) to identify your frameworks.
 5. **Generates files** — Creates skills, agents, recipes, memory files, and the FORGE.md control panel.
 6. **Reports results** — Shows a summary of everything that was created.
@@ -303,6 +304,34 @@ CopilotForge includes recipes for:
 | Memory reader | ✅ | ✅ |
 
 Go and C# recipes are available for core categories as well.
+
+---
+
+## The Ralph Loop
+
+The Ralph Loop is CopilotForge's autonomous execution engine. When you say "run the plan," here's what happens:
+
+```
+IMPLEMENTATION_PLAN.md
+        ↓
+   Pick next [ ] task
+        ↓
+   Implement it (write real code)
+        ↓
+   Validate (build, tests, lint)
+        ↓
+   Mark [x] done + commit
+        ↓
+   Loop back ↑ until all tasks done
+```
+
+It's called "The Ralph Loop" because Ralph is the tireless worker who never stops until the plan is complete.
+
+**Two ways to run it:**
+1. **Natural language:** Say "run the plan" in your AI assistant (uses the plan-executor skill)
+2. **Code:** Run `npx ts-node cookbook/task-loop.ts` or `python cookbook/task-loop.py`
+
+Both do the same thing — the skill version is conversational, the code version runs headless.
 
 ---
 

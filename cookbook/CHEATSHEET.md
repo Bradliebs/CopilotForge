@@ -19,7 +19,7 @@
 | **Organize files** | File Management | `managing-local-files.ts` / `.py` | 🟡 |
 | **Save/restore conversations** | Persisting Sessions | `persisting-sessions.ts` / `.py` | 🟡 |
 | **Add Copilot CLI hooks** | Copilot Hooks | `copilot-hooks.ts` / `.py` | 🟡 |
-| **Build an autonomous dev loop** | Task Loop | `task-loop.ts` / `.py` | 🔴 |
+| **Build an autonomous dev loop** | The Ralph Loop | `task-loop.ts` / `.py` | 🔴 |
 | **Handle multiple conversations** | Multiple Sessions | `multiple-sessions.ts` / `.py` | 🔴 |
 | **Build an MCP server** | MCP Integration | `mcp-server.ts` / `.py` | 🔴 |
 | **Run autonomous experiments** | Auto-Research | `auto-research.ts` / `.py` | 🔴 |
@@ -30,8 +30,8 @@
 | **Create custom skills** | Skill Creation | `skill-creation-example.ts` | 🔴 |
 | **Generate project templates** | Template Creator | `template-creator.ts` / `.py` | 🔴 |
 | **Write blog posts from code** | Blog Writer | `blog-writer.ts` / `.py` | 🔴 |
-| **I want AI to build my project from a plan** | Task Loop + IMPLEMENTATION_PLAN.md | `cookbook/task-loop.ts` | 🔴 |
-| **Execute my implementation plan** | Say "run the plan" | Plan Executor skill reads IMPLEMENTATION_PLAN.md, implements tasks one by one | — |
+| **I want AI to build my project from a plan** | The Ralph Loop + IMPLEMENTATION_PLAN.md | `cookbook/task-loop.ts` | 🔴 |
+| **Execute my implementation plan** | Say "run the plan" | The Ralph Loop reads IMPLEMENTATION_PLAN.md, implements tasks one by one | — |
 | **Build enterprise agents with Copilot Studio** | Copilot Studio Guide | `copilot-studio-guide.md` + `copilot-studio-agent.yaml` | 🏗️ |
 | **Create Power Apps with React/TypeScript** | Code Apps Guide | `code-apps-guide.md` + `code-apps-setup.ts` | 🏗️ |
 | **Create custom GitHub Copilot agent profiles** | Custom Agents Guide | `copilot-agents-guide.md` + `copilot-agents-example.agent.md` | 🏗️ |
@@ -138,9 +138,9 @@ These recipes show advanced patterns. Build custom tools.
     - When: Building agents that learn and improve autonomously
     - Files: `auto-research.ts` / `.py`
 
-18. **`task-loop`** — Autonomous development cycle
+18. **`task-loop`** — The Ralph Loop (autonomous plan executor)
     - What: Pick task → implement → validate → commit → repeat
-    - When: Building AI-driven continuous development systems
+    - When: Building your project from `IMPLEMENTATION_PLAN.md` autonomously
     - Files: `task-loop.ts` / `.py`
 
 19. **`delegation-example`** — Delegation patterns
@@ -162,7 +162,7 @@ Not sure what some of these recipes are? Here's what they do in everyday terms:
 | Recipe | Think of it as... |
 |--------|-------------------|
 | **Hello World** | Your first "it works!" moment — like turning on a new gadget for the first time |
-| **Task Loop** | A robot that works through your TODO list while you sleep — picks a task, does it, moves on |
+| **The Ralph Loop** | A tireless worker that executes your plan while you sleep — picks a task, does it, moves on |
 | **Auto-Research** | A tireless experimenter — tries changes to your code, keeps what works, throws away what doesn't |
 | **Knowledge Wiki** | Your personal Wikipedia — you feed it articles and notes, it organizes everything and connects the dots |
 | **MCP Server** | A custom toolbox for AI — lets your AI assistant use tools YOU built (search files, look up data, etc.) |
@@ -178,9 +178,9 @@ Not sure what some of these recipes are? Here's what they do in everyday terms:
 
 ## When Would I Use X vs Y?
 
-**auto-research vs task-loop?**
+**auto-research vs The Ralph Loop?**
 - Use **auto-research** when you want to *optimize* something — make code faster, find better settings, improve a score
-- Use **task-loop** when you want to *build* things — work through a task list, implement features, fix bugs
+- Use **The Ralph Loop** (the `task-loop` recipe) when you want to *build* things — work through a plan, implement features, fix bugs
 
 **knowledge-wiki vs forge-memory?**
 - **knowledge-wiki** is for YOU — a personal research tool for any topic (articles, papers, notes)
