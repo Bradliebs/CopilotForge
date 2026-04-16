@@ -5,6 +5,20 @@ All notable changes to CopilotForge are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-04-16
+
+### Added
+- `--yes` / `-y` flag for `init` and `upgrade` — skips all confirmation prompts
+- Autonomous mode: auto-overwrite existing files, auto-commit to git
+- `/yolo` detection in init-mode SKILL.md — AI assistants skip Phase 1 confirmation
+- Flags section in CLI help text
+- 4 new tests for `--yes` flag (46 total)
+- Autonomous Mode section in GETTING-STARTED.md and README.md
+
+### Fixed
+- Git commit error messages now show stderr and helpful tips
+- `upgrade --yes` / `upgrade -y` work as aliases for `--force`
+
 ## [0.5.0] - 2025-04-15
 
 ### Added
@@ -59,7 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial template system
 - Beginner-friendly validation suite
 
-[0.5.0]: https://github.com/copilotforge/copilotforge/releases/tag/v0.5.0
+[1.4.0]: https://github.com/Bradliebs/CopilotForge/releases/tag/v1.4.0
+[0.5.0]: https://github.com/Bradliebs/CopilotForge/releases/tag/v0.5.0
 [0.4.0]: https://github.com/copilotforge/copilotforge/releases/tag/v0.4.0
 [0.3.0]: https://github.com/copilotforge/copilotforge/releases/tag/v0.3.0
 [0.2.0]: https://github.com/copilotforge/copilotforge/releases/tag/v0.2.0

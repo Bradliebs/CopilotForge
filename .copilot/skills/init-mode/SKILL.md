@@ -10,6 +10,16 @@ tools:
     when: "Phase 1 proposal — requires explicit user confirmation"
 ---
 
+## Autonomous Mode
+
+If the user's message contains any of these signals: `/yolo`, `--auto`, `--force`, `--yes`, or the phrase "just do it" — run in **autonomous mode**:
+
+1. **Still run Phase 1** (propose the team) so the user sees what will be created
+2. **Skip the confirmation wait** — proceed directly to Phase 2 without waiting for "yes"
+3. Add a note at the end: *"⚡ Auto-generated team (autonomous mode). Say 'change the team' to modify."*
+
+This lets AI assistants running with /yolo flags scaffold everything in one shot.
+
 ## Context
 
 Init Mode activates when `.squad/team.md` does not exist, or exists but has zero roster entries under `## Members`. The coordinator proposes a team (Phase 1), waits for user confirmation, then creates the team structure (Phase 2).

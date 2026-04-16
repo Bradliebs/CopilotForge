@@ -44,6 +44,8 @@ npx copilotforge init
 That's it. One command copies everything you need into your project.
 
 > 💡 **Want starter templates too?** Use `npx copilotforge init --full` to include example agents, memory files, and starter recipes.
+>
+> **Skip prompts?** Use `npx copilotforge init --yes` for autonomous mode (auto-overwrite, auto-commit, perfect for CI/scripting)
 
 ### Option B — Manual Copy
 

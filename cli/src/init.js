@@ -93,6 +93,7 @@ const FULL_FILES = [
 
 async function run(args) {
   const minimal = args.includes('--minimal');
+  const yes = args.includes('--yes') || args.includes('-y');
   const cwd = process.cwd();
 
   banner();
@@ -102,15 +103,20 @@ async function run(args) {
   // Check for existing planner directory
   const plannerDir = path.join(cwd, '.github', 'skills', 'planner');
   if (exists(plannerDir)) {
-    warn('CopilotForge planner already exists in this project.');
-    const overwrite = await ask('Overwrite existing files?', false);
-    if (!overwrite) {
+    if (yes) {
+      info('Overwriting existing files (--yes)');
       console.log();
-      info('Aborted. No files were changed.');
+    } else {
+      warn('CopilotForge planner already exists in this project.');
+      const overwrite = await ask('Overwrite existing files?', false);
+      if (!overwrite) {
+        console.log();
+        info('Aborted. No files were changed.');
+        console.log();
+        return;
+      }
       console.log();
-      return;
     }
-    console.log();
   }
 
   // Copy core skill files from the package's files/ directory
@@ -153,7 +159,7 @@ async function run(args) {
 
   // Offer to commit if git is available
   if (hasGit() && createdFiles.length > 0) {
-    const commit = await ask('Want to commit these files?', false);
+    const commit = yes || await ask('Want to commit these files?', false);
     if (commit) {
       try {
         gitCommit(createdFiles, 'chore: add CopilotForge planner skill');
@@ -162,6 +168,11 @@ async function run(args) {
       } catch (err) {
         console.log();
         warn(`Git commit failed: ${err.message}`);
+        if (err.stderr) {
+          info(colors.dim(`  git said: ${err.stderr.toString().trim()}`));
+        }
+        info(colors.dim('  Tip: Make sure git user.name and user.email are configured.'));
+        info(colors.dim('  Files were created successfully — you can commit them manually.'));
       }
     }
     console.log();

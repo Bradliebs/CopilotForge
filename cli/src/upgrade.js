@@ -37,7 +37,7 @@ const COOKBOOK_TEMPLATES = [
 
 async function run(args) {
   const dryRun = args.includes('--dry-run');
-  const force = args.includes('--force');
+  const force = args.includes('--force') || args.includes('--yes') || args.includes('-y');
   const cwd = process.cwd();
 
   banner();

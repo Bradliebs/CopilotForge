@@ -23,6 +23,7 @@ Answer a few questions and CopilotForge generates a complete Copilot-ready struc
 |---------|-------------|
 | `npx copilotforge init` | Set up CopilotForge in your project (full scaffold) |
 | `npx copilotforge init --minimal` | Set up with planner skill only (2 files) |
+| `npx copilotforge init --yes` / `-y` | Skip all prompts (autonomous mode, auto-overwrite, auto-commit) |
 | `npx copilotforge doctor` | Check if setup is correct |
 | `npx copilotforge uninstall` | Remove CopilotForge files |
 | `npx copilotforge --version` | Show version |

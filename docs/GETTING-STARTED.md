@@ -37,6 +37,25 @@
 
 ---
 
+## 🚀 Autonomous Mode (No Prompts)
+
+Want to skip all confirmation prompts? Use the `--yes` flag:
+
+```bash
+npx copilotforge init --yes
+```
+
+This will:
+- ✅ Auto-overwrite existing files (no "Overwrite?" prompt)
+- ✅ Auto-commit to git (no "Want to commit?" prompt)
+- ✅ Perfect for scripting, CI, or when using AI assistants with `/yolo` mode
+
+**Short form:** `npx copilotforge init -y`
+
+The same flag works for upgrades: `npx copilotforge upgrade --yes`
+
+---
+
 > 🆕 **Starting from an empty repo?** That works too! Skip ahead to [Step 1](#step-1--add-the-planner-skill) — the wizard handles empty repos automatically. When it asks about your stack, just tell it what language you plan to use (e.g., "Python" or "JavaScript"). No config files needed.
 
 ## The Example Project

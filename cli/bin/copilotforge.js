@@ -81,14 +81,19 @@ function printHelp() {
 
   ${colors.bold('Usage:')}
     npx copilotforge                  Interactive command center (default)
-    npx copilotforge init             Set up CopilotForge in your project (full scaffold)
-    npx copilotforge init --minimal   Set up with planner skill only (2 files)
-    npx copilotforge status           Show project dashboard (command center)
+    npx copilotforge init             Set up CopilotForge in your project
+    npx copilotforge init --minimal   Planner skill only (2 files)
+    npx copilotforge init --yes       Skip all prompts (auto-overwrite, auto-commit)
+    npx copilotforge status           Show project dashboard
     npx copilotforge doctor           Check if setup is correct
-    npx copilotforge upgrade            Update framework files to latest version
+    npx copilotforge upgrade          Update framework files to latest
+    npx copilotforge upgrade --force  Update without confirmation prompts
     npx copilotforge upgrade --dry-run  Preview what would change
     npx copilotforge uninstall        Remove CopilotForge files
     npx copilotforge --version        Show version
+
+  ${colors.bold('Flags:')}
+    --yes, -y     Skip all confirmation prompts (for init and upgrade)
 
   ${colors.bold('Quick start:')}
     cd your-project
