@@ -169,7 +169,7 @@ The wizard shows you a menu of optional advanced features:
 
 | Extra | What it does |
 |-------|-------------|
-| 🔄 **Task automation** (ralph-loop) | AI works through your TODO list — picks a task, does it, moves on |
+| 🔄 **Task automation** (task-loop) | AI works through your TODO list — picks a task, does it, moves on |
 | 🧪 **Auto-experiments** (auto-research) | AI tries code changes, keeps what improves your metrics |
 | 📚 **Knowledge wiki** (knowledge-wiki) | Build a searchable wiki from your notes and articles |
 | 🔗 **CLI hooks** (copilot-hooks) | Auto-actions during AI sessions (logging, safety) |
@@ -185,9 +185,9 @@ The wizard shows you a menu of optional advanced features:
 
 If you picked **Task automation** in Q6, you'll also get:
 - `IMPLEMENTATION_PLAN.md` — your project's build plan (edit this anytime!)
-- `cookbook/ralph-loop.ts` / `.py` — the engine that executes the plan
+- `cookbook/task-loop.ts` / `.py` — the engine that executes the plan
 
-To run the plan: tell your AI assistant "run the plan" or execute the ralph-loop recipe directly.
+To run the plan: tell your AI assistant "run the plan" or execute the task-loop recipe directly.
 
 ---
 

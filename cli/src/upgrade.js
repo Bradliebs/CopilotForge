@@ -24,8 +24,8 @@ const FRAMEWORK_FILES = [
 const COOKBOOK_TEMPLATES = [
   { dest: path.join('cookbook', 'hello-world.ts'), content: templates.HELLO_WORLD_TS },
   { dest: path.join('cookbook', 'hello-world.py'), content: templates.HELLO_WORLD_PY },
-  { dest: path.join('cookbook', 'ralph-loop.ts'), content: templates.RALPH_LOOP_TS },
-  { dest: path.join('cookbook', 'ralph-loop.py'), content: templates.RALPH_LOOP_PY },
+  { dest: path.join('cookbook', 'task-loop.ts'), content: templates.TASK_LOOP_TS },
+  { dest: path.join('cookbook', 'task-loop.py'), content: templates.TASK_LOOP_PY },
   // platform guides
   { dest: path.join('cookbook', 'copilot-studio-guide.md'), content: templates.COPILOT_STUDIO_GUIDE_MD },
   { dest: path.join('cookbook', 'copilot-studio-agent.yaml'), content: templates.COPILOT_STUDIO_AGENT_YAML },

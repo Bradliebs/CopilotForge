@@ -6,7 +6,7 @@ Supporting reference material for the Plan Executor skill. Contains the plan for
 
 ## Plan Format Specification
 
-The `IMPLEMENTATION_PLAN.md` file uses a simple checkbox-based format. This is the same format described in the planner skill (Section 3e) and consumed by the `ralph-loop` recipe.
+The `IMPLEMENTATION_PLAN.md` file uses a simple checkbox-based format. This is the same format described in the planner skill (Section 3e) and consumed by the `task-loop` recipe.
 
 ### Task Line Format
 
@@ -262,13 +262,13 @@ If task 3 fails validation:
 
 ---
 
-## Relationship to ralph-loop Recipe
+## Relationship to task-loop Recipe
 
-The plan-executor skill and the `ralph-loop` recipe (`cookbook/ralph-loop.ts` and `cookbook/ralph-loop.py`) do the same job through different interfaces:
+The plan-executor skill and the `task-loop` recipe (`cookbook/task-loop.ts` and `cookbook/task-loop.py`) do the same job through different interfaces:
 
-| | Plan Executor Skill | ralph-loop Recipe |
+| | Plan Executor Skill | task-loop Recipe |
 |---|---|---|
-| **Interface** | Natural language — say "run the plan" | Code — run `npx ts-node cookbook/ralph-loop.ts` or `python cookbook/ralph-loop.py` |
+| **Interface** | Natural language — say "run the plan" | Code — run `npx ts-node cookbook/task-loop.ts` or `python cookbook/task-loop.py` |
 | **Reads** | `IMPLEMENTATION_PLAN.md` | `IMPLEMENTATION_PLAN.md` |
 | **Task format** | Same (`- [ ] task-id — Title`) | Same (`- [ ] task-id — Title`) |
 | **Execution** | AI implements each task conversationally | Script calls an AI API to implement each task |
@@ -279,5 +279,5 @@ The plan-executor skill and the `ralph-loop` recipe (`cookbook/ralph-loop.ts` an
 Both approaches are interchangeable. If you run three tasks with the skill and then switch to the script, the script picks up where the skill left off (because both read the same `[x]` / `[ ]` markers). The reverse is also true.
 
 Users who want the code version can run:
-- **TypeScript:** `npx ts-node cookbook/ralph-loop.ts`
-- **Python:** `python cookbook/ralph-loop.py`
+- **TypeScript:** `npx ts-node cookbook/task-loop.ts`
+- **Python:** `python cookbook/task-loop.py`

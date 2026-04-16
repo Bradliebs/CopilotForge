@@ -57,7 +57,7 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 
 | # | Recipe | What It Teaches |
 |---|--------|-----------------|
-| 12 | [`ralph-loop`](./ralph-loop.ts) | Autonomous task execution loop — pick, implement, validate, commit |
+| 12 | [`task-loop`](./task-loop.ts) | Autonomous task execution loop — pick, implement, validate, commit |
 | 13 | [`multiple-sessions`](./multiple-sessions.ts) | Multi-agent coordination with concurrent sessions |
 | 14 | [`mcp-server`](./mcp-server.ts) | Build MCP servers that extend Copilot with custom tools |
 | 15 | [`auto-research`](./auto-research.ts) | Automated web research and experiment pipelines |
@@ -88,12 +88,12 @@ The short version: run the CopilotForge wizard (say "set up my project" in your 
 | [`hello-world.ts`](./hello-world.ts) | TypeScript | Simplest Copilot SDK recipe — connect, send one message, print response, disconnect |
 | [`hello-world.py`](./hello-world.py) | Python | Same hello-world pattern in Python |
 
-### 🔴 Ralph Loop (Autonomous Dev Loop)
+### 🔴 Task Loop (Autonomous Dev Loop)
 
 | Recipe | Language | What It Does |
 |--------|----------|--------------|
-| [`ralph-loop.ts`](./ralph-loop.ts) | TypeScript | Autonomous dev loop — pick task, implement, validate, commit, repeat |
-| [`ralph-loop.py`](./ralph-loop.py) | Python | Same ralph-loop pattern in Python |
+| [`task-loop.ts`](./task-loop.ts) | TypeScript | Autonomous dev loop — pick task, implement, validate, commit, repeat |
+| [`task-loop.py`](./task-loop.py) | Python | Same task-loop pattern in Python |
 
 ### 🟢 Session Management
 

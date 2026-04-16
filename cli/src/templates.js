@@ -151,8 +151,8 @@ if __name__ == "__main__":
     main()
 `;
 
-const RALPH_LOOP_TS = `/**
- * ralph-loop.ts — CopilotForge Cookbook Recipe
+const TASK_LOOP_TS = `/**
+ * task-loop.ts — CopilotForge Cookbook Recipe
  *
  * WHAT THIS DOES:
  *   Implements the autonomous dev loop pattern (Ralph Loop): read a plan
@@ -175,7 +175,7 @@ const RALPH_LOOP_TS = `/**
  *
  * HOW TO RUN:
  *   1. Create an IMPLEMENTATION_PLAN.md in your project root (see format below)
- *   2. npx ts-node cookbook/ralph-loop.ts
+ *   2. npx ts-node cookbook/task-loop.ts
  *
  * PREREQUISITES:
  *   - Node.js 18+
@@ -493,8 +493,8 @@ const planFile = join(".", "IMPLEMENTATION_PLAN.md");
 ralphLoop(planFile, maxIterations);
 `;
 
-const RALPH_LOOP_PY = `"""
-ralph-loop.py — CopilotForge Cookbook Recipe
+const TASK_LOOP_PY = `"""
+task-loop.py — CopilotForge Cookbook Recipe
 
 WHAT THIS DOES:
     Implements the autonomous dev loop pattern (Ralph Loop): read a plan
@@ -517,7 +517,7 @@ WHEN TO USE THIS:
 
 HOW TO RUN:
     1. Create an IMPLEMENTATION_PLAN.md in your project root (see format below)
-    2. python cookbook/ralph-loop.py
+    2. python cookbook/task-loop.py
 
 PREREQUISITES:
     - Python 3.10+
@@ -849,7 +849,7 @@ const IMPLEMENTATION_PLAN_MD = `# Implementation Plan
 #
 # HOW IT WORKS:
 #   1. Describe your tasks below (one per line)
-#   2. Run the ralph-loop recipe: npx ts-node cookbook/ralph-loop.ts
+#   2. Run the task-loop recipe: npx ts-node cookbook/task-loop.ts
 #   3. Ralph picks the next [ ] task, implements it, validates, commits, repeats
 #
 # TASK FORMAT:
@@ -1504,8 +1504,8 @@ module.exports = {
   PREFERENCES_MD,
   HELLO_WORLD_TS,
   HELLO_WORLD_PY,
-  RALPH_LOOP_TS,
-  RALPH_LOOP_PY,
+  TASK_LOOP_TS,
+  TASK_LOOP_PY,
   IMPLEMENTATION_PLAN_MD,
   GETTING_STARTED_MD,
   COPILOT_STUDIO_GUIDE_MD,

@@ -38,7 +38,7 @@ The skills and agents work with any language — they're instructions, not code.
 
 Optional advanced features you can add during wizard setup. They generate specialized code recipes in your `cookbook/` folder:
 
-- **Task automation** (ralph-loop) — An AI dev loop that works through your TODO list autonomously
+- **Task automation** (task-loop) — An AI dev loop that works through your TODO list autonomously
 - **Auto-experiments** (auto-research) — An AI that tries code changes, measures results, keeps improvements
 - **Knowledge wiki** (knowledge-wiki) — Builds a searchable personal wiki from your notes and docs
 - **CLI hooks** (copilot-hooks) — Automatic actions during Copilot CLI sessions (logging, safety checks)
@@ -54,7 +54,7 @@ Run `npx copilotforge status` in your terminal. It reads your plan, memory, skil
 
 ### What is Planning Mode?
 
-Planning Mode is what happens when you select "Task automation" in Q6. The wizard generates an `IMPLEMENTATION_PLAN.md` — a checklist of tasks derived from your project description. The ralph-loop recipe then works through the plan autonomously: pick a task, implement it, validate, commit, repeat. You can edit the plan at any time to add, remove, or reorder tasks. Ralph always re-reads the file from disk, so changes take effect immediately.
+Planning Mode is what happens when you select "Task automation" in Q6. The wizard generates an `IMPLEMENTATION_PLAN.md` — a checklist of tasks derived from your project description. The task-loop recipe then works through the plan autonomously: pick a task, implement it, validate, commit, repeat. You can edit the plan at any time to add, remove, or reorder tasks. Ralph always re-reads the file from disk, so changes take effect immediately.
 
 ### I got an error during scaffolding — what do I do?
 

@@ -1,5 +1,5 @@
 """
-ralph-loop.py — CopilotForge Cookbook Recipe
+task-loop.py — CopilotForge Cookbook Recipe
 
 WHAT THIS DOES:
     Implements the autonomous dev loop pattern (Ralph Loop): read a plan
@@ -14,7 +14,7 @@ WHEN TO USE THIS:
 
 HOW TO RUN:
     1. Create an {{PLAN_FILE}} in your project root (see format below)
-    2. python cookbook/ralph-loop.py
+    2. python cookbook/task-loop.py
 
 PREREQUISITES:
     - Python 3.10+

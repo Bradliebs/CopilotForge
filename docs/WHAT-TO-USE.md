@@ -50,7 +50,7 @@ What do you want to do?
 │       memory stats, and git summary — all in one view. No setup needed.
 │
 ├─ "I want AI to build my project from a plan"
-│   └─ → Enable **Task automation** in Q6. Edit `IMPLEMENTATION_PLAN.md` to describe what you want built, then run the ralph-loop recipe. The AI works through tasks autonomously.
+│   └─ → Enable **Task automation** in Q6. Edit `IMPLEMENTATION_PLAN.md` to describe what you want built, then run the task-loop recipe. The AI works through tasks autonomously.
 │
 ├─ "I want to build enterprise agents"
 │   └─ → Copilot Studio Guide (`cookbook/copilot-studio-guide.md`)
@@ -64,7 +64,7 @@ What do you want to do?
 ├─ "I have a plan and want to execute it"
 │   └─ → Say "run the plan" — the Plan Executor skill reads
 │       `IMPLEMENTATION_PLAN.md` and works through tasks autonomously.
-│       See also: `cookbook/ralph-loop.ts` (code version).
+│       See also: `cookbook/task-loop.ts` (code version).
 │
 ├─ "I want to understand how it all fits together"
 │   └─ → docs/HOW-IT-WORKS.md
@@ -87,7 +87,7 @@ Think of it like a kitchen:
 
 > 💡 **Key insight:** You can use recipes without skills or agents. They're completely independent.
 
-### auto-research vs ralph-loop
+### auto-research vs task-loop
 
 **auto-research** — Your AI tries changes to your code, runs tests, keeps improvements, discards failures.
 Like a tireless intern running experiments overnight.
@@ -95,7 +95,7 @@ Like a tireless intern running experiments overnight.
 - Best for: optimization, performance tuning, "make this faster."
 - Example: "Try 20 different caching strategies and keep the fastest one."
 
-**ralph-loop** — Your AI picks a task from a list, implements it, validates it, commits, moves to the next.
+**task-loop** — Your AI picks a task from a list, implements it, validates it, commits, moves to the next.
 Like a junior developer working through a TODO list.
 
 - Best for: knocking out a backlog of small tasks.

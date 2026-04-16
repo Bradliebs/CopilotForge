@@ -1,5 +1,5 @@
 /**
- * ralph-loop.ts — CopilotForge Cookbook Recipe
+ * task-loop.ts — CopilotForge Cookbook Recipe
  *
  * WHAT THIS DOES:
  *   Implements the autonomous dev loop pattern (Ralph Loop): read a plan
@@ -22,7 +22,7 @@
  *
  * HOW TO RUN:
  *   1. Create an IMPLEMENTATION_PLAN.md in your project root (see format below)
- *   2. npx ts-node cookbook/ralph-loop.ts
+ *   2. npx ts-node cookbook/task-loop.ts
  *
  * PREREQUISITES:
  *   - Node.js 18+

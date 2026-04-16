@@ -299,7 +299,7 @@ When the user selects extras in Question 6, generate the corresponding recipe fi
 
 | Extra | Recipe File(s) | Description |
 |-------|---------------|-------------|
-| Task automation | `cookbook/ralph-loop.{ext}` | Autonomous dev loop — reads TODO list, implements tasks, validates, commits |
+| Task automation | `cookbook/task-loop.{ext}` | Autonomous dev loop — reads TODO list, implements tasks, validates, commits |
 | | `IMPLEMENTATION_PLAN.md` | Project-specific task list generated from wizard answers (planning mode) |
 | Auto-experiments | `cookbook/auto-research.{ext}` | Experiment loop — proposes changes, runs eval, tracks metrics in TSV |
 | Knowledge wiki | `cookbook/knowledge-wiki.{ext}` | Wiki builder — init, ingest, search, lint CLI with Obsidian-compatible output |
@@ -389,7 +389,7 @@ When the user selects extras in Question 6, generate the corresponding recipe fi
 
 ### Planning Mode (Task Automation)
 
-- **Planning mode:** When selected, also generates `IMPLEMENTATION_PLAN.md` with project-specific tasks derived from Q1 (description) and Q2 (stack). The ralph-loop recipe consumes this plan.
+- **Planning mode:** When selected, also generates `IMPLEMENTATION_PLAN.md` with project-specific tasks derived from Q1 (description) and Q2 (stack). The task-loop recipe consumes this plan.
 - **Edge case:** If the user already has an IMPLEMENTATION_PLAN.md, ask: "You already have a plan. Want me to add to it, replace it, or leave it alone?"
 
 ---
