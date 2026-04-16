@@ -547,6 +547,27 @@ Real-world scenarios and how CopilotForge handles them:
 
 ---
 
+## Running Your Plan
+
+If you selected **Task Automation** during setup, you'll have an `IMPLEMENTATION_PLAN.md` with tasks ready to go.
+
+Tell your AI assistant:
+
+> "Run the plan"
+
+It will:
+1. Read your plan
+2. Pick the first pending task
+3. Write real code for it
+4. Run tests to make sure it works
+5. Mark it done and commit
+6. Move to the next task — automatically
+
+To resume later: **"continue the plan"**  
+To check progress: **"what's next in the plan"**
+
+---
+
 ## Next Steps
 
 - **Read the recipes:** Browse `cookbook/README.md` for the full recipe index

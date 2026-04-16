@@ -52,6 +52,11 @@ What do you want to do?
 ├─ "I want AI to build my project from a plan"
 │   └─ → Enable **Task automation** in Q6. Edit `IMPLEMENTATION_PLAN.md` to describe what you want built, then run the ralph-loop recipe. The AI works through tasks autonomously.
 │
+├─ "I have a plan and want to execute it"
+│   └─ → Say "run the plan" — the Plan Executor skill reads
+│       `IMPLEMENTATION_PLAN.md` and works through tasks autonomously.
+│       See also: `cookbook/ralph-loop.ts` (code version).
+│
 ├─ "I want to understand how it all fits together"
 │   └─ → docs/HOW-IT-WORKS.md
 │

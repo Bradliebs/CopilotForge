@@ -28,6 +28,7 @@
 | **Build a personal knowledge base** | Knowledge Wiki | `knowledge-wiki.ts` / `.py` |
 | **Build an autonomous dev loop** | Ralph Loop | `ralph-loop.ts` / `.py` |
 | **I want AI to build my project from a plan** | Ralph Loop + IMPLEMENTATION_PLAN.md | `cookbook/ralph-loop.ts` | beginner+ |
+| **Execute my implementation plan** | Say "run the plan" | Plan Executor skill reads IMPLEMENTATION_PLAN.md, implements tasks one by one |
 | **I want to see my project status at a glance** | Command Center | `cookbook/command-center.ts` / `.py` | beginner+ |
 | **See delegation in action** | Delegation Example | `delegation-example.ts` |
 | **Create custom skills** | Skill Creation | `skill-creation-example.ts` |

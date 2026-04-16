@@ -484,6 +484,10 @@ Adjust verbosity based on skill level:
 
 **Also generate `cookbook/ralph-loop.{ext}`** (the recipe file for the user's stack) if not already present. The ralph-loop recipe reads IMPLEMENTATION_PLAN.md and executes tasks autonomously.
 
+**After generating the plan, tell the user:**
+
+> ✅ Plan created with {N} tasks in `IMPLEMENTATION_PLAN.md`. Say **"run the plan"** to start executing tasks autonomously, or review the plan first and edit any tasks you want to change.
+
 **If the user did NOT select "Task automation"**, skip this step entirely. Do not generate IMPLEMENTATION_PLAN.md.
 
 ---

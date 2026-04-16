@@ -126,6 +126,14 @@ Working project with 12 commits, each building on the last
 
 You can also edit the plan manually — add tasks, reorder them, or mark tasks as done. Ralph picks up where you left off.
 
+### The Complete Flow
+
+1. **Describe** — Say "set up my project" and answer six questions
+2. **Generate** — The wizard creates your plan in `IMPLEMENTATION_PLAN.md`  
+3. **Execute** — Say "run the plan" and watch your project get built, task by task
+
+Each task is implemented, validated, and committed automatically. Failed tasks are marked `[!]` so you can review them. Say "continue the plan" to resume where you left off.
+
 ### What You Get
 
 In about a minute, your repo gets a full set of AI-ready files:
