@@ -541,7 +541,7 @@ During scaffolding, memory context is passed to all generation steps via the FOR
 
 The FORGE-CONTEXT block is the inline data contract passed from the Planner to all scaffolding services during Step 3 (writing your skills, setting up your agents, updating memory files, and selecting recipes). It carries all wizard answers plus memory context.
 
-**v1.5.0 core fields (always present):**
+**v1.6.0 core fields (always present):**
 
 | Field | Description |
 |---|---|
@@ -580,7 +580,7 @@ The FORGE-CONTEXT block is the inline data contract passed from the Planner to a
 | I | Power Pages | false |
 | J | Developer Project | false |
 
-**Path J behavior:** If `BUILD_PATH` is missing or `J`, all existing v1.5.0 behavior applies unchanged. Existing users see zero change.
+**Path J behavior:** If `BUILD_PATH` is missing or `J`, all existing pre-v1.6.0 behavior applies unchanged. Existing users see zero change.
 
 **Example — Path A (Copilot Studio Agent):**
 
@@ -592,7 +592,7 @@ EXTENSION_REQUIRED: false
 MS_LEARN_ANCHOR: https://learn.microsoft.com/en-us/microsoft-copilot-studio/
 ```
 
-**Example — Path J (Developer Project, v1.5.0 compatible):**
+**Example — Path J (Developer Project, pre-v1.6.0 compatible):**
 
 ```
 BUILD_PATH: J
