@@ -1,12 +1,12 @@
 # 🔥 CopilotForge
 
-> Describe what you want. Get a fully-configured AI team. No CLI required.
+> One command. A fully-configured AI team in your repo.
 
-CopilotForge turns a plain-English description of your project into a working set of AI-powered tools — all inside your repo. You tell it what you're building, answer a few questions, and it creates everything: coding assistants that know your stack, code review checklists, test helpers, ready-to-use code recipes, and a memory system that gets smarter over time. No install. No command line. Just drop one file into your repo and start talking.
+CopilotForge turns a plain-English description of your project into a working set of AI-powered tools — all inside your repo. You tell it what you're building, answer a few questions, and it creates everything: coding assistants that know your stack, code review checklists, test helpers, ready-to-use code recipes, and a memory system that gets smarter over time.
 
 It creates **skills** (instruction files for your AI), **agents** (AI team members defined in markdown), **recipes** (copy-paste code examples), and a **memory** system (plain-text files that remember your decisions). "Scaffolding" just means auto-generating these files into your project.
 
-**Zero dependencies.** No `npm install`, no `pip install`, no package manager. Copy one folder into your repo and start talking to your AI assistant.
+**The files it creates have zero dependencies.** The skills, agents, and memory files are plain markdown — nothing to install, nothing to run. Node.js is only needed for the `npx copilotforge init` command.
 
 ---
 
@@ -26,7 +26,7 @@ It creates **skills** (instruction files for your AI), **agents** (AI team membe
 - **A code project** — new or existing, any language (even an empty folder works)
 - **Git** — recommended but not required (Git tracks changes to your files; if you don't have it, grab it from [git-scm.com](https://git-scm.com))
 
-That's it. No npm install, no CLI tools, no framework knowledge needed.
+For the one-command path: **Node.js 18+** (just to run `npx copilotforge init`). For the manual copy path: nothing at all.
 
 > 💡 **For cookbook recipes only:** If you want to run the code examples, you'll need Node.js 18+ (for TypeScript recipes) or Python 3.10+ (for Python recipes). CopilotForge itself needs nothing installed.
 
