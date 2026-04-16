@@ -25,6 +25,6 @@
 - **Owner:** Brad Liebs
 - **Stack:** Markdown (SKILL.md, agent definitions), TypeScript/Node.js (cookbook recipes), Git
 - **Phases:** 1) Planner skill ✅, 2) Wizard agent ✅, 3) Cookbook layer ✅, 4) Memory & iteration ✅, 5) Polish & docs ✅, 6) Deep polish ✅, 7) Beginner navigation ✅, 8) Wizard Q6 extras ✅, 9) Squad-inspired upgrades ✅, 10) Interactive Command Center ✅, 11) Autonomy audit ✅, 12) Perfect 10 companion ✅
-- **CLI Version:** 1.5.0
+- **CLI Version:** 1.6.0
 - **Created:** 2026-04-15
 

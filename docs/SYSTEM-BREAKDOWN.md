@@ -502,6 +502,15 @@ The AI team that builds and maintains CopilotForge itself. Uses the Squad framew
 | `log/` | Per-session logs |
 | `templates/` | Format guides for runtime files |
 
+### Squad Tooling (Development Tools)
+
+| File | What it does |
+|------|-------------|
+| `cookbook/ralph-loop.ts` | Autonomous build/plan loop runner. `npx tsx cookbook/ralph-loop.ts [plan\|build] [max_iterations]`. Auto-approves all tool calls. Reads PROMPT_plan.md or PROMPT_build.md per mode. Logs `⚙ toolName` per iteration. Default 50 iterations. |
+| `PROMPT_plan.md` | Planning mode prompt: gap analysis vs SYSTEM-BREAKDOWN.md, writes IMPLEMENTATION_PLAN.md. |
+| `PROMPT_build.md` | Build mode prompt: pick one task, implement, test, commit, exit. One task per iteration. |
+| `AGENTS.md` | Operational guide loaded every iteration: validation commands, commit rules, sacred files, jargon leak rule. |
+
 ### GitHub Workflows (`.github/workflows/`)
 
 | Workflow | What it does |
