@@ -33,10 +33,10 @@ FORGE.md has user-editable sections and generated sections. On re-run:
 - `## 📝 How to Edit This File` — static, but don't touch it
 
 **Regenerate (replace with current data):**
-- `## 👥 Team Roster` — rebuild from agent-writer output
-- `## ⚡ Skills Index` — rebuild from skill-writer output
-- `## 📖 Cookbook Index` — rebuild from cookbook-writer output
-- `## 🧠 Memory Status` — rebuild from memory-writer output
+- `## 👥 Team Roster` — rebuild with current agent definitions
+- `## ⚡ Skills Index` — rebuild with current skill definitions
+- `## 📖 Cookbook Index` — rebuild with current cookbook recipes
+- `## 🧠 Memory Status` — rebuild with current memory status
 - `## 🚀 Quick Actions` — regenerate with current agent names
 
 **How to merge:**
@@ -79,7 +79,7 @@ Patterns accumulate. New patterns get added; existing patterns are never removed
 **On re-run:**
 1. Read existing `patterns.md`.
 2. Parse existing pattern headings (e.g., `### File Naming`, `### API Response Format`).
-3. For each new pattern the memory-writer wants to add:
+3. For each new pattern to add:
    - If a pattern with the same heading already exists: **skip it** (user may have customized it).
    - If no matching heading exists: **append it** to the appropriate section.
 4. Write the updated file.
@@ -94,7 +94,7 @@ Agent definitions are frequently customized by users.
 
 **On re-run:**
 1. List existing files in `.copilot/agents/`.
-2. For each agent the agent-writer wants to create:
+2. For each agent to create:
    - If the file already exists: **skip it entirely**.
    - If the file doesn't exist: **create it**.
 3. Report which agents were skipped and which were created.
@@ -109,7 +109,7 @@ Skills are customizable and may have user edits.
 
 **On re-run:**
 1. List existing skill directories in `.github/skills/`.
-2. For each skill the skill-writer wants to create:
+2. For each skill to create:
    - If the skill directory already exists: **skip it entirely**.
    - If the skill directory doesn't exist: **create it**.
 3. Report which skills were skipped and which were created.
@@ -124,7 +124,7 @@ Cookbook recipes may have been edited or extended by the user.
 
 **On re-run:**
 1. List existing files in `cookbook/`.
-2. For each recipe the cookbook-writer wants to create:
+2. For each recipe to create:
    - If the file already exists: **skip it**.
    - If the file doesn't exist: **create it**.
 3. **Special case — `cookbook/README.md`:** Always regenerate to include the full current recipe list. But preserve any user-added content below a `<!-- user content below -->` marker if present.
