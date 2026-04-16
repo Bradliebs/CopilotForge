@@ -537,6 +537,73 @@ During scaffolding, memory context is passed to all generation steps via the FOR
 - **User overrides** from `preferences.md` → hard constraints that always apply (e.g., "use httpx instead of requests")
 - **Recent decisions** from `decisions.md` → provide context about what's already been done to avoid duplication
 
+### FORGE-CONTEXT Block Schema
+
+The FORGE-CONTEXT block is the inline data contract passed from the Planner to all specialist agents (skill-writer, agent-writer, memory-writer, cookbook-writer) during Step 3. It carries all wizard answers plus memory context.
+
+**v1.5.0 core fields (always present):**
+
+| Field | Description |
+|---|---|
+| `stack` | Raw wizard Q2 answer |
+| `detected_frameworks` | Auto-detected frameworks (JSON array) |
+| `skill_level` | `beginner` / `intermediate` / `advanced` |
+| `agent_names` | Agent names generated in step 2 |
+| `existing_files` | Files already present (re-run skipping) |
+| `existing_conventions` | Active conventions from `patterns.md` |
+| `previous_decisions` | Most recent 10 decisions from `decisions.md` |
+| `user_preferences` | User preferences from `preferences.md` |
+| `forge_md_cookbook` | Current cookbook content from `FORGE.md`, or empty |
+
+#### New in v1.6.0 — Path Awareness Fields (all optional, all have defaults)
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `BUILD_PATH` | string (A–J) | `J` | Which of the 10 build paths this project is on |
+| `PATH_NAME` | string | `"Developer Project"` | Human-readable path label |
+| `PREREQUISITES_CONFIRMED` | boolean | `false` | User confirmed they meet path prerequisites |
+| `EXTENSION_REQUIRED` | boolean | `false` | Path requires pac CLI or browser extension |
+| `MS_LEARN_ANCHOR` | string (URL) | `null` | Primary MS Learn landing page for this path |
+
+**Path values:**
+
+| Path | Label | `EXTENSION_REQUIRED` |
+|------|-------|----------------------|
+| A | Copilot Studio Agent | false |
+| B | Studio + Connector | true |
+| C | Declarative Agent | false |
+| D | Canvas App Agent | false |
+| E | Power Automate | false |
+| F | PCF Code Component | true |
+| G | Power BI | false |
+| H | SharePoint / Teams | false |
+| I | Power Pages | false |
+| J | Developer Project | false |
+
+**Path J behavior:** If `BUILD_PATH` is missing or `J`, all existing v1.5.0 behavior applies unchanged. Existing users see zero change.
+
+**Example — Path A (Copilot Studio Agent):**
+
+```
+BUILD_PATH: A
+PATH_NAME: Copilot Studio Agent
+PREREQUISITES_CONFIRMED: false
+EXTENSION_REQUIRED: false
+MS_LEARN_ANCHOR: https://learn.microsoft.com/en-us/microsoft-copilot-studio/
+```
+
+**Example — Path J (Developer Project, v1.5.0 compatible):**
+
+```
+BUILD_PATH: J
+PATH_NAME: Developer Project
+PREREQUISITES_CONFIRMED: false
+EXTENSION_REQUIRED: false
+MS_LEARN_ANCHOR: null
+```
+
+> **Implementation note:** The 5 path awareness fields (`BUILD_PATH` through `MS_LEARN_ANCHOR`) are written by the path-detection step (Phase 13, Task 3). Specialists must apply `?? fallback` defaults when reading these fields — a missing field must never cause an error.
+
 ### Memory Safety
 
 Memory is designed to degrade gracefully:

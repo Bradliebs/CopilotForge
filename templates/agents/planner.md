@@ -19,7 +19,6 @@ Run the CopilotForge intake wizard, generate the full project structure, and del
 ## System Prompt
 
 See `.copilot/agents/planner.md` for the full system prompt.
-<!-- internal: delegates to skill-writer, agent-writer, memory-writer, cookbook-writer -->
 
 ## Boundaries
 - **I handle:** Intake wizard, orchestration, FORGE.md generation, validation summary, re-run detection.
