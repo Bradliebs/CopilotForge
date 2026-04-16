@@ -18,23 +18,7 @@ function run() {
   console.log(`  ${colors.bold('\uD83D\uDCCA Command Center')}`);
   console.log();
 
-  // Time-of-day greeting
-  const hour = new Date().getHours();
-  let greeting = 'Hello';
-  if (hour < 12) greeting = 'Good morning';
-  else if (hour < 17) greeting = 'Good afternoon';
-  else greeting = 'Good evening';
-
-  // Try to get git user name
-  let userName = 'developer';
-  try {
-    const { execSync } = require('child_process');
-    userName =
-      execSync('git config user.name', { stdio: 'pipe', cwd })
-        .toString()
-        .trim() || 'developer';
-  } catch {}
-
+  const { greeting, userName } = _greetingParts(cwd);
   console.log(
     `  ${greeting}, ${colors.cyan(userName)}! Here's your project at a glance.`
   );
@@ -53,17 +37,38 @@ function run() {
   console.log();
 }
 
+// ── Greeting ────────────────────────────────────────────────────────────
+
+function _greetingParts(cwd) {
+  const hour = new Date().getHours();
+  let greeting = 'Hello';
+  if (hour < 12) greeting = 'Good morning';
+  else if (hour < 17) greeting = 'Good afternoon';
+  else greeting = 'Good evening';
+
+  let userName = 'developer';
+  try {
+    const { execSync } = require('child_process');
+    userName =
+      execSync('git config user.name', { stdio: 'pipe', cwd })
+        .toString()
+        .trim() || 'developer';
+  } catch {}
+
+  return { greeting, userName };
+}
+
+function getGreeting(cwd = process.cwd()) {
+  const { greeting, userName } = _greetingParts(cwd);
+  return `${greeting}, ${userName}! Here's your project at a glance.`;
+}
+
 // ── Plan ────────────────────────────────────────────────────────────────
 
-function showPlan(cwd) {
+function getPlanData(cwd = process.cwd()) {
+  const defaults = { done: 0, failed: 0, pending: 0, total: 0, nextTask: null };
   const planPath = path.join(cwd, 'IMPLEMENTATION_PLAN.md');
-  if (!exists(planPath)) {
-    info(
-      `\uD83D\uDCCB ${pad('Plan')}${colors.yellow('No plan yet')} ${colors.dim('\u2014 say "set up my project" with Task Automation')}`
-    );
-    console.log();
-    return;
-  }
+  if (!exists(planPath)) return defaults;
 
   try {
     const content = fs.readFileSync(planPath, 'utf8');
@@ -83,12 +88,10 @@ function showPlan(cwd) {
       } else if (/^- \[ \]/.test(trimmed)) {
         pending++;
         if (!nextTask) {
-          // Parse: - [ ] task-id — Title
           const match = trimmed.match(/^- \[ \]\s+(\S+)\s*\u2014\s*(.+)$/);
           if (match) {
             nextTask = { id: match[1], title: match[2].trim() };
           } else {
-            // Fallback: just grab everything after the checkbox
             const fallback = trimmed.replace(/^- \[ \]\s*/, '');
             nextTask = { id: '', title: fallback };
           }
@@ -97,28 +100,49 @@ function showPlan(cwd) {
     }
 
     const total = done + pending + failed;
-    const countStr =
-      done === total
-        ? colors.green(`${done}/${total} tasks done`)
-        : colors.cyan(`${done}/${total} tasks done`);
-
-    info(`\uD83D\uDCCB ${pad('Plan')}${countStr}`);
-
-    if (failed > 0) {
-      info(`${' '.repeat(LABEL_W + 2)}${colors.yellow(`${failed} failed`)}`);
-    }
-
-    if (nextTask) {
-      const taskLabel = nextTask.id
-        ? `${colors.cyan(nextTask.id)} \u2014 ${nextTask.title}`
-        : nextTask.title;
-      info(
-        `${' '.repeat(LABEL_W + 2)}${colors.dim('Next:')} ${taskLabel}`
-      );
-    }
+    return { done, failed, pending, total, nextTask };
   } catch {
+    return defaults;
+  }
+}
+
+function showPlan(cwd) {
+  const planPath = path.join(cwd, 'IMPLEMENTATION_PLAN.md');
+  if (!exists(planPath)) {
+    info(
+      `\uD83D\uDCCB ${pad('Plan')}${colors.yellow('No plan yet')} ${colors.dim('\u2014 say "set up my project" with Task Automation')}`
+    );
+    console.log();
+    return;
+  }
+
+  const data = getPlanData(cwd);
+
+  if (data.total === 0) {
     info(
       `\uD83D\uDCCB ${pad('Plan')}${colors.yellow('Could not read plan')}`
+    );
+    console.log();
+    return;
+  }
+
+  const countStr =
+    data.done === data.total
+      ? colors.green(`${data.done}/${data.total} tasks done`)
+      : colors.cyan(`${data.done}/${data.total} tasks done`);
+
+  info(`\uD83D\uDCCB ${pad('Plan')}${countStr}`);
+
+  if (data.failed > 0) {
+    info(`${' '.repeat(LABEL_W + 2)}${colors.yellow(`${data.failed} failed`)}`);
+  }
+
+  if (data.nextTask) {
+    const taskLabel = data.nextTask.id
+      ? `${colors.cyan(data.nextTask.id)} \u2014 ${data.nextTask.title}`
+      : data.nextTask.title;
+    info(
+      `${' '.repeat(LABEL_W + 2)}${colors.dim('Next:')} ${taskLabel}`
     );
   }
 
@@ -138,6 +162,17 @@ function countHeadings(filePath) {
   }
 }
 
+function getMemoryData(cwd = process.cwd()) {
+  const memDir = path.join(cwd, 'forge-memory');
+  if (!exists(memDir)) return { decisions: 0, patterns: 0, preferences: 0 };
+
+  return {
+    decisions: countHeadings(path.join(memDir, 'decisions.md')),
+    patterns: countHeadings(path.join(memDir, 'patterns.md')),
+    preferences: countHeadings(path.join(memDir, 'preferences.md')),
+  };
+}
+
 function showMemory(cwd) {
   const memDir = path.join(cwd, 'forge-memory');
   if (!exists(memDir)) {
@@ -146,15 +181,13 @@ function showMemory(cwd) {
     return;
   }
 
-  const decisions = countHeadings(path.join(memDir, 'decisions.md'));
-  const patterns = countHeadings(path.join(memDir, 'patterns.md'));
-  const preferences = countHeadings(path.join(memDir, 'preferences.md'));
+  const data = getMemoryData(cwd);
 
   const parts = [];
-  if (decisions > 0) parts.push(`${colors.cyan(String(decisions))} decisions`);
-  if (patterns > 0) parts.push(`${colors.cyan(String(patterns))} patterns`);
-  if (preferences > 0)
-    parts.push(`${colors.cyan(String(preferences))} preferences`);
+  if (data.decisions > 0) parts.push(`${colors.cyan(String(data.decisions))} decisions`);
+  if (data.patterns > 0) parts.push(`${colors.cyan(String(data.patterns))} patterns`);
+  if (data.preferences > 0)
+    parts.push(`${colors.cyan(String(data.preferences))} preferences`);
 
   if (parts.length === 0) {
     info(
@@ -169,15 +202,9 @@ function showMemory(cwd) {
 
 // ── Skills ──────────────────────────────────────────────────────────────
 
-function showSkills(cwd) {
+function getSkillsData(cwd = process.cwd()) {
   const skillsDir = path.join(cwd, '.github', 'skills');
-  if (!exists(skillsDir)) {
-    info(
-      `\uD83D\uDD27 ${pad('Skills')}${colors.yellow('None yet')} ${colors.dim('\u2014 run the wizard')}`
-    );
-    console.log();
-    return;
-  }
+  if (!exists(skillsDir)) return { names: [] };
 
   try {
     const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
@@ -188,33 +215,54 @@ function showSkills(cwd) {
           exists(path.join(skillsDir, e.name, 'SKILL.md'))
       )
       .map((e) => e.name);
-
-    if (names.length === 0) {
-      info(
-        `\uD83D\uDD27 ${pad('Skills')}${colors.yellow('None yet')} ${colors.dim('\u2014 run the wizard')}`
-      );
-    } else {
-      info(
-        `\uD83D\uDD27 ${pad('Skills')}${colors.green(String(names.length))} active`
-      );
-      info(
-        `${' '.repeat(LABEL_W + 2)}${colors.dim(names.join(' \u00B7 '))}`
-      );
-    }
+    return { names };
   } catch {
-    info(
-      `\uD83D\uDD27 ${pad('Skills')}${colors.yellow('Could not read skills')}`
-    );
+    return { names: [] };
   }
+}
+
+function showSkills(cwd) {
+  const data = getSkillsData(cwd);
+
+  if (data.names.length === 0) {
+    info(
+      `\uD83D\uDD27 ${pad('Skills')}${colors.yellow('None yet')} ${colors.dim('\u2014 run the wizard')}`
+    );
+    console.log();
+    return;
+  }
+
+  info(
+    `\uD83D\uDD27 ${pad('Skills')}${colors.green(String(data.names.length))} active`
+  );
+  info(
+    `${' '.repeat(LABEL_W + 2)}${colors.dim(data.names.join(' \u00B7 '))}`
+  );
 
   console.log();
 }
 
 // ── Agents ──────────────────────────────────────────────────────────────
 
-function showAgents(cwd) {
+function getAgentsData(cwd = process.cwd()) {
   const agentsDir = path.join(cwd, '.copilot', 'agents');
-  if (!exists(agentsDir)) {
+  if (!exists(agentsDir)) return { names: [] };
+
+  try {
+    const entries = fs.readdirSync(agentsDir);
+    const names = entries
+      .filter((f) => f.endsWith('.md'))
+      .map((f) => f.replace(/\.md$/, ''));
+    return { names };
+  } catch {
+    return { names: [] };
+  }
+}
+
+function showAgents(cwd) {
+  const data = getAgentsData(cwd);
+
+  if (data.names.length === 0) {
     info(
       `\uD83E\uDD16 ${pad('Agents')}${colors.yellow('None yet')} ${colors.dim('\u2014 run the wizard')}`
     );
@@ -222,86 +270,68 @@ function showAgents(cwd) {
     return;
   }
 
-  try {
-    const entries = fs.readdirSync(agentsDir);
-    const names = entries
-      .filter((f) => f.endsWith('.md'))
-      .map((f) => f.replace(/\.md$/, ''));
-
-    if (names.length === 0) {
-      info(
-        `\uD83E\uDD16 ${pad('Agents')}${colors.yellow('None yet')} ${colors.dim('\u2014 run the wizard')}`
-      );
-    } else {
-      info(
-        `\uD83E\uDD16 ${pad('Agents')}${colors.green(String(names.length))} configured`
-      );
-      info(
-        `${' '.repeat(LABEL_W + 2)}${colors.dim(names.join(' \u00B7 '))}`
-      );
-    }
-  } catch {
-    info(
-      `\uD83E\uDD16 ${pad('Agents')}${colors.yellow('Could not read agents')}`
-    );
-  }
+  info(
+    `\uD83E\uDD16 ${pad('Agents')}${colors.green(String(data.names.length))} configured`
+  );
+  info(
+    `${' '.repeat(LABEL_W + 2)}${colors.dim(data.names.join(' \u00B7 '))}`
+  );
 
   console.log();
 }
 
 // ── Cookbook ─────────────────────────────────────────────────────────────
 
-function showCookbook(cwd) {
+function getCookbookData(cwd = process.cwd()) {
   const cookbookDir = path.join(cwd, 'cookbook');
-  if (!exists(cookbookDir)) {
+  if (!exists(cookbookDir)) return { count: 0 };
+
+  try {
+    const entries = fs.readdirSync(cookbookDir, { withFileTypes: true });
+    const count = entries.filter((e) => e.isFile()).length;
+    return { count };
+  } catch {
+    return { count: 0 };
+  }
+}
+
+function showCookbook(cwd) {
+  const data = getCookbookData(cwd);
+  const cookbookDir = path.join(cwd, 'cookbook');
+
+  if (!exists(cookbookDir) || data.count === 0) {
     info(`\uD83D\uDCDA ${pad('Recipes')}${colors.yellow('None yet')}`);
     console.log();
     return;
   }
 
-  try {
-    const entries = fs.readdirSync(cookbookDir, { withFileTypes: true });
-    const files = entries.filter((e) => e.isFile());
-
-    if (files.length === 0) {
-      info(`\uD83D\uDCDA ${pad('Recipes')}${colors.yellow('None yet')}`);
-    } else {
-      info(
-        `\uD83D\uDCDA ${pad('Recipes')}${colors.green(String(files.length))} files in cookbook/`
-      );
-    }
-  } catch {
-    info(
-      `\uD83D\uDCDA ${pad('Recipes')}${colors.yellow('Could not read cookbook')}`
-    );
-  }
+  info(
+    `\uD83D\uDCDA ${pad('Recipes')}${colors.green(String(data.count))} files in cookbook/`
+  );
 
   console.log();
 }
 
 // ── Git ─────────────────────────────────────────────────────────────────
 
-function showGit(cwd) {
+function getGitData(cwd = process.cwd()) {
   try {
     const { execSync } = require('child_process');
     const opts = { stdio: 'pipe', cwd };
 
-    // Current branch
     let branch = 'unknown';
     try {
       branch = execSync('git branch --show-current', opts).toString().trim() || 'detached';
     } catch {}
 
-    // Commits today
-    let todayCount = 0;
+    let commitsToday = 0;
     try {
       const logOut = execSync('git log --oneline --since="midnight"', opts)
         .toString()
         .trim();
-      todayCount = logOut ? logOut.split('\n').length : 0;
+      commitsToday = logOut ? logOut.split('\n').length : 0;
     } catch {}
 
-    // Last commit time
     let lastCommit = '';
     try {
       lastCommit = execSync('git log -1 --format="%cr"', opts)
@@ -309,24 +339,35 @@ function showGit(cwd) {
         .trim();
     } catch {}
 
-    const parts = [`branch: ${colors.cyan(branch)}`];
-
-    if (todayCount > 0) {
-      parts.push(`${colors.cyan(String(todayCount))} commits today`);
-    }
-
-    if (lastCommit) {
-      parts.push(`last: ${colors.dim(lastCommit)}`);
-    }
-
-    info(
-      `\uD83D\uDCCA ${pad('Git')}${parts.join(colors.dim(' \u00B7 '))}`
-    );
+    return { branch, commitsToday, lastCommit };
   } catch {
+    return { branch: 'unknown', commitsToday: 0, lastCommit: '' };
+  }
+}
+
+function showGit(cwd) {
+  const data = getGitData(cwd);
+
+  if (data.branch === 'unknown' && data.commitsToday === 0 && !data.lastCommit) {
     info(
       `\uD83D\uDCCA ${pad('Git')}${colors.yellow('Not a git repo')}`
     );
+    return;
   }
+
+  const parts = [`branch: ${colors.cyan(data.branch)}`];
+
+  if (data.commitsToday > 0) {
+    parts.push(`${colors.cyan(String(data.commitsToday))} commits today`);
+  }
+
+  if (data.lastCommit) {
+    parts.push(`last: ${colors.dim(data.lastCommit)}`);
+  }
+
+  info(
+    `\uD83D\uDCCA ${pad('Git')}${parts.join(colors.dim(' \u00B7 '))}`
+  );
 }
 
 // ── Next Step ───────────────────────────────────────────────────────────
@@ -362,4 +403,4 @@ function showNextStep(cwd) {
   info(`\uD83D\uDCA1 ${colors.bold('Next step:')} ${tip}`);
 }
 
-module.exports = { run };
+module.exports = { run, getPlanData, getMemoryData, getSkillsData, getAgentsData, getCookbookData, getGitData, getGreeting };
