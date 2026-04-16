@@ -65,7 +65,7 @@ function printInstallInstructions() {
   console.log();
   info('  The dashboard shows your plan, Ralph status, and commits — live, as they happen.');
   console.log();
-  info(`  ${colors.bold('Download (free):')} ${colors.cyan('https://github.com/Bradliebs/CopilotForge/releases')}`);
+  info(`  ${colors.bold('Download (free):')} ${colors.cyan('https://github.com/Bradliebs/copilotforge-command-center/releases')}`);
   console.log();
   info(`  Once installed, reopen it anytime:`);
   info(`  ${colors.cyan('npx copilotforge dashboard')}`);
