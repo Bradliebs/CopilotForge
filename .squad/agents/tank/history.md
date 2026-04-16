@@ -57,3 +57,71 @@ Ran comprehensive final QA validation covering 9 check categories: internal link
 - **Test file example links trip validators.** Checklist items like `[filename](./path)` in beginner-checklist.md are teaching examples, not real links. Validator needs test file exclusion pattern.
 
 **Recommendation:** SHIP after fixing 3 TEMPLATE_INSTRUCTIONS.md links. 89% pass rate (24/27). All blocking issues resolved except one 5-minute fix. Filed detailed findings in .squad/decisions/inbox/tank-qa-findings.md.
+
+## Learnings
+
+### UX Pattern: Empty States Must Guide, Not Just Inform
+When reviewing the Command Center widgets, discovered that empty states like "No ralph-status.json detected" or "No IMPLEMENTATION_PLAN.md found" are developer-facing and confusing for beginners. Empty states should:
+1. Explain WHAT the widget does (not just say "nothing here")
+2. Tell the user WHAT TO DO NEXT (actionable guidance)
+3. Use plain language (no filenames, no jargon)
+
+**Example:** Instead of "No ralph-status.json detected", say "Ralph not initialized — click 'Start Planning' to begin."
+
+### UX Pattern: Button Labels Must Match User Mental Model
+Buttons like "resume loop" or "pause loop" assume developer knowledge of build systems. For beginners:
+- "Loop" → "Build" or "Process"
+- "Resume" (when nothing is running) → "Start"
+- "Iteration" → "Step" or "Task"
+
+Context matters: "Resume Build" makes sense after pausing, but the FIRST action should be "Start Planning" not "Resume".
+
+### UX Pattern: Sequential Workflows Need Visual Phase Indicators
+When a tool has multiple phases (Plan → Build), the UI must show WHERE YOU ARE. The Ralph widget shows "iteration 3" but doesn't distinguish between:
+- Iteration 3 of planning (5 total)
+- Iteration 3 of building (50 total)
+
+A beginner needs: "Phase: Planning" or "Phase: Building" to understand the workflow progression.
+
+### UX Testing Insight: "Brad Test" for Beginner-Friendliness
+Created a testing persona: Brad has never used a terminal, doesn't know Git/Ralph/CopilotForge. Can he:
+1. Start a build?
+2. Understand what's happening?
+3. Recover from an error?
+
+If "yes" to all three → UX is beginner-ready. This is a quick litmus test for any beginner-facing UI.
+
+### Critical Finding: The Ralph Widget IS The App
+Ralph is the entry point — if a beginner can't figure out Ralph, they can't use the app. The most important button in the entire interface is "Start Planning" and it must be:
+- Visually prominent (big, green, obvious)
+- Labeled in plain English (not "resume loop")
+- Accompanied by brief context ("Ralph builds your project automatically")
+
+All other widgets are secondary to Ralph.
+## 2026-04-16: Command Center UX Audit + Tank Orchestration (Session 15:57:43Z)
+
+**Team Update:** Scribe orchestration — Tank assessment complete
+**Assessment Scope:**
+- Pre/post review of Neo's button pass
+- Brad persona (non-developer) validation
+- Beginner accessibility checklist
+
+**Critical Findings (P0 - Blocking):**
+- Ralph widget: "resume loop" jargon, no clear entry point
+- Ralph widget: No phase context (plan vs build indistinguishable)
+- Error messages expose internal filenames (ralph-status.json)
+- "Iteration" terminology barrier
+
+**High Risk (P1):**
+- Plan widget: No CTA for creating plans
+- Memory widget: "log a decision" unclear in purpose
+- All widgets: Filenames exposed (IMPLEMENTATION_PLAN.md)
+
+**Improvements Noted:**
+- Neo's button labels are now beginner-friendly
+- Copy-to-clipboard prompts teach best practices
+- Empty states more actionable with context
+
+**Verdict:** Command Center needs Tank's P0-P1 fixes before deployment to non-technical users. Current state: ~60% accessible (good affordances, needs jargon cleanup and phase clarity).
+
+**Decision:** tank-ux-checklist.md (67-item UX audit + prioritized recommendations)

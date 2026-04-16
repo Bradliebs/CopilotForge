@@ -57,3 +57,39 @@ Built CopilotForge Command Center at C:\AI Projects\copilotforge-command-center.
 - Fixed: merged two app.whenReady() calls into one
 - Committed as 93179e5 on copilotforge-command-center repo
 - Dev command: npm run dev:electron
+
+## Learnings
+
+### 2026-04-16 16:56 - Command Center Widget Buttons
+
+**Implemented:** Beginner-friendly button pass across all 6 widgets in CopilotForge Command Center
+
+**Key Changes:**
+1. RalphWidget - Launch buttons for plan/build, status-aware UI with contextual prompts
+2. PlanWidget - Open plan file, copy help prompts, inline help for active tasks
+3. GitWidget - Copy commit list, ask about changes, open project folder
+4. SquadWidget - Better empty state explaining squad is optional for beginners
+5. MemoryWidget - Open decisions file, copy all decisions
+6. Type Safety - Added launchRalph and openFile to global.d.ts
+
+**Design Pattern:** Copy-to-clipboard helpers for Copilot prompts enable non-developers to ask right questions.
+**Build:** TypeScript compilation successful, committed and pushed.
+
+## 2026-04-16: Command Center Widget Button Pass (Session 15:57:43Z)
+
+**Team Update:** Scribe orchestration — Neo and Tank deliverables logged
+**Neo Completed:**
+- Button pass on 7 widgets (RalphWidget, PlanWidget, GitWidget, SquadWidget, MemoryWidget, etc.)
+- Replaced jargon: "resume loop" → "Start Planning", "current iteration" → "Step"
+- Implemented copy-to-clipboard Copilot prompts (pattern for non-developers)
+- Added file-open buttons and launch Ralph controls
+- Commit: 5f24283 (pushed to origin/main)
+- Decision: neo-widget-buttons.md (Widget Button UX Pattern)
+
+**Tank Assessment:**
+- Comprehensive UX audit completed (67-item checklist)
+- Identified P0 blockers (Ralph widget clarity), P1 risks (empty states), P2 improvements
+- Brad persona validation framework provided
+- Decision: tank-ux-checklist.md (Command Center UX Baseline)
+
+**Next:** Monitor Tank's P0-P1 prioritized fixes or broader UX hardening iteration.
