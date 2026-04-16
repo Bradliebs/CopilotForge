@@ -482,3 +482,61 @@ All beginner polish items delivered with zero jargon leaks and 100% validation p
 - **Neo (templates-split)**: Design recommendation for cli/src/templates.js split (Option A: directory structure)
 - **Scribe (this log)**: Merge decisions inbox → decisions.md, write orchestration & session logs
 
+---
+
+## Phase 13: Task 3 Completion — Forge Compass SKILL.md
+
+### 2026-07-09: Build forge-compass/SKILL.md — 5-Step Silent Gate Skill
+**Author:** Trinity (Prompt Engineer)
+**Date:** 2026-07-09
+**Status:** Complete — Morpheus Review
+**Summary:** Created `.github/skills/forge-compass/SKILL.md` — pre-scaffold gate skill that classifies build paths before routing to Planner wizard.
+
+#### Deliverable
+- **`.github/skills/forge-compass/SKILL.md`**: 5-step silent classifier with contradiction detection, confidence scoring, and prerequisite risk flags.
+
+#### Forge Compass Architecture
+
+**5-Step Silent Classification:**
+1. **Step 0 — Memory Read:** Reads `BUILD_PATH` and `PATH_NAME` from `forge-memory/preferences.md`. Stores as `stored_path`. Silent.
+2. **Step 1 — Signal Scan:** Classifies Q1 answer into PP_SIGNALS or DEV_SIGNALS. Maps patterns to paths A–J. Assigns confidence (High/Medium/Low). Silent.
+3. **Step 2 — Contradiction Check:** Compares `stored_path` to `detected_path`. Surfaces warning only when they differ AND confidence ≥ Medium. Low confidence → silent.
+4. **Step 3 — Prerequisite Risk Flag:** Flags tooling for Path F (Node.js ≥16, pac CLI) and Path B (REST API endpoint). Other paths silent.
+5. **Step 4 — Motivated Reasoning Detection:** Gentle note when stated preference contradicts detected signals (clear mismatches only).
+6. **Step 5 — Output:** Consolidates warnings (or silent on clean pass). Always writes `BUILD_PATH`, `PATH_NAME`, `EXTENSION_REQUIRED` to FORGE-CONTEXT.
+
+#### Architecture Alignment
+- **D13-01 compliant:** Silent classifier. Path J default. Zero UX interruption on clean passes.
+- **D13-02 compliant:** Works with specialist branching via BUILD_PATH.
+- **D13-03 compliant:** All fields have explicit defaults. Missing `preferences.md` never blocks scaffolding.
+
+#### Trigger Design
+- **User-facing triggers:** "check my path", "validate my path", "compass check"
+- **Internal trigger:** Planner invokes Compass automatically after Q1 (invisible to users)
+
+#### Memory Write Safety
+`BUILD_PATH` written to `forge-memory/preferences.md` only on:
+1. First run (no existing memory)
+2. After explicit user path switch confirmation
+
+No writes on silent passes where memory matches detected path (prevents thrashing).
+
+#### Decision: "agent" Alone → Path C
+When user says "I want to build an agent" with DEV_SIGNALS (no explicit no-code signal), maps to **Path C (Declarative Agent)** rather than Path A. Path A requires explicit no-code signal alongside "agent."
+
+#### Open Question Routed to Morpheus
+**`PREREQUISITES_CONFIRMED` Field Ownership:**
+- reference.md lists `PREREQUISITES_CONFIRMED` as one of 5 FORGE-CONTEXT path awareness fields
+- Forge Compass reads/writes: `BUILD_PATH`, `PATH_NAME`, `EXTENSION_REQUIRED` (not `PREREQUISITES_CONFIRMED`)
+- `PREREQUISITES_CONFIRMED` should be written after user responds to Step 3 prerequisite flag
+- **Question:** Should Compass own this field (default: false) or does Planner handle it?
+- **Morpheus ruling:** Compass may set `PREREQUISITES_CONFIRMED: false` as safe default. Planner or follow-up interaction confirms after user responds to flag.
+
+#### Morpheus Review Outcome (2026-07-09)
+**Ruling:** D13-03 amended. Trinity's FORGE-CONTEXT defaults correct. D13-02 alignment confirmed. `PREREQUISITES_CONFIRMED` ownership: Compass writes `false` (safe default), Planner or Follow-up Interaction confirms after user response. No rework needed.
+
+#### Wave 3 Launch
+- **Trinity (extend-planner-wizard):** Wire Compass into Planner path detection flow (task 4b)
+- **Morpheus (prereq ruling):** Confirm `PREREQUISITES_CONFIRMED` ownership model (complete)
+- **Scribe (this log):** Merge decisions, write orchestration & session logs
+
