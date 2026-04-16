@@ -201,15 +201,16 @@ Write the updated content back to the file. Do not modify any other lines.
 
 #### 3g. Commit
 
-Stage all changes and commit with a descriptive message:
+Stage **only** the files you created or modified for this task, plus the updated plan file. Follow the **Git Safety Protocol** below — never use `git add -A` or `git add .`.
 
 ```
-git add -A && git commit -m "feat: {task-id} — {title}"
+git add src/server.ts src/server.test.ts IMPLEMENTATION_PLAN.md
+git commit -m "feat(setup-express): Create Express server with health check endpoint
+
+Task: setup-express — \"Create Express server with health check endpoint\""
 ```
 
-For example: `git commit -m "feat: setup-express — Create Express server with health check endpoint"`
-
-If git is not initialized or the commit fails, skip the commit and note it in the task report. Don't let a git error stop the whole plan.
+Run the **Pre-Commit Checklist** (see Git Safety Protocol) before every commit. If git is not initialized or the commit fails, skip the commit and note it in the task report. Don't let a git error stop the whole plan.
 
 #### 3h. Report
 
@@ -222,6 +223,71 @@ If there are no more pending tasks, skip the "Next:" part.
 #### 3i. Repeat
 
 Go back to Step 3c and pick the next pending task. Continue until no `[ ]` tasks remain.
+
+---
+
+## Git Safety Protocol
+
+**These rules are mandatory. Violating them can delete user code.**
+
+### Staging Rules
+- ❌ **NEVER** use `git add .` or `git add -A` — these stage unintended files and deletions
+- ❌ **NEVER** use `git commit -a` — same risk
+- ✅ **ALWAYS** stage specific files you created or modified: `git add src/auth.ts src/auth.test.ts`
+- ✅ **ALWAYS** stage the updated `IMPLEMENTATION_PLAN.md` (you mark tasks done)
+
+### Pre-Commit Checklist
+
+Before every commit, run these checks:
+
+1. **Verify file count**: `git diff --cached --stat` — expect ≤10 files for most tasks
+2. **Check for deletions**: `git diff --cached --diff-filter=D --name-only` — should be empty unless you intentionally removed a file
+3. **Review staged files**: `git diff --cached --name-only` — every file should relate to the current task
+
+If any check fails, unstage everything (`git reset HEAD`) and re-stage only the correct files.
+
+### Commit Message Format
+
+Use this format for every task commit:
+
+```
+feat(task-id): brief description
+
+Task: task-id — "Task title from plan"
+```
+
+Example:
+```
+feat(add-auth): implement JWT authentication
+
+Task: add-auth — "Add JWT authentication to API routes"
+```
+
+### Red Flags — STOP
+
+If you encounter any of these, **stop autonomous execution** and report to the user:
+
+- 🚩 More than 20 files in your `git diff --cached --stat`
+- 🚩 Any file deletions you did not explicitly intend
+- 🚩 Changes to files outside the scope of the current task
+- 🚩 Changes to `.env`, `.gitignore`, `package-lock.json`, or other sensitive files you didn't plan to modify
+- 🚩 The staged diff is larger than what one task should produce
+
+### Rollback Protocol
+
+If validation fails for a task:
+
+1. Discard all uncommitted changes: `git checkout -- .`
+2. Remove any untracked files created for this task: `git clean -fd` (only in the directories you were working in)
+3. Mark the task as `[!]` (failed) in `IMPLEMENTATION_PLAN.md`
+4. Commit ONLY the plan update: `git add IMPLEMENTATION_PLAN.md && git commit -m "mark task-id as failed"`
+5. Move to the next task
+
+### Max Files Per Commit
+
+- **Normal**: 1–10 files per task commit
+- **Warning**: 11–20 files — log a note but proceed
+- **Stop**: >20 files — something is wrong, stop and report
 
 ---
 
@@ -240,9 +306,12 @@ If validation fails for a task:
    - What the validation error was (compile error, test failure, missing dependency, etc.)
    - A brief suggestion for how to fix it manually
 
-3. **Commit the partial work** (if any files were created/modified):
+3. **Commit the partial work** (if any files were created/modified) — stage only the specific files you touched:
    ```
-   git add -A && git commit -m "wip: {task-id} — {title} (failed: {brief reason})"
+   git add src/auth.ts IMPLEMENTATION_PLAN.md
+   git commit -m "wip(add-auth): Add JWT authentication middleware (failed: type errors)
+
+   Task: add-auth — \"Add JWT authentication middleware\""
    ```
 
 4. **Continue to the next task.** Do not stop the whole plan because one task failed. Other tasks may not depend on the failed one.
