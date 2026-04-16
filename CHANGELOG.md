@@ -5,6 +5,29 @@ All notable changes to CopilotForge are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - Phase 13: Path Awareness
+
+### Added
+- 10 build paths (A–J): 9 Power Platform paths + existing developer flow (Path J)
+- forge-compass skill: silent path classifier with contradiction detection
+- power-platform-guide skill: master routing oracle with decision matrix
+- 9 path-specific skill files (studio-agent, studio-connector, declarative-agent, canvas-agent, power-automate, pcf-component, powerbi-report, sharepoint-agent, power-pages)
+- 6 Power Platform agent templates
+- 16 cookbook recipes (15 markdown + 1 TypeScript PCF skeleton)
+- 9 per-path FORGE.md templates via getPlatformForge(path)
+- BUILD_PATH dispatch in all 4 specialist agents
+- forge-remember phrase support across all 13 skill files
+- Path-change conflict detection with 3-choice resolution flow
+- doctor.js path-aware prerequisite checks (Node≥16/pac for F, paconn for B/I, PBI note for G)
+- templates.js modular split into cli/src/templates/ (8 files)
+
+### Changed
+- Planner wizard extended with path detection, PP diagnostic questions, FORGE-CONTEXT write step
+- FORGE-CONTEXT schema extended with 5 new optional fields (BUILD_PATH, PATH_NAME, PREREQUISITES_CONFIRMED, EXTENSION_REQUIRED, MS_LEARN_ANCHOR)
+
+### Fixed
+- 9 jargon leaks in templates/agents/ and templates/utils/
+
 ## [1.5.0] - 2026-04-17
 
 ### Added

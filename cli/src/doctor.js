@@ -221,7 +221,7 @@ function run() {
           issues++;
         }
       } else {
-        info(colors.dim('  FORGE.md has no version stamp (created before v1.5.0)'));
+        info(colors.dim('  FORGE.md has no version stamp (created before v1.6.0)'));
       }
     } catch {
       // FORGE.md read error — already checked for existence above

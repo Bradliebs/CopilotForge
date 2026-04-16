@@ -115,7 +115,7 @@ Present a context summary to the user:
 
 **Returning user path check (v1.6.0):** After reading `forge-memory/preferences.md`, check whether `BUILD_PATH` is present:
 
-- **If `BUILD_PATH` is absent or `J`:** Use the "What would you like to do?" prompt above. No new text, questions, or behavior — this flow is unchanged from v1.5.0.
+- **If `BUILD_PATH` is absent or `J`:** Use the "What would you like to do?" prompt above. No new text, questions, or behavior — this flow is unchanged from v1.6.0.
 - **If `BUILD_PATH` is A–I (a Power Platform path):** Replace the "What would you like to do?" prompt with:
   > Welcome back to **[PATH_NAME]**. What would you like to do?
   > **1.** ▶ Continue where you left off
@@ -157,7 +157,7 @@ If stored BUILD_PATH matches detected BUILD_PATH, skip all questions and say:
 **Path J returning user (no Power Platform):**
 If stored BUILD_PATH = J (or missing), and no PP signals detected:
 > Welcome back! Ready to scaffold your next developer project?
-(No path change dialog — this is the existing v1.5.0 flow, unchanged.)
+(No path change dialog — this is the existing v1.6.0 flow, unchanged.)
 
 Then skip to Step 2 (Confirm & Generate) with pre-populated answers from memory.
 Only ask questions for information that's **missing** from memory — see Step 1 adaptive logic below.
@@ -217,7 +217,7 @@ Ask each question one at a time. Wait for the user's answer before asking the ne
 | Low | No PP signals, or Path J | → Proceed to Q2 silently — zero new text shown (D13-A) |
 | Low | Exactly 1 partial PP keyword | → Ask ambiguous clarifier, then route |
 
-**Path J rule (D13-A):** When confidence is Low and no clarifier is triggered, proceed directly to Q2. No new text, questions, or delays. Path J users must see no difference from v1.5.0.
+**Path J rule (D13-A):** When confidence is Low and no clarifier is triggered, proceed directly to Q2. No new text, questions, or delays. Path J users must see no difference from v1.6.0.
 
 **Medium confidence clarifier** *(ask once, then route — one question only)*:
 > Just to confirm — are you building within Microsoft Power Platform?
