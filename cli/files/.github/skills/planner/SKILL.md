@@ -208,13 +208,14 @@ If the user skips or says nothing, default to **beginner**.
 > | ✍️ **Blog writer** | Turns your pull requests and code changes into blog posts automatically |
 > | 📋 **Template factory** | Generates README files, issue templates, and project docs in bulk |
 > | 📊 **PR dashboard** | Charts showing what pull requests are open, how old they are, who's reviewing |
+> | 🏠 **Command center** | A terminal dashboard showing your project at a glance — plan progress, skills, agents, git status, all in one view |
 >
 > Type the ones you want (e.g., "task automation, wiki") or say **"none"** to skip.
 > *(You can always add these later — see `cookbook/CHEATSHEET.md`)*
 
 **Default suggestions by experience level** (from Question 5):
 - **beginner** → Suggest "none" with reassurance: *"These are optional — I'd recommend starting simple. You can always add them later."*
-- **intermediate** → Suggest "task automation" as a starting point: *"Task automation pairs well with most projects. Want to add it?"*
+- **intermediate** → Suggest "task automation" as a starting point: *"Task automation pairs well with most projects. Want to add it? Command center is also popular — shows project status at a glance."*
 - **advanced** → Suggest "task automation, auto-experiments": *"These two are popular with experienced devs. Want them?"*
 
 If the user skips or says nothing, default to **none** (no extras).
@@ -410,6 +411,7 @@ The goal is: every recipe matches something you actually use. No generic filler.
 - Blog writer → `blog-writer.{ext}`
 - Template factory → `template-creator.{ext}`
 - PR dashboard → `pr-visualization.{ext}`
+- Command center → `command-center.{ext}`
 
 Extras recipes are only generated if explicitly selected. They are never auto-included.
 

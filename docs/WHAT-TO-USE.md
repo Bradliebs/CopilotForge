@@ -44,6 +44,11 @@ What do you want to do?
 ├─ "Build a personal knowledge base"
 │   └─ → cookbook/knowledge-wiki.ts (or .py)
 │
+├─ "I want a quick overview of my project"
+│   └─ → Run `npx copilotforge status` for a terminal dashboard.
+│       It shows your plan progress, active skills and agents,
+│       memory stats, and git summary — all in one view. No setup needed.
+│
 ├─ "I want AI to build my project from a plan"
 │   └─ → Enable **Task automation** in Q6. Edit `IMPLEMENTATION_PLAN.md` to describe what you want built, then run the ralph-loop recipe. The AI works through tasks autonomously.
 │

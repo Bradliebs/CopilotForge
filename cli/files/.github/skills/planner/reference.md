@@ -307,15 +307,23 @@ When the user selects extras in Question 6, generate the corresponding recipe fi
 | Blog writer | `cookbook/blog-writer.{ext}` | PR reader → outline → draft → edit pipeline for developer blog posts |
 | Template factory | `cookbook/template-creator.{ext}` | Scans repo, generates README, CONTRIBUTING, issue templates, and more |
 | PR dashboard | `cookbook/pr-visualization.{ext}` | Fetches PR data via GitHub API, generates charts and summary reports |
+| Command center | `cookbook/command-center.{ext}` | Terminal dashboard — plan progress, skills, agents, git status at a glance |
 
 `{ext}` = `ts` for TypeScript/JavaScript stacks, `py` for Python stacks, `ts` as default for other stacks.
 
 ### Extras Edge Cases
 
-- **"I want everything"** / **"all of them"** → Select all 7 extras. Warn: "That's a lot of files! I'll generate them all — you can always delete ones you don't use."
-- **"I want the wiki"** → Map fuzzy names: "wiki" = Knowledge wiki, "loops" / "automation" = Task automation, "research" / "experiments" = Auto-experiments, "hooks" = CLI hooks, "blog" = Blog writer, "templates" / "docs" = Template factory, "dashboard" / "PRs" = PR dashboard.
+- **"I want everything"** / **"all of them"** → Select all 8 extras. Warn: "That's a lot of files! I'll generate them all — you can always delete ones you don't use."
+- **"I want the wiki"** → Map fuzzy names: "wiki" = Knowledge wiki, "loops" / "automation" = Task automation, "research" / "experiments" = Auto-experiments, "hooks" = CLI hooks, "blog" = Blog writer, "templates" / "docs" = Template factory, "dashboard" / "PRs" = PR dashboard, "command center" / "status" = Command center.
 - **User picks an extra that needs TypeScript/Python but their stack is Go/Rust** → Generate anyway with a comment: `// NOTE: This recipe is optimized for TypeScript. Adapt patterns for your {stack}.`
 - **Returning user** → Read extras list from `preferences.md`. Show current selections. Only ask about changes.
+
+### 🏠 Command Center
+- **What it does:** A terminal-based project dashboard that shows everything at a glance: plan progress, memory stats, active skills and agents, cookbook recipes, and git status. Inspired by [command-center-lite](https://github.com/brittanyellich/command-center-lite).
+- **Files generated:** `cookbook/command-center.{ext}` (recipe showing how to build custom dashboards)
+- **CLI integration:** Users can also run `npx copilotforge status` for a built-in dashboard.
+- **Stack mapping:** TypeScript → `command-center.ts`, Python → `command-center.py`
+- **Beginner note:** This is a "read-only" feature — it shows you what's in your project but doesn't change anything. Safe to enable at any level.
 
 ### Planning Mode (Task Automation)
 

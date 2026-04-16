@@ -48,6 +48,10 @@ Optional advanced features you can add during wizard setup. They generate specia
 
 You don't need any of them to use CopilotForge. They're power-ups you can add anytime. See `cookbook/CHEATSHEET.md` to add them later without re-running the wizard. For beginners, we recommend "none." For intermediate developers, try "task automation." Advanced users often combine "task automation" with "auto-experiments."
 
+### How do I see my project status at a glance?
+
+Run `npx copilotforge status` in your terminal. It reads your plan, memory, skills, agents, and git status, then shows everything in a single dashboard view. For a customizable version, check `cookbook/command-center.ts` — it has a widget system you can extend with your own data sources.
+
 ### What is Planning Mode?
 
 Planning Mode is what happens when you select "Task automation" in Q6. The wizard generates an `IMPLEMENTATION_PLAN.md` — a checklist of tasks derived from your project description. The ralph-loop recipe then works through the plan autonomously: pick a task, implement it, validate, commit, repeat. You can edit the plan at any time to add, remove, or reorder tasks. Ralph always re-reads the file from disk, so changes take effect immediately.

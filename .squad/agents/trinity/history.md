@@ -39,3 +39,5 @@ Duration: 239s | Tool Calls: 31 | Status: COMPLETE
 Applied two-layer architecture to agent definitions. Scrubbed .copilot/agents/ files of specialist terminology. Added Internal Delegation Protocol section. Removed internal agent names from user-visible sections.
 
 - **Planning mode is conditional on Q6 "Task automation" selection.** It generates IMPLEMENTATION_PLAN.md only when the user opts in. The plan uses `- [ ] task-id — Task title` format matching what ralph-loop expects. Section numbering shifted: old 3e (FORGE.md) became 3f to accommodate 3e (Planning Mode). Both SKILL.md and reference.md must stay in sync with their cli/files/ mirrors.
+
+- **Q6 extras list is now 8 items (was 7).** Added 🏠 Command Center as the 8th extra, inspired by command-center-lite. It's a read-only terminal dashboard — safe for all skill levels. Edge case count updated from "all 7" to "all 8", fuzzy name mapping added ("command center" / "status"). Recipe file: `command-center.{ext}`. CLI shortcut: `npx copilotforge status`. Both SKILL.md and reference.md updated with CLI mirrors synced.

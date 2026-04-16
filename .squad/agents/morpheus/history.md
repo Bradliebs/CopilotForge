@@ -32,3 +32,5 @@
 - **2026-04-15: Documentation is the product.** README + GETTING-STARTED + WHAT-TO-USE + CHEATSHEET + FAQ form a complete onboarding funnel. Users never feel lost because documentation anticipates every question. No user should ever ask "where do I start?" — WHAT-TO-USE answers it.
 
 - **2026-04-16: Planning Mode documentation added.** Updated README, GETTING-STARTED, WHAT-TO-USE, CHEATSHEET, and FAQ to explain Planning Mode. Consistent terminology: "Planning Mode", "IMPLEMENTATION_PLAN.md", "Ralph Loop". All beginner-friendly. Added heroic example flow showing autonomous project build from plan.
+
+- **2026-04-16: Command Center recipe + docs delivered.** Created `cookbook/command-center.ts` and `.py` — terminal dashboard recipes with Widget extensibility pattern. Updated README (new section + recipe table), CHEATSHEET (new row), FAQ (new Q&A), and WHAT-TO-USE (new decision path). Zero external dependencies. Credited command-center-lite as inspiration. All additions are additive — no existing content rewritten.

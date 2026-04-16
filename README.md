@@ -88,6 +88,22 @@ The wizard asks six questions about your project, then scaffolds everything auto
 
 You'll see a summary of your answers. Say "yes" to confirm, or change anything before it starts building.
 
+### 🏠 Command Center — Your Project at a Glance
+
+Run `npx copilotforge status` to see a terminal dashboard:
+
+```
+📋 Plan       5/12 tasks done — Next: add-auth
+🧠 Memory     3 decisions · 2 patterns
+🔧 Skills     planner · code-review · testing
+🤖 Agents     planner · reviewer · tester
+📊 Git        branch: main · 8 commits today
+```
+
+Inspired by [command-center-lite](https://github.com/brittanyellich/command-center-lite) — but terminal-first. No GUI, no dependencies. Everything you need in one `npx` command.
+
+Want a custom dashboard? See `cookbook/command-center.ts` for an extensible recipe with a widget system you can plug your own data sources into.
+
 ### 🔄 Planning Mode — Let AI Build Your Project
 
 Select **Task automation** in Question 6 and CopilotForge generates two things:
@@ -471,6 +487,7 @@ The `cookbook/` folder contains ready-to-use code recipes for common tasks. Each
 | **pr-visualization** | TS + PY | Interactive CLI to visualize PR activity and age |
 | **copilot-hooks** | TS + PY | Copilot CLI session hooks for logging and safety checks |
 | **auto-research** | TS + PY | Autonomous experiment loops inspired by Karpathy |
+| **command-center** | TS + PY | Terminal dashboard showing plan, memory, skills, agents, git status |
 | **delegation-example** | TS | How the Planner delegates to focused agents |
 | **skill-creation-example** | TS | How to create new skills programmatically |
 

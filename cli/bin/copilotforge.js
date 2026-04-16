@@ -31,6 +31,12 @@ switch (command) {
     break;
   }
 
+  case 'status': {
+    const status = require('../src/status');
+    status.run();
+    break;
+  }
+
   case 'uninstall': {
     const uninstall = require('../src/uninstall');
     uninstall.run();
@@ -58,6 +64,7 @@ function printHelp() {
   ${colors.bold('Usage:')}
     npx copilotforge init             Set up CopilotForge in your project (full scaffold)
     npx copilotforge init --minimal   Set up with planner skill only (2 files)
+    npx copilotforge status           Show project dashboard (command center)
     npx copilotforge doctor           Check if setup is correct
     npx copilotforge uninstall        Remove CopilotForge files
     npx copilotforge --version        Show version
