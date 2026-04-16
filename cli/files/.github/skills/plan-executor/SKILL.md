@@ -13,7 +13,6 @@ triggers:
   - "pick up where I left off"
   - "what's next in the plan"
   - "implement the next task"
-  - "ralph go"
   - "keep building"
 ---
 
