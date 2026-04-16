@@ -1,246 +1,169 @@
 #!/usr/bin/env tsx
 /**
- * ralph-loop.ts — CopilotForge Development Tool
- *
- * WHAT THIS DOES:
- *   Autonomous development loop runner for CopilotForge. Reads a prompt
- *   file from the project root (PROMPT_plan.md or PROMPT_build.md) and
- *   drives a Copilot session in a loop until all tasks are done or the
- *   iteration cap is reached. Every tool call is logged (⚙ toolName) so
- *   progress is always visible.
- *
- * WHEN TO USE THIS:
- *   When you want to run CopilotForge's development cycle without sitting
- *   at the keyboard. Choose plan mode to populate the backlog, build mode
- *   to work through it. Sessions are fully autonomous — no permission
- *   prompts, no interruptions.
+ * ralph-loop.ts — CopilotForge Autonomous Development Loop
  *
  * HOW TO RUN:
- *   1. npm install @github/copilot-sdk
- *   2. Create PROMPT_plan.md or PROMPT_build.md at the project root
- *   3. npx tsx cookbook/ralph-loop.ts [plan|build] [max_iterations]
+ *   npx tsx cookbook/ralph-loop.ts [plan|build] [max_iterations]
  *
- *   Examples:
- *     npx tsx cookbook/ralph-loop.ts build        # build mode, 50 iterations
- *     npx tsx cookbook/ralph-loop.ts plan 10      # plan mode, 10 iterations
- *     npx tsx cookbook/ralph-loop.ts build 5      # build mode, 5 iterations
+ *   npx tsx cookbook/ralph-loop.ts plan 5    — populate IMPLEMENTATION_PLAN.md
+ *   npx tsx cookbook/ralph-loop.ts build 50  — work through the plan
+ *   npx tsx cookbook/ralph-loop.ts build     — build mode, default 50 iterations
  *
- * PREREQUISITES:
- *   - Node.js 18+
- *   - TypeScript 5+ (tsx or ts-node for direct execution)
- *   - @github/copilot-sdk (npm install @github/copilot-sdk)
- *   - PROMPT_plan.md or PROMPT_build.md at the project root
+ * STOP ANYTIME: Press Ctrl+C — exits cleanly, no data lost.
+ * PAUSE VIA DASHBOARD: The Command Center pause button writes RALPH_PAUSE
+ *   to the project root; Ralph detects it and exits at the next iteration.
  *
- * EXPECTED OUTPUT:
- *   🔄 Ralph Loop — build mode — max 50 iterations
- *   📁 Working directory: /your/project/root
- *
- *   --- Iteration 1/50 [build mode] ---
- *     ⚙ read_file
- *     ⚙ edit_file
- *     ⚙ run_command
- *     ✓ Iteration complete
- *
- *   --- Iteration 2/50 [build mode] ---
- *     ⚙ git_commit
- *     ✓ Iteration complete
- *
- *   ✅ All tasks complete. Ralph Loop exiting.
- *   🔄 Ralph Loop finished — build mode — 50 iterations max
- *
- * PLATFORM NOTES:
- *   - Windows: Use `npx tsx` rather than `npx ts-node` for best results
- *   - macOS/Linux: Both tsx and ts-node work
- *   - Environment variables: Use $env:VAR (PowerShell) or export VAR (bash)
- *
- * NOTE: This file is a CopilotForge development tool — it is NOT scaffolded
- *   into user repos by `copilotforge init`. It lives only in cookbook/.
+ * NOTE: This is a CopilotForge development tool. It is NOT copied into
+ *   user repos by `copilotforge init`. It lives only in cookbook/.
  */
 
-// TODO: Replace mock types with the real import once @github/copilot-sdk is installed:
-//   import { CopilotClient } from "@github/copilot-sdk";
-//   npm install @github/copilot-sdk
-
-import { readFileSync, existsSync } from "node:fs";
+import { CopilotClient, approveAll } from "@github/copilot-sdk";
+import { readFileSync, existsSync, writeFileSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
+import { execSync } from "node:child_process";
 
-// --- Types ---
+// --- Config from CLI args ---
 
-/** A tool-use event emitted by the session as it works. */
-interface ToolCallEvent {
-  name: string;
+const mode = (process.argv[2] ?? "build") as "plan" | "build";
+const maxIterations = parseInt(process.argv[3] ?? "50", 10);
+const projectRoot = process.cwd();
+const startedAt = new Date().toISOString();
+
+if (mode !== "plan" && mode !== "build") {
+  console.error(`❌ Unknown mode "${mode}". Use "plan" or "build".`);
+  process.exit(1);
 }
 
-/** The callback fired when the session wants to use a tool. */
-type ToolCallHandler = (toolName: string) => void;
-
-/** Passed to onPermissionRequest; contains tool name and arguments. */
-interface PermissionRequest {
-  toolName: string;
-  args?: Record<string, unknown>;
+if (isNaN(maxIterations) || maxIterations < 1) {
+  console.error(`❌ max_iterations must be a positive integer.`);
+  process.exit(1);
 }
 
-/** Return this from onPermissionRequest to grant or deny tool use. */
-interface PermissionResponse {
-  approved: boolean;
+// --- Load prompt file ---
+
+const promptFile = mode === "plan" ? "PROMPT_plan.md" : "PROMPT_build.md";
+const promptPath = join(projectRoot, promptFile);
+
+if (!existsSync(promptPath)) {
+  console.error(`❌ Prompt file not found: ${promptPath}`);
+  console.error(`   Create ${promptFile} at the project root first.`);
+  process.exit(1);
 }
 
-/** Options forwarded to session.sendAndWait. */
-interface SendOptions {
-  onToolCall?: ToolCallHandler;
-}
+const prompt = readFileSync(promptPath, "utf-8").trim();
 
-/** A single autonomous Copilot session. */
-interface CopilotSession {
-  sendAndWait(prompt: string, options?: SendOptions): Promise<string>;
-}
+// --- ralph-status.json (read by Command Center dashboard) ---
 
-/** Configuration for creating a CopilotSession. */
-interface SessionConfig {
-  workingDirectory: string;
-  onPermissionRequest: (req: PermissionRequest) => Promise<PermissionResponse>;
-}
-
-/** Top-level SDK client. */
-interface CopilotClientInterface {
-  createSession(config: SessionConfig): Promise<CopilotSession>;
-}
-
-// TODO: Remove this mock class once @github/copilot-sdk is installed.
-//       Replace instantiation below with: const client = new CopilotClient();
-class MockCopilotClient implements CopilotClientInterface {
-  async createSession(config: SessionConfig): Promise<CopilotSession> {
-    // Simulate a session that auto-approves and echoes tool call events.
-    return {
-      async sendAndWait(prompt: string, options?: SendOptions): Promise<string> {
-        // Simulate two tool calls per iteration so the log output is meaningful.
-        const simulatedTools = ["read_file", "edit_file"];
-        for (const tool of simulatedTools) {
-          options?.onToolCall?.(tool);
-          await new Promise((r) => setTimeout(r, 50));
-        }
-        // Return a non-terminal response so the loop runs to max iterations.
-        return "Working on next task…";
-      },
-    };
+function getLastCommit(): string {
+  try {
+    return execSync("git rev-parse --short HEAD", { stdio: "pipe" }).toString().trim();
+  } catch {
+    return "";
   }
 }
 
-// --- Prompt loader ---
-
-/**
- * Reads the mode-specific prompt file from the project root.
- * Throws if the file is missing so the user gets a clear message.
- */
-function loadPrompt(mode: "plan" | "build", projectRoot: string): string {
-  const fileName = mode === "plan" ? "PROMPT_plan.md" : "PROMPT_build.md";
-  const filePath = join(projectRoot, fileName);
-
-  if (!existsSync(filePath)) {
-    throw new Error(
-      `Prompt file not found: ${filePath}\n` +
-        `Create ${fileName} at the project root before running ralph-loop.`
+function writeStatus(iteration: number, currentTask: string, running: boolean): void {
+  try {
+    writeFileSync(
+      join(projectRoot, "ralph-status.json"),
+      JSON.stringify(
+        { running, iteration, maxIterations, currentTask, lastCommit: getLastCommit(), mode, startedAt },
+        null,
+        2
+      )
     );
+  } catch {
+    // Non-fatal — dashboard is optional
   }
-
-  return readFileSync(filePath, "utf-8").trim();
 }
 
-// --- Completion detector ---
+// --- RALPH_PAUSE sentinel (written by Command Center pause button) ---
 
-/**
- * Returns true when the session response signals that no more tasks remain.
- * Extend this list as the project adds new completion signals.
- */
-function isComplete(response: string): boolean {
+function checkPause(iteration: number): boolean {
+  const pausePath = join(projectRoot, "RALPH_PAUSE");
+  if (existsSync(pausePath)) {
+    console.log("\n⏸  RALPH_PAUSE detected — exiting cleanly.");
+    writeStatus(iteration, "paused by user", false);
+    try {
+      unlinkSync(pausePath);
+    } catch {}
+    return true;
+  }
+  return false;
+}
+
+// --- Completion detection ---
+
+function isComplete(text: string): boolean {
   const signals = [
-    "NO_MORE_TASKS",
-    "Board is clear",
-    "DONE",
-    "All tasks complete",
+    "no_more_tasks",
+    "board is clear",
+    "all tasks complete",
     "nothing left to do",
+    "done",
   ];
-  const lower = response.toLowerCase();
-  return signals.some((s) => lower.includes(s.toLowerCase()));
+  const lower = text.toLowerCase();
+  return signals.some((s) => lower.includes(s));
 }
 
 // --- Main loop ---
 
 async function runLoop(): Promise<void> {
-  const mode = (process.argv[2] ?? "build") as "plan" | "build";
-  const maxIterations = parseInt(process.argv[3] ?? "50", 10);
-  const projectRoot = process.cwd();
-
-  if (mode !== "plan" && mode !== "build") {
-    console.error(`❌ Unknown mode "${mode}". Use "plan" or "build".`);
-    process.exit(1);
-  }
-
-  if (isNaN(maxIterations) || maxIterations < 1) {
-    console.error(`❌ max_iterations must be a positive integer. Got: ${process.argv[3]}`);
-    process.exit(1);
-  }
-
   console.log(`🔄 Ralph Loop — ${mode} mode — max ${maxIterations} iterations`);
   console.log(`📁 Working directory: ${projectRoot}\n`);
 
-  let prompt: string;
-  try {
-    prompt = loadPrompt(mode, projectRoot);
-  } catch (err) {
-    console.error(`❌ ${err instanceof Error ? err.message : err}`);
-    process.exit(1);
-  }
+  const client = new CopilotClient();
+  await client.start();
 
-  // TODO: Replace MockCopilotClient with the real SDK:
-  //   import { CopilotClient } from "@github/copilot-sdk";
-  //   const client = new CopilotClient();
-  const client: CopilotClientInterface = new MockCopilotClient();
-
-  let tasksCompleted = 0;
-  let lastCommitMessage = "(none)";
+  // Clean exit on Ctrl+C
+  process.on("SIGINT", async () => {
+    console.log("\n⏹  Interrupted — shutting down cleanly.");
+    writeStatus(0, "interrupted", false);
+    await client.stop();
+    process.exit(0);
+  });
 
   for (let i = 1; i <= maxIterations; i++) {
+    // Check for pause before starting each iteration
+    if (checkPause(i)) break;
+
+    writeStatus(i, "working...", true);
     console.log(`\n--- Iteration ${i}/${maxIterations} [${mode} mode] ---`);
 
     try {
+      // approveAll auto-approves every tool call — no permission prompts
       const session = await client.createSession({
-        workingDirectory: projectRoot,
-        // Auto-approve every tool call — no interactive prompts.
-        onPermissionRequest: async (_req: PermissionRequest): Promise<PermissionResponse> => ({
-          approved: true,
-        }),
+        onPermissionRequest: approveAll,
       });
 
-      const response = await session.sendAndWait(prompt, {
-        onToolCall: (toolName: string) => {
-          console.log(`  ⚙ ${toolName}`);
-          // Track git commits for the exit summary.
-          if (toolName === "git_commit" || toolName === "create_commit") {
-            tasksCompleted += 1;
-            lastCommitMessage = `commit detected at iteration ${i}`;
-          }
-        },
+      // Log each tool call so progress is visible
+      session.on("tool.execution_start", (event: any) => {
+        const name = event?.data?.name ?? event?.data?.toolName ?? "tool";
+        console.log(`  ⚙ ${name}`);
       });
 
+      const result = await session.sendAndWait({ prompt });
+      const responseText = result?.data?.content ?? "";
+
+      writeStatus(i, "iteration complete", true);
       console.log(`  ✓ Iteration complete`);
 
-      if (isComplete(response)) {
+      await session.disconnect();
+
+      if (isComplete(responseText)) {
         console.log("\n✅ All tasks complete. Ralph Loop exiting.");
+        writeStatus(i, "all tasks complete", false);
         break;
       }
     } catch (err) {
-      console.error(
-        `  ❌ Iteration ${i} failed:`,
-        err instanceof Error ? err.message : err
-      );
-      // Log and continue — never crash the entire loop on a single bad iteration.
+      console.error(`  ❌ Iteration ${i} failed:`, err instanceof Error ? err.message : err);
+      // Never crash the whole loop on a single bad iteration
     }
   }
 
+  writeStatus(maxIterations, "loop finished", false);
+  await client.stop();
   console.log(`\n🔄 Ralph Loop finished — ${mode} mode — ${maxIterations} iterations max`);
-  console.log(`   Tasks completed (commits detected): ${tasksCompleted}`);
-  console.log(`   Last commit note: ${lastCommitMessage}`);
 }
 
 runLoop().catch(console.error);
