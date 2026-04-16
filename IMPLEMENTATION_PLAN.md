@@ -16,6 +16,74 @@
 # TIP: Run the CopilotForge wizard ("set up my project") with Task Automation
 # enabled to auto-generate tasks from your project description.
 
-- [ ] setup-project — Initialize project structure and dependencies
-- [ ] hello-world — Create a minimal working example
-- [ ] add-tests — Add basic test coverage
+# =============================================================================
+# PHASE 13 — PATH AWARENESS (v1.5.0 → v1.6.0)
+# =============================================================================
+#
+# Adds 10 build paths to the wizard (A–J). Paths A–I are Power Platform;
+# Path J is the existing developer project flow (unchanged).
+#
+# Build Paths:
+#   A = Copilot Studio Agent (no code)
+#   B = Copilot Studio + Custom Connector
+#   C = Declarative Agent / Agent Builder
+#   D = Canvas App + Copilot Agent
+#   E = Power Automate Flow + AI Builder
+#   F = PCF Code Component (TypeScript required)
+#   G = Power BI Report / Semantic Model
+#   H = SharePoint / Teams + Copilot
+#   I = Power Pages + AI plugin
+#   J = Developer project (existing flow — unchanged)
+#
+# DEPENDENCY CHAIN:
+#   1 (jargon) → 2 (FORGE-CONTEXT) → 3 (wizard) → 4 (compass) → 5 (pp-guide)
+#   → 6 (path-skills) → 7 (path-agents) → 8 (cookbook) → 9 (forgemd-templates)
+#   → 10 (extend-specialists) → 11 (forge-remember) → 12 (memory-conflict)
+#   → 13 (doctor) → 14 (version-bump) → 15 (tests) → 16 (docs-update)
+#
+# PARALLELIZABLE:
+#   Tasks 6, 7, 8 can run in parallel (after task 5 completes).
+#   Tasks 11, 12, 13 can run in parallel (after task 10 completes).
+#
+# INVARIANTS (never break):
+#   - Path J users see identical behavior to v1.5.0
+#   - Specialist names never appear in user-facing output
+#   - forge-memory/ files are never overwritten by upgrade
+#   - All generated files use skip-on-exist safety
+#
+# VALIDATION GATE: After tasks 1, 3, 10, and 14 — run cli/tests/*.test.js
+#   to confirm no regressions. Tank runs jargon-leak scan after every task
+#   that touches templates/ or skill files.
+# =============================================================================
+
+- [ ] fix-jargon-leak — Audit and fix all 24 jargon leak failures: remove specialist names (skill-writer, agent-writer, memory-writer, cookbook-writer) from templates/agents/planner.md, templates/agents/reviewer.md, templates/agents/tester.md, and any user-facing output. Cross-reference check: ensure no specialist name appears in generated FORGE.md. Run jargon validator after fixing. (Owner: Neo + Trinity | Gate: Tank jargon scan)
+
+- [ ] extend-forge-context — Add four new fields to the FORGE-CONTEXT block in .github/skills/planner/reference.md: BUILD_PATH (letter A-J), PATH_NAME (human label), PREREQUISITES_CONFIRMED (boolean), EXTENSION_REQUIRED (boolean — true for paths needing a browser extension or pac CLI), MS_LEARN_ANCHOR (URL to MS Learn page for the path). Update the FORGE-CONTEXT block format example in reference.md to include all four fields with placeholder values. Do NOT change existing fields.
+
+- [ ] extend-planner-wizard — Extend .github/skills/planner/SKILL.md: (a) After Q1 ("What are you building?"), detect Power Platform signals (keywords: studio, copilot studio, canvas app, power automate, PCF, power bi, sharepoint agent, power pages, declarative agent). (b) If Power Platform signals detected: ask 3-question diagnostic to determine exact path (Is this a no-code/low-code or TypeScript/C# project? Does it need a custom connector or API integration? What's the primary output: agent, report, app, flow, or page?). (c) Ambiguous-answer clarification: if Q1 is ambiguous, Planner asks one follow-up before routing. (d) Add Forge Compass pre-check: before running the diagnostic, invoke forge-compass to confirm the path is consistent with memory. (e) Path J users with no Power Platform signals continue unchanged.
+
+- [ ] build-forge-compass — Create .github/skills/forge-compass/SKILL.md: a pre-scaffold gate skill. It must: (1) read forge-memory/preferences.md for previous BUILD_PATH; (2) detect contradictions between memory and current session responses (e.g., memory says Path A but user now says "I need TypeScript"); (3) emit a confidence score (High/Medium/Low) for path routing; (4) flag prerequisite risk (Path F requires Node >=16 + pac CLI; Path B requires a REST API to wrap); (5) detect motivated reasoning (user is rationalizing a path rather than selecting it). On contradiction: surface a one-line warning and ask for confirmation. On high confidence: proceed silently. File: .github/skills/forge-compass/SKILL.md (create new directory).
+
+- [ ] build-power-platform-guide — Create .github/skills/power-platform-guide/SKILL.md: master routing table + per-path reference guides. Must include: (a) Routing table mapping Q1/Q2/Q3 answers to BUILD_PATH letter; (b) Per-path guide sections for all 10 paths (A-J) covering: what it is, who it's for, prerequisites, what gets generated, MS Learn anchor; (c) Path F (PCF) gets expanded coverage: Node >=16 check, pac CLI setup, TypeScript PCF component lifecycle, manifest validation. Trigger phrases: "which path am I on?", "power platform guide", "route my project". File: .github/skills/power-platform-guide/SKILL.md.
+
+- [ ] build-path-skills — Create 9 path-specific skill files, one per Power Platform path. Each file: .github/skills/{path-name}/SKILL.md. File names: studio-agent, studio-connector, declarative-agent, canvas-agent, power-automate, pcf-component, powerbi-report, sharepoint-agent, power-pages. Each file must: (1) state the path letter and name in the first line; (2) include a MS Learn integration block with 2-3 MS Learn article links relevant to that path; (3) provide a 5-step "day one" checklist; (4) specify what specialist agents are available for this path; (5) include "forge remember: [decision]" phrase support block. Path F (pcf-component) gets extra content: PCF control lifecycle, TypeScript interface requirements, pac CLI commands for init/build/push.
+
+- [ ] build-path-agents — Create 6 Power Platform agent template files in templates/agents/: studio-agent.md (Copilot Studio orchestrator), declarative-agent.md (no-code agent for path C), canvas-agent.md (Canvas + Copilot integration), pcf-agent.md (Code Component dev assistant), automate-agent.md (Power Automate flow assistant), powerbi-agent.md (Power BI report/model assistant). Each file: no specialist names, no cross-references between agents, clear role boundary, trigger phrase for activation, list of what the agent will/won't do, one example opening message. Paths H (SharePoint) and I (Power Pages) share the studio-agent.md with a path-specific preamble.
+
+- [ ] build-path-cookbook — Create 16 Power Platform cookbook files in cookbook/: topics-guide.md, connector-setup.md, api-auth-guide.md, manifest-guide.md, action-setup.md, powerfx-patterns.md, data-connections.md, sharepoint-connector.md, dataverse-connector.md, pcf-component.ts (TypeScript PCF skeleton), pcf-manifest.md, flow-patterns.md, trigger-setup.md, studio-flow-integration.md, report-setup.md, data-model.md. Each file: header comment stating which path(s) it applies to, self-contained (no imports from other cookbook files), working code or step-by-step instructions with copy-paste intent. pcf-component.ts must be a compilable TypeScript skeleton with correct PCF interfaces.
+
+- [ ] build-path-forgemd — Add 9 per-path FORGE.md template strings to cli/src/templates.js (one per path A-I), following the existing FORGE.md template pattern. Each variant: (1) path-specific Project Summary (path letter, name, prerequisites); (2) correct Team Roster (only agents relevant to that path); (3) Skills Index listing only path-relevant skills; (4) Cookbook index listing only path-relevant recipes; (5) version stamp <!-- copilotforge: v1.6.0 -->. Export a new getPlatformForge(path) function from templates.js that returns the correct template by path letter. Path J continues to use the existing getForge() function unchanged.
+
+- [ ] extend-specialists — Extend all 4 specialist agents to read BUILD_PATH from FORGE-CONTEXT and branch accordingly: (a) skill-writer.md: if BUILD_PATH is A-I, generate path-specific skill files instead of generic ones; (b) agent-writer.md: if BUILD_PATH is A-I, instantiate the correct Power Platform agent template; (c) memory-writer.md: persist BUILD_PATH and PATH_NAME into forge-memory/preferences.md on first scaffold; (d) cookbook-writer.md: if BUILD_PATH is A-I, select only path-appropriate recipes from the new cookbook files. All 4 agents: BUILD_PATH=J or missing uses existing v1.5.0 behavior exactly (unchanged code path).
+
+- [ ] add-forge-remember — Add "forge remember: [decision]" phrase support to all skill files — both existing and new. Files to update: .github/skills/planner/SKILL.md, .github/skills/plan-executor/SKILL.md, .github/skills/forge-compass/SKILL.md, .github/skills/power-platform-guide/SKILL.md, and all 9 path-specific SKILL.md files created in task build-path-skills. The phrase must: (a) be recognized as a memory-write trigger; (b) format the decision with today's date; (c) append it to forge-memory/decisions.md; (d) confirm with a one-line acknowledgment ("Remembered: [decision]").
+
+- [ ] extend-memory-conflict — Extend the returning-user detection logic in .github/skills/planner/SKILL.md and reference.md: (a) when forge-memory/preferences.md exists, read BUILD_PATH from it; (b) if current session answers indicate a different path than stored path, surface a path-change warning ("Your memory says Path A (Copilot Studio). You now seem to be on Path F (PCF). Confirm change?"); (c) if user confirms path change, update preferences.md BUILD_PATH; (d) if returning Power Platform user (paths A-I stored in memory) and re-running wizard, show "Welcome back to [PATH_NAME]" with 3 action choices: continue where left off / change path / reset to blank. Existing Path J returning-user flow is unchanged.
+
+- [ ] extend-doctor — Extend cli/src/doctor.js with path-aware prerequisite checks: (a) read BUILD_PATH from FORGE.md if present (look for <!-- copilotforge: path={letter} --> stamp; add this stamp to all new FORGE.md templates); (b) if BUILD_PATH=F: check Node version >=16, check for pac CLI (run pac --version, warn if missing), check for PCF extension in .github/skills/; (c) if BUILD_PATH=B or I: add manual check item "Custom connector endpoint verified?"; (d) if BUILD_PATH=G: check for Power BI Desktop note; (e) Path J and no BUILD_PATH: existing doctor checks only (unchanged). Add new doctor output section "Path Prerequisites" that only appears when a path is detected.
+
+- [ ] bump-version — Bump version from 1.5.0 to 1.6.0 in all locations: cli/package.json (version field), cli/src/templates.js (version stamp string in getForge()), cli/bin/copilotforge.js (--version output if hardcoded), any hardcoded "v1.5.0" strings in .github/skills/planner/SKILL.md or reference.md. Run: grep -r "1.5.0" to find all occurrences before editing. Do NOT bump versions in CHANGELOG.md or decision logs (those record history). Confirm doctor check passes with new stamp after bumping.
+
+- [ ] extend-tests — Create cli/tests/path-detection.test.js using Node.js built-in test runner (zero dependencies). Required test cases: (1) all 10 path detection scenarios (signal words for each path A-I, fallback to J); (2) ambiguous input triggers clarification flow; (3) path contradiction detection (memory says A, input signals F); (4) forge-compass confidence levels (high/medium/low); (5) returning Power Platform user welcome-back flow; (6) jargon-leak regression: scan all files in templates/agents/ and .github/skills/ for forbidden words (skill-writer, agent-writer, memory-writer, cookbook-writer); (7) Path J regression: existing Path J signals produce identical output structure to v1.5.0. Run all existing tests after to confirm no regressions.
+
+- [ ] update-system-breakdown — Update docs/SYSTEM-BREAKDOWN.md to document Phase 13: (a) add Phase 13 row to the Development Lifecycle table (status: Done, description: Path Awareness — 10 build paths, Power Platform support, forge-compass); (b) add Layer 2 section for forge-compass and power-platform-guide skills; (c) add BUILD_PATH routing table to Layer 6 (FORGE.md); (d) add 10-path routing table near the wizard section; (e) update all version references from 1.5.0 to 1.6.0; (f) update Open Issues table (remove fixed jargon-leak issue). Mark Phase 13 as complete.
