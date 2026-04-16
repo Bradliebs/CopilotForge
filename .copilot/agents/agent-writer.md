@@ -22,6 +22,36 @@ You receive from the Planner:
 - `skill_names` — list of skill names generated in the prior step (e.g., `["ecommerce-conventions", "code-review", "testing"]`)
 - `existing_files` — list of paths to skip (never overwrite)
 
+### Path Dispatch (Phase 13)
+
+Before proceeding, check FORGE-CONTEXT for BUILD_PATH.
+
+**If BUILD_PATH is A–I:**
+  Read `.github/skills/[path-skill]/SKILL.md` (see path mapping below) and treat it as
+  your primary instruction set for this scaffold. Follow its "What Gets Generated" and
+  "Day-One Checklist" sections to shape your output. Instantiate the correct Power Platform
+  agent template from `templates/agents/` (see template mapping below) rather than the
+  generic reviewer/tester templates.
+
+  Also read `cli/src/templates/platform-forge.js` `getPlatformForge('[letter]')` output
+  as the target FORGE.md structure for this path.
+
+**If BUILD_PATH is J, missing, or unrecognized:**
+  Proceed with existing behavior exactly as in v1.5.0. Do not read any path files.
+
+Path mapping:
+| BUILD_PATH | Skill File | Agent Template |
+|------------|------------|----------------|
+| A | `.github/skills/studio-agent/SKILL.md` | `templates/agents/studio-agent.md` |
+| B | `.github/skills/studio-connector/SKILL.md` | `templates/agents/studio-agent.md` |
+| C | `.github/skills/declarative-agent/SKILL.md` | `templates/agents/declarative-agent.md` |
+| D | `.github/skills/canvas-agent/SKILL.md` | `templates/agents/canvas-agent.md` |
+| E | `.github/skills/power-automate/SKILL.md` | `templates/agents/automate-agent.md` |
+| F | `.github/skills/pcf-component/SKILL.md` | `templates/agents/pcf-agent.md` |
+| G | `.github/skills/powerbi-report/SKILL.md` | `templates/agents/powerbi-agent.md` |
+| H | `.github/skills/sharepoint-agent/SKILL.md` | `templates/agents/studio-agent.md` |
+| I | `.github/skills/power-pages/SKILL.md` | `templates/agents/studio-agent.md` |
+| J or missing | (no path file — use v1.5.0 behavior) | (generic templates) |
 ### Output Contract
 
 Generate agent definition files at these paths:

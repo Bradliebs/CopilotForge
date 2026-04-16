@@ -24,6 +24,38 @@ You receive from the Planner:
 - `existing_files` — list of paths to skip (never overwrite)
 - `forge_md_cookbook` — current contents between `<!-- forge:cookbook-start -->` and `<!-- forge:cookbook-end -->` in FORGE.md (empty on first run)
 
+### Path Dispatch (Phase 13)
+
+Before proceeding, check FORGE-CONTEXT for BUILD_PATH.
+
+**If BUILD_PATH is A–I:**
+  Read `.github/skills/[path-skill]/SKILL.md` (see path mapping below) and treat it as
+  your primary instruction set for this scaffold. Follow its "What Gets Generated" and
+  "Day-One Checklist" sections to shape your output. Select only path-appropriate recipes
+  from `cookbook/` — use the recipe guidance in the path skill file as the authoritative
+  source for which recipes to generate. The path skill file's guidance takes precedence
+  over the generic recipe selection table in the Output Contract below.
+
+  Also read `cli/src/templates/platform-forge.js` `getPlatformForge('[letter]')` output
+  as the target FORGE.md structure for this path.
+
+**If BUILD_PATH is J, missing, or unrecognized:**
+  Proceed with existing behavior exactly as in v1.5.0. Use the generic recipe selection
+  table in the Output Contract. Do not read any path files.
+
+Path mapping:
+| BUILD_PATH | Skill File |
+|------------|------------|
+| A | `.github/skills/studio-agent/SKILL.md` |
+| B | `.github/skills/studio-connector/SKILL.md` |
+| C | `.github/skills/declarative-agent/SKILL.md` |
+| D | `.github/skills/canvas-agent/SKILL.md` |
+| E | `.github/skills/power-automate/SKILL.md` |
+| F | `.github/skills/pcf-component/SKILL.md` |
+| G | `.github/skills/powerbi-report/SKILL.md` |
+| H | `.github/skills/sharepoint-agent/SKILL.md` |
+| I | `.github/skills/power-pages/SKILL.md` |
+| J or missing | (no path file — use v1.5.0 behavior) |
 ### Stack Detection
 
 Before selecting recipes, identify every framework in the project. The Planner runs this detection and passes results, but if `detected_frameworks` is empty, run detection yourself:

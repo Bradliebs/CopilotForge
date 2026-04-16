@@ -60,6 +60,45 @@ You receive from the Planner:
 - `previous_decisions` — recent decisions from decisions.md (provided by Planner's memory read phase)
 - `user_preferences` — preferences from preferences.md (provided by Planner's memory read phase)
 
+### Path Dispatch (Phase 13)
+
+Before proceeding, check FORGE-CONTEXT for BUILD_PATH.
+
+**If BUILD_PATH is A–I:**
+  Read `.github/skills/[path-skill]/SKILL.md` (see path mapping below) and treat it as
+  your primary instruction set for this scaffold. Follow its "What Gets Generated" and
+  "Day-One Checklist" sections to shape your output.
+
+  Also read `cli/src/templates/platform-forge.js` `getPlatformForge('[letter]')` output
+  as the target FORGE.md structure for this path.
+
+  **On first scaffold only:** After writing `forge-memory/preferences.md`, append these
+  two lines at the end of the file:
+  ```
+  BUILD_PATH: [letter]
+  PATH_NAME: [value of PATH_NAME from FORGE-CONTEXT]
+  ```
+  If `forge-memory/preferences.md` already contains a `BUILD_PATH:` line, do **not**
+  overwrite it unless `PREREQUISITES_CONFIRMED` is `true` in FORGE-CONTEXT (which
+  indicates the user explicitly confirmed a path change).
+
+**If BUILD_PATH is J, missing, or unrecognized:**
+  Proceed with existing behavior exactly as in v1.5.0. Do not read any path files.
+  Do not append BUILD_PATH or PATH_NAME to preferences.md.
+
+Path mapping:
+| BUILD_PATH | Skill File |
+|------------|------------|
+| A | `.github/skills/studio-agent/SKILL.md` |
+| B | `.github/skills/studio-connector/SKILL.md` |
+| C | `.github/skills/declarative-agent/SKILL.md` |
+| D | `.github/skills/canvas-agent/SKILL.md` |
+| E | `.github/skills/power-automate/SKILL.md` |
+| F | `.github/skills/pcf-component/SKILL.md` |
+| G | `.github/skills/powerbi-report/SKILL.md` |
+| H | `.github/skills/sharepoint-agent/SKILL.md` |
+| I | `.github/skills/power-pages/SKILL.md` |
+| J or missing | (no path file — use v1.5.0 behavior) |
 ### Output Contract
 
 Generate or update files at these paths:

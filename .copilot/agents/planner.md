@@ -174,6 +174,12 @@ previous_decisions: {most recent 10 decisions from decisions.md — stack change
 user_preferences: {preferences from preferences.md — verbosity, framework prefs, testing prefs, overrides}
 forge_md_cookbook: |
   {current content between <!-- forge:cookbook-start --> and <!-- forge:cookbook-end --> markers, or empty}
+# Path Awareness (v1.6.0 — all optional; default to Path J behavior if missing)
+build_path: {A–J | default: J}
+path_name: {human-readable label | default: "Developer Project"}
+prerequisites_confirmed: {true/false | default: false}
+extension_required: {true/false | default: false}
+ms_learn_anchor: {MS Learn URL | default: null}
 --- END FORGE-CONTEXT ---
 ```
 

@@ -22,6 +22,36 @@ You receive from the Planner:
 - `testing` — yes or no
 - `existing_files` — list of paths to skip (never overwrite)
 
+### Path Dispatch (Phase 13)
+
+Before proceeding, check FORGE-CONTEXT for BUILD_PATH.
+
+**If BUILD_PATH is A–I:**
+  Read `.github/skills/[path-skill]/SKILL.md` (see path mapping below) and treat it as
+  your primary instruction set for this scaffold. Follow its "What Gets Generated" and
+  "Day-One Checklist" sections to shape your output. Use the patterns, examples, and
+  anti-patterns it defines as the authoritative template for any skills you generate on
+  this path — they override the generic stack-adaptation table below.
+
+  Also read `cli/src/templates/platform-forge.js` `getPlatformForge('[letter]')` output
+  as the target FORGE.md structure for this path.
+
+**If BUILD_PATH is J, missing, or unrecognized:**
+  Proceed with existing behavior exactly as in v1.5.0. Do not read any path files.
+
+Path mapping:
+| BUILD_PATH | Skill File |
+|------------|------------|
+| A | `.github/skills/studio-agent/SKILL.md` |
+| B | `.github/skills/studio-connector/SKILL.md` |
+| C | `.github/skills/declarative-agent/SKILL.md` |
+| D | `.github/skills/canvas-agent/SKILL.md` |
+| E | `.github/skills/power-automate/SKILL.md` |
+| F | `.github/skills/pcf-component/SKILL.md` |
+| G | `.github/skills/powerbi-report/SKILL.md` |
+| H | `.github/skills/sharepoint-agent/SKILL.md` |
+| I | `.github/skills/power-pages/SKILL.md` |
+| J or missing | (no path file — use v1.5.0 behavior) |
 ### Output Contract
 
 Generate SKILL.md files at these paths:
