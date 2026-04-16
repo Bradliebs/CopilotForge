@@ -1,3 +1,67 @@
+# Decision: Phase 13 Task 9 — Per-Path FORGE.md Templates
+
+**Author:** Neo (Developer)
+**Date:** 2025-01-29
+**Status:** Implemented
+
+## Decision
+
+Implemented 9 dedicated `getPlatformForge[A-I]()` functions in `cli/src/templates/platform-forge.js`, each returning a complete FORGE.md template tailored to its Power Platform build path. Path J continues to fall back to the existing `FORGE_MD` generic template from `forge.js`.
+
+## Version Stamps
+
+All new Path A–I templates carry:
+- `<!-- copilotforge: v1.6.0 -->` (hardcoded, not derived from package.json which is at v1.5.0)
+- `<!-- copilotforge: path=[LETTER] -->` on the line immediately following
+
+## Dispatch Logic
+
+```javascript
+function getPlatformForge(forgePath) {
+  const variants = { A: ..., B: ..., C: ..., D: ..., E: ..., F: ..., G: ..., H: ..., I: ... };
+  const fn = variants[forgePath && forgePath.toUpperCase()];
+  const { FORGE_MD } = require('./forge');
+  return fn ? fn() : FORGE_MD; // Path J fallback
+}
+```
+
+## Template Structure Per Path
+
+Each template includes:
+- Project Summary with Build Path, Stack, Prerequisites, and MS Learn URL
+- Team Roster table referencing path-appropriate `.copilot/agents/` files
+- Skills Index table referencing path-appropriate `.github/skills/` entries
+- Cookbook table referencing path-appropriate `cookbook/` recipes
+- Memory section (common across all paths)
+- Settings block with Build Path and Path Name
+
+## Path Assignments
+
+| Path | Name | Stack | Agent | Key Skills |
+|------|------|-------|-------|------------|
+| A | Copilot Studio Agent | Copilot Studio (no-code) | Studio Guide | studio-agent |
+| B | Studio + Custom Connector | Copilot Studio + REST API | Studio Guide | studio-connector |
+| C | Declarative Agent | M365 Copilot Agent Builder | Declarative Builder | declarative-agent |
+| D | Canvas App + Copilot Agent | Power Apps Canvas + AI Builder | Canvas Companion | canvas-agent |
+| E | Power Automate | Power Automate + AI Builder | Flow Architect | power-automate |
+| F | PCF Code Component | TypeScript + PCF + pac CLI | Component Engineer | pcf-component |
+| G | Power BI | Power BI Desktop + Service | Report Architect | powerbi-report |
+| H | SharePoint + Teams | M365 Copilot + SharePoint | Studio Guide | sharepoint-agent |
+| I | Power Pages | Power Pages + Dataverse + AI Plugin | Studio Guide | power-pages |
+| J | (generic fallback) | — | — | — |
+
+## Export
+
+`getPlatformForge` is spread into `cli/src/templates/index.js` via `...platformForge` (already present before this task).
+
+## Test Results
+
+- Smoke test: all 10 paths (A–J) return non-empty strings; Path J returns FORGE_MD generic content
+- Test suite: 46/46 tests pass (`node --test tests/*.test.js`)
+
+
+---
+
 # CopilotForge Squad Decisions
 
 ## Latest Decisions
@@ -109,4 +173,5 @@
 **Requested by:** Brad Liebs
 
 **Ruling:** Option 1 — Compass flags. Planner confirms. Compass is a gate that reads, detects, and warns. The Planner wizard is where users interact and confirm.
+
 
