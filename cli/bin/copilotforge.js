@@ -52,9 +52,18 @@ switch (command) {
     break;
   }
 
+  case 'interactive':
+  case '': {
+    const interactive = require('../src/interactive');
+    interactive.run().catch((err) => {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    });
+    break;
+  }
+
   case '--help':
   case '-h':
-  case '':
     printHelp();
     break;
 
@@ -71,6 +80,7 @@ function printHelp() {
   ${colors.bold(colors.red('\uD83D\uDD25 CopilotForge'))} ${colors.dim('\u2014 AI team scaffolding in one command')}
 
   ${colors.bold('Usage:')}
+    npx copilotforge                  Interactive command center (default)
     npx copilotforge init             Set up CopilotForge in your project (full scaffold)
     npx copilotforge init --minimal   Set up with planner skill only (2 files)
     npx copilotforge status           Show project dashboard (command center)

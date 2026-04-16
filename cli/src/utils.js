@@ -75,6 +75,46 @@ function ask(question, defaultAnswer = false) {
 }
 
 /**
+ * Numbered menu prompt. Takes an array of { label, value, show? } items.
+ * Returns the `value` of the selected item.
+ */
+async function menu(items) {
+  const visible = items.filter((item) => item.show !== false);
+
+  // Non-interactive: return first visible item
+  if (!process.stdin.isTTY) {
+    return visible[0].value;
+  }
+
+  console.log();
+  for (let i = 0; i < visible.length; i++) {
+    console.log(`  ${colors.cyan(`[${i + 1}]`)} ${colors.bold(visible[i].label)}`);
+  }
+
+  return new Promise((resolve) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    const prompt = () => {
+      rl.question('> ', (answer) => {
+        const num = Number(answer.trim());
+        if (Number.isInteger(num) && num >= 1 && num <= visible.length) {
+          rl.close();
+          resolve(visible[num - 1].value);
+        } else {
+          console.log(`  Pick a number 1-${visible.length}`);
+          prompt();
+        }
+      });
+    };
+
+    prompt();
+  });
+}
+
+/**
  * Resolve the package's `files/` directory, where bundled assets live.
  */
 function filesDir() {
@@ -206,6 +246,7 @@ module.exports = {
   info,
   separator,
   ask,
+  menu,
   filesDir,
   copyFile,
   writeFile,

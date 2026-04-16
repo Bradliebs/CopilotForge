@@ -11,8 +11,9 @@
  *   multiple files. Run it daily as your "morning briefing."
  *
  * HOW TO RUN:
- *   npx ts-node cookbook/command-center.ts
- *   Or: npx copilotforge status (built-in version)
+ *   npx ts-node cookbook/command-center.ts           Interactive dashboard
+ *   npx copilotforge status                          Static dashboard
+ *   npx copilotforge                                 Interactive (built-in)
  *
  * PREREQUISITES:
  *   - Node.js 18+
@@ -37,6 +38,7 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, basename } from "node:path";
 import { execSync } from "node:child_process";
+import { createInterface } from "node:readline";
 
 // --- ANSI helpers ---
 
@@ -167,6 +169,97 @@ function renderDashboard(): void {
   console.log();
 }
 
+// --- Interactive menu functions ---
+
+async function showMenu(): Promise<string> {
+  console.log(`${c.cyan}What would you like to do?${c.reset}`);
+  console.log();
+  console.log(`  ${c.bold}[1]${c.reset} 📋 View plan details`);
+  console.log(`  ${c.bold}[2]${c.reset} 🔄 Refresh dashboard`);
+  console.log(`  ${c.bold}[3]${c.reset} ❌ Exit`);
+  console.log();
+
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    rl.question(`${c.yellow}Choose an option (1–3): ${c.reset}`, (answer) => {
+      rl.close();
+      if (answer === "1" || answer === "plan") resolve("plan");
+      if (answer === "2" || answer === "refresh") resolve("refresh");
+      if (answer === "3" || answer === "exit") resolve("exit");
+      resolve("refresh");
+    });
+  });
+}
+
+function viewPlan(): void {
+  const planPath = join(".", "IMPLEMENTATION_PLAN.md");
+  if (!existsSync(planPath)) {
+    console.log(`${c.yellow}❌ No IMPLEMENTATION_PLAN.md found${c.reset}`);
+    promptEnter();
+    return;
+  }
+
+  const lines = readFileSync(planPath, "utf-8").split("\n");
+  const tasks = lines.filter((l) => /^- \[.\]/.test(l));
+
+  console.log();
+  console.log(`${c.bold}📋 Plan Details${c.reset}`);
+  console.log(LINE);
+
+  let done = 0,
+    pending = 0,
+    failed = 0;
+
+  for (const task of tasks) {
+    if (/^- \[x\]/.test(task)) {
+      console.log(`${c.green}✅${c.reset} ${task.substring(6)}`);
+      done++;
+    } else if (/^- \[!\]/.test(task)) {
+      console.log(`${c.yellow}❌${c.reset} ${task.substring(6)}`);
+      failed++;
+    } else {
+      console.log(`${c.dim}⬜${c.reset} ${task.substring(6)}`);
+      pending++;
+    }
+  }
+
+  console.log(LINE);
+  const total = tasks.length;
+  console.log(
+    `${c.bold}Summary:${c.reset} ${done}/${total} done · ${pending} pending · ${failed} failed`
+  );
+  console.log();
+
+  promptEnter();
+}
+
+function promptEnter(): void {
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  rl.question(`${c.dim}Press Enter to return...${c.reset}`, () => {
+    rl.close();
+  });
+}
+
+async function interactiveDashboard(): Promise<void> {
+  let firstRun = true;
+  while (true) {
+    if (!firstRun) console.clear();
+    firstRun = false;
+    renderDashboard();
+    const choice = await showMenu();
+    if (choice === "exit") break;
+    if (choice === "plan") viewPlan();
+  }
+}
+
 // --- Entry Point ---
 
-renderDashboard();
+interactiveDashboard().catch(() => process.exit(0));
