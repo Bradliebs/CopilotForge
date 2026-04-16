@@ -1,4 +1,4 @@
-﻿---
+---
 name: "copilotforge-planner"
 description: "Guided wizard that scaffolds Copilot skills, agents, memory, and cookbook recipes into any repo from a plain-English project description"
 domain: "scaffolding"
@@ -142,7 +142,7 @@ forge-memory/preferences.md (BUILD_PATH field).
 > 3. **Wipe memory** — Start fresh with a clean slate
 
 **On choice 1:** Update FORGE-CONTEXT BUILD_PATH + PATH_NAME. Set PREREQUISITES_CONFIRMED=false.
-Proceed with new path routing. memory-writer will persist the change.
+Proceed with new path routing. memory files will be updated to persist the change.
 
 **On choice 2:** Keep stored BUILD_PATH. Proceed with existing path. No FORGE-CONTEXT changes.
 

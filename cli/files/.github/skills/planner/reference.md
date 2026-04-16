@@ -539,7 +539,7 @@ During scaffolding, memory context is passed to all generation steps via the FOR
 
 ### FORGE-CONTEXT Block Schema
 
-The FORGE-CONTEXT block is the inline data contract passed from the Planner to all specialist agents (skill-writer, agent-writer, memory-writer, cookbook-writer) during Step 3. It carries all wizard answers plus memory context.
+The FORGE-CONTEXT block is the inline data contract passed from the Planner to all scaffolding services during Step 3 (writing your skills, setting up your agents, updating memory files, and selecting recipes). It carries all wizard answers plus memory context.
 
 **v1.5.0 core fields (always present):**
 
