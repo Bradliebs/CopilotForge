@@ -537,3 +537,88 @@ A default must be the safest possible value when the user hasn't spoken. `false`
 - Merge decision inbox entries regularly
 - Archive superseded decisions with date and rationale for change
 
+
+---
+
+## CopilotForge Command Center Architecture
+
+**Date:** 2026-04-16  
+**Lead:** Morpheus  
+**Status:** Approved
+
+### 1. Application Scope
+The Command Center is a **separate Electron application** located at C:\AI Projects\copilotforge-command-center. It is NOT embedded within Oracle_Prime but runs as a standalone desktop application that integrates with the CopilotForge ecosystem.
+
+### 2. File Watching Strategy
+- Uses Node.js s.watch() for real-time file monitoring
+- **Debounce:** 500ms to prevent excessive re-renders
+- Watches: IMPLEMENTATION_PLAN.md, ralph-status.json, .squad directory, git repository
+
+### 3. Ralph Integration
+- Ralph state persisted in alph-status.json (gitignored)
+- Written by alph-loop.ts
+- Read by Command Center's ralph-watcher
+- Includes: execution status, current task, error state
+
+### 4. IPC Channel Design
+Primary communication between Electron main and renderer processes:
+- **forge:selectDirectory** — Directory picker dialog
+- **forge:getData** — Fetch widget data (async request-response)
+- **forge:pauseRalph** — Stop ralph-loop execution
+- **forge:resumeRalph** — Resume ralph-loop execution
+- **forge:appendMemory** — Add entries to forge memory store
+- **forge:onUpdate** — Real-time updates from file watchers (one-way broadcast)
+
+### 5. Data Persistence
+- **SQLite Database:** 
+otes.db — Notes widget only, NOT for state persistence
+- **JSON Files:** ralph-status.json, configuration files
+- **Markdown Files:** IMPLEMENTATION_PLAN.md (read-only), project files
+- **Git State:** Accessed via git CLI commands
+
+### 6. Widget Configuration
+Six-widget component tree with 60/40 split layout:
+
+**Left Panel (60%):**
+- Ralph Widget — ralph-loop status and controls
+- Plan Widget — IMPLEMENTATION_PLAN.md viewer
+- Squad Widget — Team member status display
+
+**Right Panel (40%):**
+- Git Widget — Repository overview and recent commits
+- Memory Widget — Forge memory entries with append
+- Notes Widget — SQLite-backed persistent notes
+
+### 7. Dark Terminal UI Design System
+- **Background:** #0f0f0f (deep terminal black)
+- **Cards/Panels:** #1a1a1a (subtle elevation contrast)
+- **Primary Accent:** #22c55e (bright green for interactive elements)
+- **Text:** #ffffff (main), #e5e7eb (secondary)
+- **Borders:** Max 6px border-radius (modern minimal aesthetic)
+- **Typography:** Monospace for code blocks, sans-serif for UI labels
+
+### 8. Technology Stack
+- **Framework:** Electron 40 (latest stable)
+- **UI Library:** React 19 (concurrent rendering)
+- **Language:** TypeScript (full type safety)
+- **Build Tool:** Vite (fast dev server, optimized builds)
+- **Styling:** Tailwind CSS 4 (utility-first, no custom CSS)
+- **Database:** SQLite 3 (notes persistence only)
+
+### 9. Preload Security Model
+- Preload script defines IPC channel contracts
+- Only listed channels exposed to renderer
+- Type-safe bridge for all main→renderer communication
+- Sandboxed renderer context
+
+### 10. File System Layout
+`
+copilotforge-command-center/
+├── src/main/ — Electron main process (file watcher, IPC handlers)
+├── src/renderer/ — React UI (6 widgets)
+├── src/preload.ts — IPC bridge definitions
+├── notes.db — SQLite database (gitignored)
+├── .env — Configuration (gitignored)
+└── vite.config.ts — Build configuration
+`
+
