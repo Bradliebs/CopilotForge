@@ -642,7 +642,7 @@ Run with: `node --test tests/*.test.js`
 
 | Issue | Status | Owner |
 |-------|--------|-------|
-| Jargon leak: specialist names appear in user-facing templates (24 validator failures) | Identified | Neo, Trinity |
+| Jargon leak: specialist names in user-facing templates | ✅ Fixed (Phase 13, Task 1) | Neo |
 | No automated wizard test harness | Carried from Phase 1 | Tank |
 | Specialist agent templates contain cross-references visible to users | Known | Neo |
 | Re-run sub-decisions (3 scenarios still open) | Pending consensus | Tank |
