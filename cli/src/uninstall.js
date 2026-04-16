@@ -11,6 +11,16 @@ const INSTALLED_FILES = [
 
 function run() {
   const cwd = process.cwd();
+  const dryRun = process.argv.includes('--dry-run') || process.argv.includes('--dryRun');
+
+  // --dry-run: print what would be deleted and exit without deleting
+  if (dryRun) {
+    for (const rel of INSTALLED_FILES) {
+      console.log(`[DRY RUN] Would delete: ${rel}`);
+    }
+    console.log('[DRY RUN] No files were deleted.');
+    return;
+  }
 
   banner();
   console.log(`  ${colors.bold('\uD83E\uDDF9 Removing CopilotForge files...')}`);

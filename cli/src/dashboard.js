@@ -1,7 +1,6 @@
 'use strict';
 
 const { spawn, execSync } = require('child_process');
-const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -114,22 +113,13 @@ function printInstallInstructions() {
   console.log();
 }
 
-// Download from URL using https module
-function httpsGet(url) {
-  return new Promise((resolve, reject) => {
-    https.get(url, { headers: { 'User-Agent': 'copilotforge-cli' } }, (res) => {
-      if (res.statusCode === 302 || res.statusCode === 301) {
-        return httpsGet(res.headers.location).then(resolve).catch(reject);
-      }
-      if (res.statusCode !== 200) {
-        return reject(new Error(`HTTP ${res.statusCode}`));
-      }
-      const chunks = [];
-      res.on('data', (chunk) => chunks.push(chunk));
-      res.on('end', () => resolve(Buffer.concat(chunks)));
-      res.on('error', reject);
-    }).on('error', reject);
-  });
+// Download from URL using native fetch (Node.js 18+)
+async function fetchBuffer(url) {
+  const response = await fetch(url, { headers: { 'User-Agent': 'copilotforge-cli' } });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return Buffer.from(await response.arrayBuffer());
 }
 
 // Download and launch the Command Center
@@ -138,7 +128,7 @@ async function downloadAndLaunch(projectPath) {
   info('📊 Downloading CopilotForge Command Center...');
   
   // Get latest release info
-  const releaseData = await httpsGet('https://api.github.com/repos/Bradliebs/copilotforge-command-center/releases/latest');
+  const releaseData = await fetchBuffer('https://api.github.com/repos/Bradliebs/copilotforge-command-center/releases/latest');
   const release = JSON.parse(releaseData.toString());
   
   // Find the right asset for this platform
@@ -156,7 +146,7 @@ async function downloadAndLaunch(projectPath) {
   }
   
   info(`  ⬇  Downloading from GitHub releases (~140 MB)...`);
-  const zipData = await httpsGet(assetName.browser_download_url);
+  const zipData = await fetchBuffer(assetName.browser_download_url);
   
   // Save to temp file
   const installDir = path.join(os.homedir(), '.copilotforge', 'command-center');

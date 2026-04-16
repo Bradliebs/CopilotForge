@@ -89,12 +89,132 @@ const FULL_FILES = [
     dest: path.join('cookbook', 'copilot-agents-example.agent.md'),
     content: templates.COPILOT_AGENTS_EXAMPLE_MD,
   },
+  // devcontainer for Codespaces (Win 2)
+  {
+    dest: path.join('.devcontainer', 'devcontainer.json'),
+    content: templates.DEVCONTAINER_JSON,
+  },
 ];
+
+// Beginner note templates (Win 6)
+const BEGINNER_NOTES_PLANNER = `# 🌱 What is this folder?
+
+This is the **Planner skill** — it's like giving your AI assistant a job description.
+
+When you open GitHub Copilot Chat and say **"set up my project"**, the AI reads this
+file to know exactly how to help you plan and scaffold your codebase.
+
+## How to use it
+1. Open GitHub Copilot Chat in VS Code
+2. Type: \`set up my project\`
+3. Answer the AI's questions — it will create a plan just for you!
+
+## Can I edit this file?
+Yes! These are just text files. You can't break anything.
+If you make a mistake, you can always run \`npx copilotforge init\` again.
+
+## Where to get help
+- GitHub Discussions: https://github.com/Bradliebs/CopilotForge/discussions
+- Issues: https://github.com/Bradliebs/CopilotForge/issues
+`;
+
+const BEGINNER_NOTES_PLAN_EXECUTOR = `# 🌱 What is this folder?
+
+This is the **Plan Executor skill** — it helps your AI assistant *execute* a plan
+step by step, tracking progress as it goes.
+
+When you have an IMPLEMENTATION_PLAN.md in your project, the AI reads this skill
+to know how to pick the next task and implement it autonomously.
+
+## How to use it
+1. Run \`npx copilotforge init\` to create your IMPLEMENTATION_PLAN.md
+2. Open GitHub Copilot Chat
+3. Type: \`execute the next task\`
+4. Watch your AI build features one by one!
+
+## Can I edit this file?
+Absolutely — these are just text files. Experiment freely!
+
+## Where to get help
+- GitHub Discussions: https://github.com/Bradliebs/CopilotForge/discussions
+- Issues: https://github.com/Bradliebs/CopilotForge/issues
+`;
+
+const WHAT_THIS_MEANS_MD = `# 🎉 What CopilotForge just created for you
+
+Welcome! Here's a plain-English guide to everything that was just set up.
+
+---
+
+## Files and folders explained
+
+| File / Folder | What it does |
+|---|---|
+| \`.github/skills/planner/SKILL.md\` | Teaches your AI how to plan your project |
+| \`.github/skills/plan-executor/SKILL.md\` | Teaches your AI how to build features step by step |
+| \`FORGE.md\` | Your project control panel — edit this to customise everything |
+| \`IMPLEMENTATION_PLAN.md\` | A living to-do list your AI fills in and ticks off |
+| \`forge-memory/\` | Notes your AI remembers between sessions |
+| \`cookbook/\` | Ready-to-use code examples |
+| \`docs/GETTING-STARTED.md\` | A longer guide to get the most out of CopilotForge |
+| \`.devcontainer/devcontainer.json\` | Makes GitHub Codespaces work perfectly out of the box |
+
+---
+
+## 3 simple steps to get started
+
+**Step 1:** Open GitHub Copilot Chat in VS Code (the speech-bubble icon on the left)
+
+**Step 2:** Type this message:
+> set up my project
+
+**Step 3:** Answer the AI's questions. It will create a personalised plan just for you!
+
+---
+
+## You can't break anything
+
+All of these files are just text. If something goes wrong:
+- Delete the file and run \`npx copilotforge init\` again
+- Or just edit the text yourself
+
+---
+
+## Where to ask for help
+
+- 💬 Community: https://github.com/Bradliebs/CopilotForge/discussions
+- 🐛 Bug reports: https://github.com/Bradliebs/CopilotForge/issues
+- 📖 Full docs: https://github.com/Bradliebs/CopilotForge#readme
+
+**You've got this! 🚀**
+`;
 
 async function run(args) {
   const minimal = args.includes('--minimal');
   const yes = args.includes('--yes') || args.includes('-y');
+  const dryRun = args.includes('--dry-run') || args.includes('--dryRun');
+  const beginner = args.includes('--beginner');
   const cwd = process.cwd();
+
+  // --dry-run: print what would happen and exit without writing
+  if (dryRun) {
+    for (const rel of CORE_FILES) {
+      console.log(`[DRY RUN] Would create: ${rel}`);
+    }
+    if (!minimal) {
+      for (const entry of FULL_FILES) {
+        console.log(`[DRY RUN] Would create: ${entry.dest}`);
+      }
+      console.log(`[DRY RUN] Would create: ${path.join('docs', 'GETTING-STARTED.md')}`);
+      if (beginner) {
+        console.log(`[DRY RUN] Would create: ${path.join('.github', 'skills', 'planner', 'BEGINNER_NOTES.md')}`);
+        console.log(`[DRY RUN] Would create: ${path.join('.github', 'skills', 'plan-executor', 'BEGINNER_NOTES.md')}`);
+        console.log('[DRY RUN] Would create: WHAT_THIS_MEANS.md');
+      }
+    }
+    console.log('[DRY RUN] No files were written.');
+    return;
+  }
 
   banner();
   console.log('  Setting up your project...');
@@ -153,6 +273,28 @@ async function run(args) {
       success('Created docs/GETTING-STARTED.md');
       createdFiles.push(path.join('docs', 'GETTING-STARTED.md'));
     }
+
+    // --beginner: write extra guidance files (Win 6)
+    if (beginner) {
+      console.log();
+      const beginnerFiles = [
+        {
+          dest: path.join('.github', 'skills', 'planner', 'BEGINNER_NOTES.md'),
+          content: BEGINNER_NOTES_PLANNER,
+        },
+        {
+          dest: path.join('.github', 'skills', 'plan-executor', 'BEGINNER_NOTES.md'),
+          content: BEGINNER_NOTES_PLAN_EXECUTOR,
+        },
+        { dest: 'WHAT_THIS_MEANS.md', content: WHAT_THIS_MEANS_MD },
+      ];
+      for (const entry of beginnerFiles) {
+        const dest = path.join(cwd, entry.dest);
+        writeFile(dest, entry.content);
+        success(`Created ${entry.dest}`);
+        createdFiles.push(entry.dest);
+      }
+    }
   }
 
   separator();
@@ -190,6 +332,12 @@ async function run(args) {
   info(`${colors.dim('📖 Quick guide: docs/GETTING-STARTED.md')}`);
   info(`${colors.dim('📋 Control panel: FORGE.md')}`);
   info(`${colors.dim('🔍 Verify setup: npx copilotforge doctor')}`);
+
+  // --beginner banner (Win 6)
+  if (beginner) {
+    console.log();
+    info(`${colors.cyan('💡 Beginner tip: Open WHAT_THIS_MEANS.md to understand everything that was just created!')}`);
+  }
 
   // Auto-open the Command Center dashboard pointed at this project
   const dashboard = require('./dashboard');

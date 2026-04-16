@@ -61,4 +61,22 @@ That's it! Your AI assistant generates skills, agents, and recipes customized fo
 ${VERSION_STAMP}
 `;
 
-module.exports = { IMPLEMENTATION_PLAN_MD, GETTING_STARTED_MD };
+const DEVCONTAINER_JSON = JSON.stringify({
+  name: 'CopilotForge Dev Container',
+  image: 'mcr.microsoft.com/devcontainers/javascript-node:20',
+  customizations: {
+    vscode: {
+      extensions: [
+        'GitHub.copilot',
+        'GitHub.copilot-chat',
+        'dbaeumer.vscode-eslint',
+        'esbenp.prettier-vscode',
+      ],
+    },
+  },
+  postCreateCommand: 'if [ -f package.json ]; then npm install; fi',
+  remoteUser: 'node',
+}, null, 2) + '\n';
+
+// Note: devcontainer.json for Codespaces is also deployed via init.js FULL_FILES
+module.exports = { IMPLEMENTATION_PLAN_MD, GETTING_STARTED_MD, DEVCONTAINER_JSON };

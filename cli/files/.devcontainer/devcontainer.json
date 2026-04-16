@@ -1,0 +1,16 @@
+{
+  "name": "CopilotForge Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "postCreateCommand": "if [ -f package.json ]; then npm install; fi",
+  "remoteUser": "node"
+}

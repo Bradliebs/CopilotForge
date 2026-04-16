@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 const { banner, success, warn, fail, info, separator, exists, hasGit, colors } = require('./utils');
 
 // Phase 13: path stamp reader
@@ -25,23 +26,22 @@ const PATH_NAMES = {
 
 // Phase 13: path-specific prerequisite checks
 function runPathChecks(pathStamp) {
-  const { execSync } = require('child_process');
   let pathIssues = 0;
   let pathChecks = 0;
   const pathName = PATH_NAMES[pathStamp] || pathStamp;
 
   try {
-    info(`ℹ️  Power Platform path ${pathStamp} (${pathName}) detected. Run \`pac auth create\` to authenticate with your environment before scaffolding.`);
+    info(`Info Power Platform path ${pathStamp} (${pathName}) detected. Run pac auth create to authenticate.`);
 
     if (pathStamp === 'F') {
       try {
         const nodeVer = process.version;
         const nodeMajor = parseInt(nodeVer.slice(1).split('.')[0], 10);
         if (nodeMajor >= 16) {
-          success(`Node.js ${nodeVer} meets PCF Component Framework requirement (≥16)`);
+          success(`Node.js ${nodeVer} meets PCF Component Framework requirement`);
           pathChecks++;
         } else {
-          fail(`PCF Component Framework requires Node.js ≥16. You have ${nodeVer}. Please upgrade.`);
+          fail(`PCF Component Framework requires Node.js >=16. You have ${nodeVer}. Please upgrade.`);
           pathIssues++;
         }
       } catch (e) {
@@ -68,7 +68,7 @@ function runPathChecks(pathStamp) {
     }
 
     if (pathStamp === 'G') {
-      info('ℹ️  Path G (Power BI Report): Power BI Desktop is required for local development. Download at https://aka.ms/pbidesktopstore');
+      info('Path G (Power BI Report): Power BI Desktop required for local development. Download at https://aka.ms/pbidesktopstore');
     }
   } catch (e) {
     warn(`Could not run path ${pathStamp} check: ${e.message}`);
@@ -79,131 +79,156 @@ function runPathChecks(pathStamp) {
 
 function run() {
   const cwd = process.cwd();
+  const jsonMode = process.argv.includes('--json');
+  const pkg = require('../package.json');
 
-  banner();
-  console.log(`  ${colors.bold('\uD83D\uDD0D CopilotForge Health Check')}`);
-  console.log();
+  const checkResults = [];
 
-  let issues = 0;
-  let checks = 0;
-  let forgeContent = null;
+  function recordCheck(name, status, message, detail) {
+    checkResults.push({ name, status, message, detail: detail || '' });
+    if (!jsonMode) {
+      if (status === 'pass') success(message);
+      else if (status === 'warn') warn(message);
+      else fail(message);
+    }
+  }
 
-  // Node.js version
+  if (!jsonMode) {
+    banner();
+    console.log(`  \u{1F50D} CopilotForge Health Check`);
+    console.log();
+  }
+
+  // Node.js version (>=18)
   const nodeVersion = process.version;
   const major = parseInt(nodeVersion.slice(1).split('.')[0], 10);
   if (major >= 18) {
-    success(`Node.js ${nodeVersion}`);
-    checks++;
+    recordCheck('Node.js version', 'pass', `Node.js ${nodeVersion} -- OK`, 'Required: >=18.0.0');
   } else {
-    warn(`Node.js ${nodeVersion} — version 18+ recommended`);
-    issues++;
+    recordCheck('Node.js version', 'fail', `Node.js ${nodeVersion} -- requires >=18.0.0`, 'Required: >=18.0.0');
   }
 
-  // Core files
+  // git user.name
+  try {
+    const name = execSync('git config user.name', { stdio: 'pipe', cwd }).toString().trim();
+    if (name) {
+      recordCheck('git user.name', 'pass', 'git user.name configured -- OK', '');
+    } else {
+      recordCheck('git user.name', 'warn', "git user.name not set -- commits may fail (run: git config --global user.name 'Your Name')", '');
+    }
+  } catch {
+    recordCheck('git user.name', 'warn', "git user.name not set -- commits may fail (run: git config --global user.name 'Your Name')", '');
+  }
+
+  // git user.email
+  try {
+    const email = execSync('git config user.email', { stdio: 'pipe', cwd }).toString().trim();
+    if (email) {
+      recordCheck('git user.email', 'pass', 'git user.email configured -- OK', '');
+    } else {
+      recordCheck('git user.email', 'warn', "git user.email not set -- commits may fail (run: git config --global user.email 'you@example.com')", '');
+    }
+  } catch {
+    recordCheck('git user.email', 'warn', "git user.email not set -- commits may fail (run: git config --global user.email 'you@example.com')", '');
+  }
+
+  // VS Code CLI (soft -- warn only)
+  let vscodeFound = false;
+  try {
+    execSync('code --version', { stdio: 'pipe' });
+    vscodeFound = true;
+    recordCheck('VS Code', 'pass', 'VS Code detected -- OK', '');
+  } catch {
+    recordCheck('VS Code', 'warn', 'VS Code not found in PATH -- install from https://code.visualstudio.com or add code to PATH', '');
+  }
+
+  // GitHub Copilot extension (only if VS Code found)
+  if (vscodeFound) {
+    try {
+      const extensions = execSync('code --list-extensions', { stdio: 'pipe' }).toString().toLowerCase();
+      if (extensions.includes('github.copilot')) {
+        recordCheck('GitHub Copilot extension', 'pass', 'GitHub Copilot extension detected -- OK', '');
+      } else {
+        recordCheck('GitHub Copilot extension', 'warn', 'GitHub Copilot extension not found -- install from VS Code marketplace', '');
+      }
+    } catch {
+      recordCheck('GitHub Copilot extension', 'warn', 'GitHub Copilot extension not found -- install from VS Code marketplace', '');
+    }
+  }
+
+  let forgeContent = null;
+
   const skillPath = path.join(cwd, '.github', 'skills', 'planner', 'SKILL.md');
   const refPath = path.join(cwd, '.github', 'skills', 'planner', 'reference.md');
 
   if (exists(skillPath)) {
-    success('.github/skills/planner/SKILL.md exists');
-    checks++;
+    recordCheck('planner SKILL.md', 'pass', '.github/skills/planner/SKILL.md exists', '');
   } else {
-    warn('.github/skills/planner/SKILL.md not found (run: npx copilotforge init)');
-    issues++;
+    recordCheck('planner SKILL.md', 'warn', '.github/skills/planner/SKILL.md not found (run: npx copilotforge init)', '');
   }
 
   if (exists(refPath)) {
-    success('.github/skills/planner/reference.md exists');
-    checks++;
+    recordCheck('planner reference.md', 'pass', '.github/skills/planner/reference.md exists', '');
   } else {
-    warn('.github/skills/planner/reference.md not found (run: npx copilotforge init)');
-    issues++;
+    recordCheck('planner reference.md', 'warn', '.github/skills/planner/reference.md not found (run: npx copilotforge init)', '');
   }
 
-  // Optional files (informational)
   const forgeMd = path.join(cwd, 'FORGE.md');
   if (exists(forgeMd)) {
-    success('FORGE.md exists');
-    checks++;
+    recordCheck('FORGE.md', 'pass', 'FORGE.md exists', '');
   } else {
-    warn('No FORGE.md found (run the wizard to create one)');
+    recordCheck('FORGE.md', 'warn', 'No FORGE.md found (run the wizard to create one)', '');
   }
 
   const agentsDir = path.join(cwd, '.copilot', 'agents');
   if (exists(agentsDir)) {
-    success('.copilot/agents/ found');
-    checks++;
+    recordCheck('.copilot/agents/', 'pass', '.copilot/agents/ found', '');
   } else {
-    warn('No .copilot/agents/ found (run the wizard to create agents)');
+    recordCheck('.copilot/agents/', 'warn', 'No .copilot/agents/ found (run the wizard to create agents)', '');
   }
 
   const memoryDir = path.join(cwd, 'forge-memory');
   if (exists(memoryDir)) {
-    success('forge-memory/ found');
-    checks++;
+    recordCheck('forge-memory/', 'pass', 'forge-memory/ found', '');
   } else {
-    warn('No forge-memory/ found (run the wizard to create memory)');
+    recordCheck('forge-memory/', 'warn', 'No forge-memory/ found (run the wizard to create memory)', '');
   }
 
   const cookbookDir = path.join(cwd, 'cookbook');
   if (exists(cookbookDir)) {
-    success('cookbook/ found');
-    checks++;
+    recordCheck('cookbook/', 'pass', 'cookbook/ found', '');
   } else {
-    warn('No cookbook/ found (run the wizard to create recipes)');
+    recordCheck('cookbook/', 'warn', 'No cookbook/ found (run the wizard to create recipes)', '');
   }
 
-  // Optional: IMPLEMENTATION_PLAN.md
   const planMd = path.join(cwd, 'IMPLEMENTATION_PLAN.md');
-  if (exists(planMd)) {
-    success('IMPLEMENTATION_PLAN.md exists');
-    checks++;
-  } else {
-    info('Optional: IMPLEMENTATION_PLAN.md (for Ralph Loop planning mode)');
-  }
-
-  // Git
-  if (hasGit()) {
-    success('Git repository detected');
-    checks++;
-
-    // Check git user config
-    try {
-      const { execSync } = require('child_process');
-      const opts = { stdio: 'pipe', cwd };
-      const name = execSync('git config user.name', opts).toString().trim();
-      const email = execSync('git config user.email', opts).toString().trim();
-      if (name && email) {
-        success(`Git user: ${name} <${email}>`);
-        checks++;
-      } else {
-        warn('Git user.name or user.email not configured — commits may fail');
-        issues++;
-      }
-    } catch {
-      warn('Git user.name/user.email not set — run: git config --global user.name "Your Name"');
-      issues++;
+  if (!jsonMode) {
+    if (exists(planMd)) {
+      success('IMPLEMENTATION_PLAN.md exists');
+    } else {
+      info('Optional: IMPLEMENTATION_PLAN.md (for Ralph Loop planning mode)');
     }
-  } else {
-    warn('Not a git repository');
   }
 
-  // Write permissions
+  if (hasGit()) {
+    recordCheck('git repository', 'pass', 'Git repository detected', '');
+  } else {
+    recordCheck('git repository', 'warn', 'Not a git repository', '');
+  }
+
   const testFile = path.join(cwd, '.copilotforge-test-write');
   try {
     fs.writeFileSync(testFile, 'test', 'utf8');
     fs.unlinkSync(testFile);
-    success('Write permissions OK');
-    checks++;
+    recordCheck('write permissions', 'pass', 'Write permissions OK', '');
   } catch {
-    warn('Cannot write to project directory — check folder permissions');
-    issues++;
+    recordCheck('write permissions', 'warn', 'Cannot write to project directory -- check folder permissions', '');
   }
 
-  // Version check
-  const pkg = require('../package.json');
-  info(`${colors.dim(`CopilotForge CLI v${pkg.version}`)}`);
+  if (!jsonMode) {
+    info(`CopilotForge CLI v${pkg.version}`);
+  }
 
-  // Version stamp check
   const forgeMdPath = path.join(cwd, 'FORGE.md');
   if (exists(forgeMdPath)) {
     try {
@@ -213,41 +238,59 @@ function run() {
         const installedVersion = stampMatch[1];
         const currentVersion = pkg.version;
         if (installedVersion === currentVersion) {
-          success(`FORGE.md version: v${installedVersion} (current)`);
-          checks++;
+          recordCheck('FORGE.md version', 'pass', `FORGE.md version: v${installedVersion} (current)`, '');
         } else {
-          warn(`FORGE.md version: v${installedVersion} (latest: v${currentVersion})`);
-          info(`  Run ${colors.cyan('npx copilotforge upgrade')} to update`);
-          issues++;
+          recordCheck('FORGE.md version', 'warn', `FORGE.md version: v${installedVersion} (latest: v${currentVersion})`, 'Run: npx copilotforge upgrade');
+          if (!jsonMode) info(`  Run npx copilotforge upgrade to update`);
         }
-      } else {
-        info(colors.dim('  FORGE.md has no version stamp (created before v1.6.0)'));
+      } else if (!jsonMode) {
+        info('  FORGE.md has no version stamp (created before v1.6.0)');
       }
     } catch {
-      // FORGE.md read error — already checked for existence above
+      // ignore
     }
   }
 
-  // Phase 13: path-aware checks
   const pathStamp = readPathStamp(forgeContent);
   if (pathStamp && pathStamp !== 'J') {
     const { pathIssues, pathChecks } = runPathChecks(pathStamp);
-    issues += pathIssues;
-    checks += pathChecks;
+    void pathIssues; void pathChecks;
+  }
+
+  if (jsonMode) {
+    const total = checkResults.length;
+    const passed = checkResults.filter(c => c.status === 'pass').length;
+    const warned = checkResults.filter(c => c.status === 'warn').length;
+    const failed = checkResults.filter(c => c.status === 'fail').length;
+    const healthy = failed === 0;
+
+    const output = {
+      version: pkg.version,
+      timestamp: new Date().toISOString(),
+      checks: checkResults,
+      summary: { total, passed, warned, failed },
+      healthy,
+    };
+    process.stdout.write(JSON.stringify(output, null, 2) + '\n');
+    process.exit(healthy ? 0 : 1);
+    return;
   }
 
   separator();
 
+  const failCount = checkResults.filter(c => c.status === 'fail').length;
+  const warnCount = checkResults.filter(c => c.status === 'warn').length;
+  const issues = failCount + warnCount;
+  const checks = checkResults.filter(c => c.status === 'pass').length;
+
   if (issues === 0) {
-    console.log(`  ${colors.green('✅ All checks passed')} (${checks} checks)`);
+    console.log(`  All checks passed (${checks} checks)`);
     console.log();
-    info(
-      `Ready! Say ${colors.cyan('"set up my project"')} in Copilot Chat`
-    );
+    info(`Ready! Say "set up my project" in Copilot Chat`);
   } else {
-    console.log(`  ${colors.yellow(`⚠️  ${issues} issue(s) found`)} (${checks} checks passed)`);
+    console.log(`  ${issues} issue(s) found (${checks} checks passed)`);
     console.log();
-    info(`Fix the issues above, then run ${colors.cyan('npx copilotforge doctor')} again.`);
+    info(`Fix the issues above, then run npx copilotforge doctor again.`);
   }
 
   console.log();
