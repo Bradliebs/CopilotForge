@@ -122,11 +122,38 @@ function hasGit() {
  */
 function gitCommit(files, message) {
   const { execSync } = require('child_process');
+  const fs = require('fs');
+  const pathMod = require('path');
   const opts = { stdio: 'pipe', cwd: process.cwd() };
+
+  // Stage all files
   for (const f of files) {
-    execSync(`git add "${f}"`, opts);
+    try {
+      execSync(`git add "${f}"`, opts);
+    } catch {
+      // File might not exist or already staged — continue
+    }
   }
-  execSync(`git commit -m "${message}"`, opts);
+
+  // Check if anything is staged
+  try {
+    const status = execSync('git diff --cached --name-only', opts).toString().trim();
+    if (!status) {
+      throw new Error('No files were staged — nothing to commit');
+    }
+  } catch (e) {
+    if (e.message.includes('No files')) throw e;
+    // git diff failed — try committing anyway
+  }
+
+  // Use a temp file for the commit message to avoid shell escaping issues
+  const tmpFile = pathMod.join(process.cwd(), '.git', 'COPILOTFORGE_COMMIT_MSG');
+  try {
+    fs.writeFileSync(tmpFile, message, 'utf8');
+    execSync(`git commit --file="${tmpFile}"`, opts);
+  } finally {
+    try { fs.unlinkSync(tmpFile); } catch { /* cleanup best-effort */ }
+  }
 }
 
 /**
