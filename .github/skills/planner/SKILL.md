@@ -75,7 +75,7 @@ Read whatever memory files are present. If any file is missing or unreadable, sk
 
 - Read `forge-memory/decisions.md` — extract the most recent 5 decisions (entries under `### {date}` headings)
 - Read `forge-memory/patterns.md` — extract all active patterns (headings under `## Stack Conventions` and `## Project-Specific Patterns`)
-- Read `forge-memory/preferences.md` — extract verbosity level, stack preferences, and any user overrides
+- Read `forge-memory/preferences.md` — extract verbosity level, stack preferences, any user overrides, and `BUILD_PATH` (if present)
 - Read `FORGE.md` — extract the Project section (description, stack, settings) and the Skills/Agents tables
 
 - **Check for conflicts:** Compare memory against the current project state:
@@ -99,6 +99,18 @@ Present a context summary to the user:
 > - **Agents:** {agent names from FORGE.md Agents table}
 >
 > What would you like to do? *(add a skill, add an agent, update recipes, or describe what's changed)*
+
+**Returning user path check (v1.6.0):** After reading `forge-memory/preferences.md`, check whether `BUILD_PATH` is present:
+
+- **If `BUILD_PATH` is absent or `J`:** Use the "What would you like to do?" prompt above. No new text, questions, or behavior — this flow is unchanged from v1.5.0.
+- **If `BUILD_PATH` is A–I (a Power Platform path):** Replace the "What would you like to do?" prompt with:
+  > Welcome back to **[PATH_NAME]**. What would you like to do?
+  > **1.** ▶ Continue where you left off
+  > **2.** 🔀 Change path — describe something new and I'll re-detect your path
+  > **3.** 🔄 Reset — start fresh from the beginning
+  - **Choice 1:** Keep stored `BUILD_PATH` and `PATH_NAME`. Skip path detection. Proceed to Step 2 with pre-populated answers.
+  - **Choice 2:** Clear stored `BUILD_PATH`. Proceed to Q1, then run path detection on the new answer.
+  - **Choice 3:** Clear all forge-memory. Run the full first-time wizard from Step 1.
 
 Then skip to Step 2 (Confirm & Generate) with pre-populated answers from memory.
 Only ask questions for information that's **missing** from memory — see Step 1 adaptive logic below.
@@ -142,6 +154,81 @@ Ask each question one at a time. Wait for the user's answer before asking the ne
 *If not in memory:*
 > What are you building? Describe your project in a sentence or two.
 > *(Example: "A REST API for a pet adoption platform" or "A React dashboard for monitoring CI pipelines")*
+
+---
+
+**🔍 Path Detection — Silent Classifier (runs after Q1, before Q2)**
+
+*This step runs silently after the user answers Q1. No output is shown unless a Power Platform signal is detected. Invoke `forge-compass` on the Q1 answer. Compass returns `detected_path` (A–J) and `confidence` (High / Medium / Low).*
+
+**Routing:**
+
+| Confidence | Condition | Action |
+|---|---|---|
+| High | PP path (A–I) detected | → Run PP Diagnostic below (replaces Q2–Q5) |
+| Medium | PP path possible | → Ask one clarifying question, then route |
+| Low | No PP signals, or Path J | → Proceed to Q2 silently — zero new text shown (D13-A) |
+| Low | Exactly 1 partial PP keyword | → Ask ambiguous clarifier, then route |
+
+**Path J rule (D13-A):** When confidence is Low and no clarifier is triggered, proceed directly to Q2. No new text, questions, or delays. Path J users must see no difference from v1.5.0.
+
+**Medium confidence clarifier** *(ask once, then route — one question only)*:
+> Just to confirm — are you building within Microsoft Power Platform?
+> *(yes / no)*
+
+- **yes** → Run PP Diagnostic
+- **no** → Proceed to Q2 silently (Path J)
+
+**Ambiguous Q1 clarifier** *(Low confidence + exactly 1 partial PP keyword in the Q1 answer)*:
+> Quick check — are you working within Microsoft 365 / Power Platform? (yes / no)
+
+- **yes** → Run PP Diagnostic
+- **no** → Path J, proceed to Q2 silently
+
+---
+
+**PP Diagnostic — 3-Question Flow** *(replaces Q2–Q5 when a PP path is confirmed)*
+
+*Only runs when Power Platform is confirmed. Path J users never reach this section.*
+
+**PP-Q1:**
+> Is this primarily no-code / low-code, or will you be writing TypeScript or C#?
+> **1.** No-code / low-code *(studio tools, drag and drop)*
+> **2.** TypeScript or C# *(you'll write and edit code)*
+
+**PP-Q2:**
+> Does your project need to connect to an outside service or REST API?
+> **1.** Yes — I need a custom connection to an external service
+> **2.** No — it stays within the platform
+
+**PP-Q3:**
+> What's the main thing you're building? Pick the closest match.
+> **1.** 🤖 Agent — an AI that answers questions or takes actions
+> **2.** 📊 Report — charts, dashboards, or data analysis
+> **3.** 📱 App — a screen-based tool people interact with
+> **4.** ⚡ Flow — an automated process or scheduled task
+> **5.** 🌐 Page — a public-facing website or portal
+
+**Path resolution from PP answers:**
+
+| PP-Q1 | PP-Q2 | PP-Q3 | BUILD_PATH |
+|---|---|---|---|
+| TypeScript / C# | — | — | F |
+| No-code | Yes (connector) | Any | B |
+| No-code | No | Agent | A |
+| No-code | No | Report | G |
+| No-code | No | App | D |
+| No-code | No | Flow | E |
+| No-code | No | Page | I |
+
+*If answers are ambiguous (e.g., the user says both Agent and App): use `detected_path` from compass as tiebreaker. Path A is the PP fallback when still unclear.*
+
+**After the 3 questions, show:**
+> 📍 You're on **Path [X] — [PATH_NAME]**. Here's what gets generated: [brief one-line list for this path]. Ready? *(yes / adjust)*
+
+Wait for the user to confirm before proceeding. If they say "adjust," re-ask any of the 3 questions they want to change.
+
+---
 
 **Question 2 — Tech Stack**
 
@@ -259,13 +346,47 @@ After collecting all answers, present a summary and ask for confirmation:
 
 Wait for confirmation. If the user says "change X," adjust and re-confirm. Do not scaffold until the user confirms.
 
+> **📍 Path detection (v1.6.0 — implemented):** Path detection runs silently after Q1 (see the Path Detection section in Step 1a above). `BUILD_PATH`, `PATH_NAME`, `EXTENSION_REQUIRED`, and `MS_LEARN_ANCHOR` are resolved there, then written to FORGE-CONTEXT at the start of Step 3. All fields are optional — if absent, Path J (Developer Project) behavior applies unchanged.
+
 ### Step 3 — Scaffold the Project
 
 Create all files described below. Use the user's answers to customize content. Every generated file must be valid markdown (or valid code for cookbook recipes).
 
 ---
 
-#### 3a. Skills — `.github/skills/`
+#### 3a. FORGE-CONTEXT Write — path-awareness fields
+
+Before generating any other files, write the following path-awareness fields to the FORGE-CONTEXT block. These fields are read by all specialist agents.
+
+```
+build_path: {A–J — resolved from path detection after Q1; default J if unresolved}
+path_name: {human-readable label — e.g., "Copilot Studio Agent" or "Developer Project"}
+extension_required: {true for paths B and F; false for all others}
+ms_learn_anchor: {primary MS Learn URL for this path, or null}
+```
+
+**MS Learn anchors by path:**
+
+| Path | Label | ms_learn_anchor |
+|---|---|---|
+| A | Copilot Studio Agent | https://learn.microsoft.com/en-us/microsoft-copilot-studio/ |
+| B | Studio + Connector | https://learn.microsoft.com/en-us/connectors/custom-connectors/ |
+| C | Declarative Agent | https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/ |
+| D | Canvas App Agent | https://learn.microsoft.com/en-us/power-apps/maker/canvas-apps/ |
+| E | Power Automate | https://learn.microsoft.com/en-us/power-automate/ |
+| F | PCF Code Component | https://learn.microsoft.com/en-us/power-apps/developer/component-framework/ |
+| G | Power BI | https://learn.microsoft.com/en-us/power-bi/ |
+| H | SharePoint / Teams | https://learn.microsoft.com/en-us/sharepoint/ |
+| I | Power Pages | https://learn.microsoft.com/en-us/power-pages/ |
+| J | Developer Project | null |
+
+All four fields are optional. Specialists must treat a missing `BUILD_PATH` as equivalent to `J`.
+
+Also write `BUILD_PATH` to `forge-memory/preferences.md` if it is not already stored there, or if it changed from the stored value (user chose a new path).
+
+---
+
+#### 3b. Skills — `.github/skills/`
 
 Generate SKILL.md files based on the project description and stack. At minimum, create:
 
@@ -315,7 +436,7 @@ source: "generated by CopilotForge"
 
 ---
 
-#### 3b. Agents — `.copilot/agents/`
+#### 3c. Agents — `.copilot/agents/`
 
 Generate agent definition files. At minimum:
 
@@ -373,7 +494,7 @@ When a request falls outside this agent's scope:
 
 ---
 
-#### 3c. Memory — `forge-memory/`
+#### 3d. Memory — `forge-memory/`
 
 **If memory = yes**, create:
 
@@ -415,7 +536,7 @@ Reusable conventions for this project. Updated as the team learns what works.
 
 ---
 
-#### 3d. Cookbook — `cookbook/`
+#### 3e. Cookbook — `cookbook/`
 
 Generate code recipes based on the project's detected stack. Recipes are copy-paste-ready code files with comments explaining what they do. The cookbook auto-selects recipes based on the frameworks and packages found in your project — the more specific your stack, the more targeted the recipes.
 
@@ -477,7 +598,7 @@ Adjust verbosity based on skill level:
 
 ---
 
-#### 3e. Planning Mode — `IMPLEMENTATION_PLAN.md`
+#### 3f. Planning Mode — `IMPLEMENTATION_PLAN.md`
 
 **If the user selected "Task automation" in Q6**, generate an `IMPLEMENTATION_PLAN.md` at the project root. This file is consumed by the task-loop recipe — the AI reads it, picks the next pending task, implements it, commits, and moves to the next.
 
@@ -543,7 +664,7 @@ Adjust verbosity based on skill level:
 
 ---
 
-#### 3f. FORGE.md — Control Panel
+#### 3g. FORGE.md — Control Panel
 
 Create `FORGE.md` at the repo root. This is the human-readable dashboard. Format:
 
