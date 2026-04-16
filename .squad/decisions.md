@@ -310,6 +310,225 @@ Added an interactive Command Center as the default `copilotforge` experience:
 
 ---
 
+
+### Decision: templates.js Split Executed (Phase 13 Prep)
+
+# Decision: templates.js Split Executed (Phase 13 Prep)
+
+**Author:** Neo  
+**Date:** 2026-04-16  
+**Status:** Implemented  
+**Related:** D13-B (Morpheus — getPlatformForge path variant architecture)
+
+---
+
+## What Was Done
+
+Split `cli/src/templates.js` (1,525 lines, 53.5 KB) into a modular directory structure at `cli/src/templates/`. The original file is now a 5-line backward-compatible shim.
+
+## New Structure
+
+```
+cli/src/templates/
+  index.js          — barrel re-export (backward-compatible entry point)
+  forge.js          — FORGE_MD (includes VERSION_STAMP via pkg.version)
+  platform-forge.js — getPlatformForge(path) stub for Phase 13 Task 9
+  agents.js         — PLANNER_AGENT_MD
+  memory.js         — DECISIONS_MD, PATTERNS_MD, PREFERENCES_MD
+  cookbook.js       — HELLO_WORLD_TS, HELLO_WORLD_PY, TASK_LOOP_TS, TASK_LOOP_PY
+  init.js           — IMPLEMENTATION_PLAN_MD, GETTING_STARTED_MD (includes VERSION_STAMP)
+  platform-guides.js — COPILOT_STUDIO_GUIDE_MD, COPILOT_STUDIO_AGENT_YAML,
+                        CODE_APPS_GUIDE_MD, CODE_APPS_SETUP_TS,
+                        COPILOT_AGENTS_GUIDE_MD, COPILOT_AGENTS_EXAMPLE_MD
+```
+
+`cli/src/templates.js` is now:
+```javascript
+'use strict';
+// Backward-compatible shim
+module.exports = require('./templates/index');
+```
+
+## Backward Compatibility
+
+- All 17 original exports remain identical in name and value
+- `require('./templates')` and `const { FORGE_MD } = require('./templates')` both work unchanged
+- `init.js` and `upgrade.js` import patterns verified — zero changes needed there
+- All 46 existing tests pass (46/46)
+
+## New Export Added
+
+`getPlatformForge(path)` stub in `platform-guides.js`:
+- Returns `FORGE_MD` by default (Path J behavior)
+- TODO comment marks where Task 9 will add cases for Paths A–I
+- Avoids circular dep: requires `./forge` at call time
+
+## VERSION_STAMP Handling
+
+Two templates use `${VERSION_STAMP}`: `FORGE_MD` and `GETTING_STARTED_MD`.  
+Both `forge.js` and `init.js` independently declare `VERSION_STAMP` using `require('../../package.json')`.  
+The `../../` path resolves correctly from `cli/src/templates/` to `cli/package.json`.
+
+## Grouping Rationale
+
+| File | Contents | Rationale |
+|------|----------|-----------|
+| forge.js | FORGE_MD | Core control-panel template; isolated for Task 9 extension |
+| platform-forge.js | getPlatformForge stub | D13-B: one file for all path variants |
+| agents.js | PLANNER_AGENT_MD | Agent definitions group |
+| memory.js | DECISIONS/PATTERNS/PREFERENCES | forge-memory templates group |
+| cookbook.js | HELLO_WORLD_*, TASK_LOOP_* | Cookbook recipe starters |
+| init.js | IMPLEMENTATION_PLAN_MD, GETTING_STARTED_MD | Project setup templates |
+| platform-guides.js | COPILOT_STUDIO_*, CODE_APPS_*, COPILOT_AGENTS_* | Platform cookbook guides |
+
+## What Task 9 Must Do
+
+Add cases in `platform-forge.js`:
+```javascript
+function getPlatformForge(forgePath) {
+  switch (forgePath) {
+    case 'A': return /* Path A template */;
+    // ... cases B-I
+    default: return require('./forge').FORGE_MD; // Path J
+  }
+}
+```
+
+Export `getPlatformForge` is already in `index.js` so no changes needed there.
+
+## What Trinity Must Do (Task 2 — FORGE-CONTEXT fields)
+
+Add FORGE-CONTEXT fields to `FORGE_MD` in `forge.js` only. The shim means nothing else needs touching.
+
+
+---
+
+### Trinity Decision Inbox — FORGE-CONTEXT Path Awareness Fields
+
+# Trinity Decision Inbox — FORGE-CONTEXT Path Awareness Fields
+
+**Author:** Trinity (Prompt Engineer)
+**Date:** 2026-07-09
+**Task:** Phase 13 — Task 2: Extend FORGE-CONTEXT block with Path Awareness Fields
+**Status:** Ready for team review
+
+---
+
+## What Was Done
+
+Added 5 new optional fields to the FORGE-CONTEXT block schema across three files:
+
+1. `.github/skills/planner/reference.md` — Added `### FORGE-CONTEXT Block Schema` subsection with full v1.5.0 field table, v1.6.0 Path Awareness fields table, path values table, examples for Path A and J, and implementation note.
+2. `cli/files/.github/skills/planner/reference.md` — Mirrored the same changes (this file tracks the main reference.md).
+3. `.copilot/agents/planner.md` — Added the 5 new fields to the inline FORGE-CONTEXT block (after `forge_md_cookbook`).
+4. `.github/skills/planner/SKILL.md` — Added a brief callout note between Step 2 and Step 3 about path-detection populating these fields.
+
+---
+
+## The 5 New Fields
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `BUILD_PATH` | string (A–J) | `J` | Which of the 10 build paths this project is on |
+| `PATH_NAME` | string | `"Developer Project"` | Human-readable path label |
+| `PREREQUISITES_CONFIRMED` | boolean | `false` | User confirmed they meet path prerequisites |
+| `EXTENSION_REQUIRED` | boolean | `false` | Path requires pac CLI or browser extension |
+| `MS_LEARN_ANCHOR` | string (URL) | `null` | Primary MS Learn landing page for this path |
+
+All fields are **optional** with **explicit defaults**. Specialists must use `?? fallback` patterns. A missing `BUILD_PATH` is identical to `BUILD_PATH: J`.
+
+---
+
+## ⚠️ Default Value Discrepancy — Needs Team Decision
+
+Decision D13-03 in `.squad/decisions/decisions.md` specifies these defaults:
+- `PATH_NAME: "Developer Workspace"` — Brad's task spec says `"Developer Project"`
+- `PREREQUISITES_CONFIRMED: true` — Brad's task spec says `false`
+- `MS_LEARN_ANCHOR: ""` (empty string) — Brad's task spec says `null`
+
+**Trinity's recommendation:** Follow Brad's task spec (used in this implementation). Reasons:
+1. `false` is the safer default for PREREQUISITES_CONFIRMED — do not assume users confirmed prerequisites they haven't seen yet.
+2. `null` is semantically cleaner than `""` for "no URL" — empty string can cause URL validation errors.
+3. "Developer Project" is more accurate than "Developer Workspace" for Path J (aligns with existing language in FORGE.md).
+
+**Action needed:** Morpheus to confirm which defaults are canonical and update D13-03 if needed.
+
+---
+
+## No Existing Fields Were Modified
+
+The following existing v1.5.0 FORGE-CONTEXT fields were documented but NOT changed:
+`stack`, `detected_frameworks`, `skill_level`, `agent_names`, `existing_files`, `existing_conventions`, `previous_decisions`, `user_preferences`, `forge_md_cookbook`
+
+---
+
+## Next Step
+
+Task 3 (path-detection logic) will read Q1 + Q2 answers and write these 5 fields into the block before specialist delegation.
+
+
+---
+
+### Morpheus Ruling — FORGE-CONTEXT Default Values (D13-03 Amendment)
+
+# Morpheus Ruling — FORGE-CONTEXT Default Values (D13-03 Amendment)
+
+**Author:** Morpheus (Lead)
+**Date:** 2026-07-09
+**Status:** Ruling — Canonical, supersedes D13-03 defaults
+**Triggered by:** Trinity's discrepancy report in `trinity-forge-context.md`
+
+---
+
+## The Conflict
+
+D13-03 specifies:
+- `PATH_NAME: "Developer Workspace"`
+- `PREREQUISITES_CONFIRMED: true`
+- `MS_LEARN_ANCHOR: ""`
+
+Trinity's implementation uses:
+- `PATH_NAME: "Developer Project"`
+- `PREREQUISITES_CONFIRMED: false`
+- `MS_LEARN_ANCHOR: null`
+
+---
+
+## Ruling
+
+### PATH_NAME default: `"Developer Project"` ✅ (Trinity is correct)
+
+**Rationale:** "Developer Project" aligns with existing language in FORGE.md, SKILL.md, and the implementation plan — "Developer Workspace" appeared only in D13-03 and has no precedent elsewhere in the codebase.
+
+### PREREQUISITES_CONFIRMED default: `false` ✅ (Trinity is correct)
+
+**Rationale:** A default of `true` would tell downstream specialists the user confirmed prerequisites they were never asked about — the safe default for any unconfirmed boolean is `false`, consistent with our "defaults > questions" principle (never assume what hasn't been verified).
+
+### MS_LEARN_ANCHOR default: `null` ✅ (Trinity is correct)
+
+**Rationale:** `null` means "no value" while `""` means "empty string that happens to be a URL" — `null` avoids URL-validation edge cases and is the idiomatic sentinel for "field not set" in every language we target.
+
+---
+
+## Action Items
+
+1. **D13-03 must be amended** in `.squad/decisions/decisions.md` to read:
+   > All 5 new fields have defaults: BUILD_PATH: "J", PATH_NAME: "Developer Project", PREREQUISITES_CONFIRMED: false, EXTENSION_REQUIRED: false, MS_LEARN_ANCHOR: null.
+
+2. **Trinity does NOT need to change her implementation.** Her defaults in `reference.md` are now canonical.
+
+3. **Neo:** When implementing specialist fallbacks (Task 3+), use these defaults in all `?? fallback` patterns.
+
+---
+
+## Design Principle Cited
+
+> "Defaults > questions." — Morpheus history.md, 2026-04-15
+
+A default must be the safest possible value when the user hasn't spoken. `false` is safer than `true` for confirmation fields. `null` is safer than `""` for URL fields. The more specific name ("Developer Project") wins over the vaguer one ("Developer Workspace") because it matches what users already see.
+
+
+---
 ## Governance
 
 - All meaningful changes require team consensus
@@ -317,3 +536,4 @@ Added an interactive Command Center as the default `copilotforge` experience:
 - Keep history focused on work, decisions focused on direction
 - Merge decision inbox entries regularly
 - Archive superseded decisions with date and rationale for change
+
