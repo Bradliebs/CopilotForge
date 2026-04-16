@@ -25,6 +25,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Planner wizard extended with path detection, PP diagnostic questions, FORGE-CONTEXT write step
 - FORGE-CONTEXT schema extended with 5 new optional fields (BUILD_PATH, PATH_NAME, PREREQUISITES_CONFIRMED, EXTENSION_REQUIRED, MS_LEARN_ANCHOR)
 
+### Improved
+- **`--dry-run` flag on `init` and `uninstall`** — prints `[DRY RUN] Would create/delete: <file>` per file, exits 0 without writing anything
+- **`devcontainer.json` for Codespaces** — Node 20 base image, Copilot + ESLint + Prettier extensions, deployed by `init`, enables one-click GitHub Codespaces setup
+- **`doctor --json` flag** — machine-readable structured JSON output with checks array, summary, healthy flag, and exit code 1 on failures — enables CI automation
+- **`fetch()` replaces `https` module in `dashboard.js`** — uses native `fetch` (Node 18+) for downloading Command Center; removes manual redirect handling
+- **Pre-flight environment checks in `doctor`** — checks Node ≥18, git user.name, git user.email, VS Code CLI presence, GitHub Copilot extension presence
+- **`--beginner` flag on `init`** — creates `BEGINNER_NOTES.md` per skill directory and `WHAT_THIS_MEANS.md` at repo root with plain-English explanations; adds friendly completion banner
+
 ### Fixed
 - 9 jargon leaks in templates/agents/ and templates/utils/
 
