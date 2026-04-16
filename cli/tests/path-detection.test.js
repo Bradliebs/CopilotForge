@@ -299,3 +299,70 @@ describe('forge-compass - contradiction/compass detection', () => {
     assert.ok(true, 'forge-compass is markdown-only — unit test not applicable');
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 9. File-system jargon scan — templates/agents/ and .github/skills/
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('file-system jargon scan - templates/agents/ and .github/skills/', () => {
+  const fs = require('fs');
+  const path = require('path');
+
+  // Resolve paths relative to the cli/ directory (this file lives in cli/tests/)
+  const repoRoot = path.resolve(__dirname, '..', '..');
+  const agentsDir = path.join(repoRoot, 'templates', 'agents');
+  const skillsDir = path.join(repoRoot, '.github', 'skills');
+
+  function collectMarkdownFiles(dir) {
+    const results = [];
+    if (!fs.existsSync(dir)) return results;
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        results.push(...collectMarkdownFiles(fullPath));
+      } else if (entry.isFile() && (entry.name.endsWith('.md') || entry.name.endsWith('.ts'))) {
+        results.push(fullPath);
+      }
+    }
+    return results;
+  }
+
+  it('no file in templates/agents/ contains forbidden specialist jargon', () => {
+    const files = collectMarkdownFiles(agentsDir);
+    assert.ok(files.length > 0, 'templates/agents/ should contain at least one file');
+    const violations = [];
+    for (const filePath of files) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      for (const term of JARGON_TERMS) {
+        if (content.includes(term)) {
+          violations.push(`${path.relative(repoRoot, filePath)}: contains "${term}"`);
+        }
+      }
+    }
+    assert.strictEqual(
+      violations.length,
+      0,
+      `Jargon violations found:\n${violations.join('\n')}`
+    );
+  });
+
+  it('no file in .github/skills/ contains forbidden specialist jargon', () => {
+    const files = collectMarkdownFiles(skillsDir);
+    assert.ok(files.length > 0, '.github/skills/ should contain at least one file');
+    const violations = [];
+    for (const filePath of files) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      for (const term of JARGON_TERMS) {
+        if (content.includes(term)) {
+          violations.push(`${path.relative(repoRoot, filePath)}: contains "${term}"`);
+        }
+      }
+    }
+    assert.strictEqual(
+      violations.length,
+      0,
+      `Jargon violations found:\n${violations.join('\n')}`
+    );
+  });
+});
