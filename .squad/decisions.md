@@ -288,6 +288,28 @@ Phase 4 delivers the memory read-back loop that makes CopilotForge learn across 
 
 ---
 
+### Phase 10: Interactive Command Center (v1.3.0)
+
+**Source:** Neo, Morpheus, Trinity
+**Date:** 2026-04-16
+**Status:** Implemented
+
+Added an interactive Command Center as the default `copilotforge` experience:
+- `copilotforge` (no args) → interactive home screen with dashboard + numbered menu
+- Zero new dependencies (pure Node.js readline)
+- Context-aware menu: items appear/disappear based on project state
+- Plan viewer: colored ✅/⬜/❌ task list from IMPLEMENTATION_PLAN.md
+- Getting started guide: inline markdown viewer
+- `menu(items)` utility in utils.js for reusable numbered menus
+- Status.js refactored with 7 data-returning functions (getPlanData, getMemoryData, etc.)
+
+**Files created:** `cli/src/interactive.js`
+**Files modified:** `cli/src/utils.js`, `cli/src/status.js`, `cli/bin/copilotforge.js`, `cli/package.json`, `cookbook/command-center.ts`
+
+**Design principle:** A total beginner types one word, sees their project at a glance, picks a number. No commands to memorize. The loop stays open until Exit.
+
+---
+
 ## Governance
 
 - All meaningful changes require team consensus
