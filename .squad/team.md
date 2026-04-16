@@ -24,6 +24,7 @@
 - **Project:** CopilotForge — a beginner-friendly framework that scaffolds Copilot skills, agents, memory, and cookbook recipes from plain-English descriptions. No CLI required. Works in VS Code Copilot, Claude Code, or copy-paste.
 - **Owner:** Brad Liebs
 - **Stack:** Markdown (SKILL.md, agent definitions), TypeScript/Node.js (cookbook recipes), Git
-- **Phases:** 1) Planner skill ✅, 2) Wizard agent ✅, 3) Cookbook layer ✅, 4) Memory & iteration ✅, 5) Polish & docs ✅, 6) Deep polish ✅, 7) Beginner navigation ✅, 8) Wizard Q6 extras ✅
+- **Phases:** 1) Planner skill ✅, 2) Wizard agent ✅, 3) Cookbook layer ✅, 4) Memory & iteration ✅, 5) Polish & docs ✅, 6) Deep polish ✅, 7) Beginner navigation ✅, 8) Wizard Q6 extras ✅, 9) Squad-inspired upgrades ✅
+- **CLI Version:** 1.2.0
 - **Created:** 2026-04-15
 

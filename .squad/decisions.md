@@ -273,6 +273,21 @@ Phase 4 delivers the memory read-back loop that makes CopilotForge learn across 
 
 ---
 
+### 2026-04-16: Phase 9 — Squad-inspired upgrades (v1.2.0)
+
+**By:** Squad (Coordinator)
+
+**What:** After researching bradygaster/squad, adopted 4 patterns:
+
+1. `copilotforge upgrade` command — updates framework files without touching user state
+2. Git Safety Protocol in plan-executor — no `git add .`, pre-commit checklist, rollback protocol
+3. Curated cookbook learning path — beginner → intermediate → advanced tiers
+4. Hardened task automation loop — graceful shutdown, 4-tier error escalation, checkpoint persistence
+
+**Why:** Squad's production-hardened patterns improve CopilotForge's reliability and developer experience.
+
+---
+
 ## Governance
 
 - All meaningful changes require team consensus
