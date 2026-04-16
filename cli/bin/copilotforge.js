@@ -27,7 +27,12 @@ switch (command) {
 
   case 'doctor': {
     const doctor = require('../src/doctor');
-    doctor.run();
+    try {
+      doctor.run();
+    } catch (err) {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    }
     break;
   }
 
@@ -42,13 +47,23 @@ switch (command) {
 
   case 'status': {
     const status = require('../src/status');
-    status.run();
+    try {
+      status.run();
+    } catch (err) {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    }
     break;
   }
 
   case 'uninstall': {
     const uninstall = require('../src/uninstall');
-    uninstall.run();
+    try {
+      uninstall.run();
+    } catch (err) {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    }
     break;
   }
 

@@ -271,6 +271,103 @@ describe('CopilotForge E2E Validation', () => {
     });
   });
 
+  describe('Init --yes Flag', () => {
+    let yesDir;
+
+    it('should run init --yes without prompting', () => {
+      yesDir = createTempDir();
+      const result = runCLI('init --yes', yesDir);
+      assert.ok(result.success || result.exitCode === 0, `Init --yes should succeed: ${result.error || result.output}`);
+      assert.ok(fileExists(yesDir, '.github/skills/planner/SKILL.md'), 'Should create planner SKILL.md');
+    });
+
+    it('should run init --yes again to test overwrite', () => {
+      // Running init --yes a second time should overwrite without error
+      const result = runCLI('init --yes', yesDir);
+      assert.ok(result.success || result.exitCode === 0, `Init --yes overwrite should succeed: ${result.error || result.output}`);
+    });
+
+    it('cleanup --yes temp dir', () => {
+      cleanup(yesDir);
+    });
+  });
+
+  describe('Non-TTY Behavior', () => {
+    let nonTtyDir;
+
+    it('should handle non-TTY mode gracefully', () => {
+      nonTtyDir = createTempDir();
+      // Running with piped input (non-TTY) — should use defaults
+      const result = runCLI('init', nonTtyDir, true);
+      assert.ok(result.success || result.exitCode === 0, `Non-TTY init should succeed: ${result.error || result.output}`);
+      assert.ok(fileExists(nonTtyDir, '.github/skills/planner/SKILL.md'), 'Should create planner SKILL.md in non-TTY');
+    });
+
+    it('cleanup non-TTY temp dir', () => {
+      cleanup(nonTtyDir);
+    });
+  });
+
+  describe('Doctor Detailed Checks', () => {
+    let doctorDir;
+
+    it('should setup and run doctor on full scaffold', () => {
+      doctorDir = createTempDir();
+      // First init
+      const initResult = runCLI('init --yes', doctorDir);
+      assert.ok(initResult.success || initResult.exitCode === 0, 'Init should succeed before doctor');
+
+      // Then doctor
+      const result = runCLI('doctor', doctorDir);
+      assert.strictEqual(result.exitCode, 0, 'Doctor should exit 0');
+      // Doctor output should contain check marks (success indicators)
+      assert.ok(result.output.includes('SKILL.md'), 'Doctor should check for SKILL.md');
+    });
+
+    it('should not show raw stack traces in doctor output', () => {
+      const result = runCLI('doctor', doctorDir);
+      assert.ok(!result.output.includes('at Object.'), 'Doctor should not show raw stack traces');
+      assert.ok(!result.output.includes('node:internal'), 'Doctor should not show node internal traces');
+    });
+
+    it('cleanup doctor temp dir', () => {
+      cleanup(doctorDir);
+    });
+  });
+
+  describe('Error Message Quality', () => {
+    it('should show user-friendly error for unknown command', () => {
+      const result = runCLI('nonexistent-command', process.cwd());
+      assert.strictEqual(result.exitCode, 1, 'Unknown command should exit with code 1');
+      assert.ok(result.output.includes('Unknown command') || result.error.includes('Unknown command'),
+        'Should show "Unknown command" message');
+    });
+
+    it('should show version without error', () => {
+      const result = runCLI('--version', process.cwd());
+      assert.strictEqual(result.exitCode, 0, 'Version should exit with code 0');
+      assert.ok(result.output.includes('copilotforge v'), 'Should show version string');
+    });
+  });
+
+  describe('Version Stamp', () => {
+    let stampDir;
+
+    it('should include version stamp in generated FORGE.md', () => {
+      stampDir = createTempDir();
+      runCLI('init --yes', stampDir);
+
+      if (fileExists(stampDir, 'FORGE.md')) {
+        const content = readFile(stampDir, 'FORGE.md');
+        assert.ok(content.includes('<!-- copilotforge:'), 'FORGE.md should contain version stamp');
+      }
+    });
+
+    it('cleanup stamp temp dir', () => {
+      cleanup(stampDir);
+    });
+  });
+
   // Cleanup after all tests
   describe('Cleanup', () => {
     it('should remove all temp directories', () => {

@@ -52,6 +52,7 @@ function ask(question, defaultAnswer = false) {
   return new Promise((resolve) => {
     // Non-interactive: use default
     if (!process.stdin.isTTY) {
+      console.log(`  ${colors.dim(`[non-interactive] ${question} → ${defaultAnswer ? 'yes' : 'no'}`)}`);
       resolve(defaultAnswer);
       return;
     }
@@ -83,6 +84,7 @@ async function menu(items) {
 
   // Non-interactive: return first visible item
   if (!process.stdin.isTTY) {
+    console.log(`  ${colors.dim(`[non-interactive] Auto-selecting: ${visible[0].label}`)}`);
     return visible[0].value;
   }
 
@@ -127,18 +129,35 @@ function filesDir() {
  */
 function copyFile(relativeSrc, destPath) {
   const src = path.join(filesDir(), relativeSrc);
-  const dir = path.dirname(destPath);
-  fs.mkdirSync(dir, { recursive: true });
-  fs.copyFileSync(src, destPath);
+  if (!fs.existsSync(src)) {
+    throw new Error(`Source file not found: ${relativeSrc}\n  This might mean CopilotForge was not installed correctly.\n  Try: npm install -g copilotforge`);
+  }
+  try {
+    const dir = path.dirname(destPath);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.copyFileSync(src, destPath);
+  } catch (err) {
+    if (err.code === 'EACCES' || err.code === 'EPERM') {
+      throw new Error(`Permission denied writing to: ${destPath}\n  Check folder permissions or try running with elevated access.`);
+    }
+    throw new Error(`Could not create file: ${destPath}\n  ${err.message}`);
+  }
 }
 
 /**
  * Write content to a file, creating parent directories as needed.
  */
 function writeFile(destPath, content) {
-  const dir = path.dirname(destPath);
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(destPath, content, 'utf8');
+  try {
+    const dir = path.dirname(destPath);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(destPath, content, 'utf8');
+  } catch (err) {
+    if (err.code === 'EACCES' || err.code === 'EPERM') {
+      throw new Error(`Permission denied writing to: ${destPath}\n  Check folder permissions or try running with elevated access.`);
+    }
+    throw new Error(`Could not write file: ${destPath}\n  ${err.message}`);
+  }
 }
 
 /**
@@ -170,8 +189,8 @@ function gitCommit(files, message) {
   for (const f of files) {
     try {
       execSync(`git add "${f}"`, opts);
-    } catch {
-      // File might not exist or already staged — continue
+    } catch (err) {
+      warn(`Could not stage ${f}: ${err.message}`);
     }
   }
 
@@ -183,7 +202,8 @@ function gitCommit(files, message) {
     }
   } catch (e) {
     if (e.message.includes('No files')) throw e;
-    // git diff failed — try committing anyway
+    // Only recover from git diff itself failing (not other errors)
+    console.warn(`  ${colors.yellow('⚠️')} Could not check staged files — proceeding with commit`);
   }
 
   // Use a temp file for the commit message to avoid shell escaping issues

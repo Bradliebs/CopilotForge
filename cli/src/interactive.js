@@ -210,16 +210,13 @@ function buildMenuItems(cwd) {
 async function handleChoice(choice, cwd) {
   switch (choice) {
     case 'init':
-      await require('./init').run([]);
-      await waitForEnter();
+      await require('./init').run(['--yes']);
       break;
     case 'doctor':
       require('./doctor').run();
-      await waitForEnter();
       break;
     case 'upgrade':
-      await require('./upgrade').run([]);
-      await waitForEnter();
+      await require('./upgrade').run(['--yes']);
       break;
     case 'plan':
       await showPlanViewer(cwd);
@@ -245,6 +242,7 @@ async function run() {
 
   // Non-interactive: fall through to static status output
   if (!process.stdin.isTTY) {
+    info(colors.dim('Non-interactive terminal — showing status dashboard'));
     require('./status').run();
     return;
   }

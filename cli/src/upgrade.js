@@ -67,45 +67,49 @@ async function run(args) {
     const rel = entry.type === 'copy' ? entry.src : entry.dest;
     const destPath = path.join(cwd, rel);
 
-    if (!exists(destPath)) {
-      // File doesn't exist yet — create it
-      if (!dryRun) {
-        if (entry.type === 'copy') {
-          copyFile(entry.src, destPath);
-        } else {
-          writeFile(destPath, entry.content);
+    try {
+      if (!exists(destPath)) {
+        // File doesn't exist yet — create it
+        if (!dryRun) {
+          if (entry.type === 'copy') {
+            copyFile(entry.src, destPath);
+          } else {
+            writeFile(destPath, entry.content);
+          }
         }
+        success(`${dryRun ? '[dry-run] Would create' : 'Created'} ${rel}`);
+        updated++;
+        updatedFiles.push(rel);
+        continue;
       }
-      success(`${dryRun ? '[dry-run] Would create' : 'Created'} ${rel}`);
-      updated++;
-      updatedFiles.push(rel);
-      continue;
-    }
 
-    // Compare content
-    const currentContent = fs.readFileSync(destPath, 'utf8');
-    let newContent;
-    if (entry.type === 'copy') {
-      const srcPath = path.join(filesDir(), entry.src);
-      newContent = fs.readFileSync(srcPath, 'utf8');
-    } else {
-      newContent = entry.content;
-    }
+      // Compare content
+      const currentContent = fs.readFileSync(destPath, 'utf8');
+      let newContent;
+      if (entry.type === 'copy') {
+        const srcPath = path.join(filesDir(), entry.src);
+        newContent = fs.readFileSync(srcPath, 'utf8');
+      } else {
+        newContent = entry.content;
+      }
 
-    if (currentContent === newContent) {
-      info(`  ${colors.dim('✓')} ${rel} ${colors.dim('(current)')}`);
-      current++;
-    } else {
-      if (!dryRun) {
-        if (entry.type === 'copy') {
-          copyFile(entry.src, destPath);
-        } else {
-          writeFile(destPath, entry.content);
+      if (currentContent === newContent) {
+        info(`  ${colors.dim('✓')} ${rel} ${colors.dim('(current)')}`);
+        current++;
+      } else {
+        if (!dryRun) {
+          if (entry.type === 'copy') {
+            copyFile(entry.src, destPath);
+          } else {
+            writeFile(destPath, entry.content);
+          }
         }
+        success(`${dryRun ? '[dry-run] Would update' : 'Updated'} ${rel}`);
+        updated++;
+        updatedFiles.push(rel);
       }
-      success(`${dryRun ? '[dry-run] Would update' : 'Updated'} ${rel}`);
-      updated++;
-      updatedFiles.push(rel);
+    } catch (err) {
+      warn(`Could not process ${rel}: ${err.message}`);
     }
   }
 
@@ -150,23 +154,31 @@ async function run(args) {
         }
       } else {
         for (const entry of cookbookNeedsUpdate) {
-          const destPath = path.join(cwd, entry.dest);
-          writeFile(destPath, entry.content);
-          success(`Updated ${entry.dest}`);
-          updated++;
-          updatedFiles.push(entry.dest);
+          try {
+            const destPath = path.join(cwd, entry.dest);
+            writeFile(destPath, entry.content);
+            success(`Updated ${entry.dest}`);
+            updated++;
+            updatedFiles.push(entry.dest);
+          } catch (err) {
+            warn(`Could not update ${entry.dest}: ${err.message}`);
+          }
         }
       }
     } else {
       for (const entry of cookbookNeedsUpdate) {
-        const destPath = path.join(cwd, entry.dest);
-        const action = exists(destPath) ? 'update' : 'create';
-        if (!dryRun) {
-          writeFile(destPath, entry.content);
+        try {
+          const destPath = path.join(cwd, entry.dest);
+          const action = exists(destPath) ? 'update' : 'create';
+          if (!dryRun) {
+            writeFile(destPath, entry.content);
+          }
+          success(`${dryRun ? `[dry-run] Would ${action}` : action === 'create' ? 'Created' : 'Updated'} ${entry.dest}`);
+          updated++;
+          updatedFiles.push(entry.dest);
+        } catch (err) {
+          warn(`Could not update ${entry.dest}: ${err.message}`);
         }
-        success(`${dryRun ? `[dry-run] Would ${action}` : action === 'create' ? 'Created' : 'Updated'} ${entry.dest}`);
-        updated++;
-        updatedFiles.push(entry.dest);
       }
     }
   }
@@ -181,7 +193,9 @@ async function run(args) {
     if (updated > 0) info(`  ${colors.green(`${updated} file(s) ${dryRun ? 'would be ' : ''}updated`)}`);
     if (current > 0) info(`  ${colors.dim(`${current} file(s) already current`)}`);
     if (skipped > 0) info(`  ${colors.yellow(`${skipped} file(s) skipped`)}`);
-  }
+    if (updated > 0 && !dryRun) {
+      info(colors.dim(`  Files now stamped with v${require('../package.json').version}`));
+    }  }
 
   // Offer to commit
   if (!dryRun && updatedFiles.length > 0 && hasGit()) {

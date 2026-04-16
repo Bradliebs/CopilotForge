@@ -5,6 +5,28 @@ All notable changes to CopilotForge are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-04-17
+
+### Added
+- **Memory conflict detection** — wizard compares remembered stack against manifest files, surfaces conflicts
+- **`forge remember:` feedback loop** — AI writes decisions back to memory during sessions
+- **Persistent experience level** — beginner/intermediate/advanced affects ongoing AI behavior, not just generation
+- **Conversational cookbook** — ask for recipes mid-session ("forge recipe: error-handling")
+- **Agent escalation logic** — agents have clear handoff language to route requests to the right specialist
+- **Version stamping** — generated files include `<!-- copilotforge: vX.X.X -->` stamp
+- **Doctor expansion** — checks Node version, git config, write permissions, version stamps
+- **Non-TTY logging** — `ask()` and `menu()` log what defaults they use in piped/CI mode
+- **The Ralph Loop** — consistent branding for the autonomous plan executor across all docs
+- Error path tests, --yes e2e test, version stamp test
+
+### Fixed
+- `.catch()` wrappers on all CLI router commands (doctor, status, uninstall)
+- `copyFile()` and `writeFile()` now throw beginner-friendly permission errors
+- `gitCommit()` logs warnings for failed `git add` instead of silently swallowing
+- Interactive mode: init/upgrade from menu auto-pass `--yes` (no nested prompts)
+- Removed unnecessary `waitForEnter()` after doctor and upgrade in interactive mode
+- Unsafe git diff fallback now logs a warning instead of silently continuing
+
 ## [1.4.0] - 2026-04-16
 
 ### Added

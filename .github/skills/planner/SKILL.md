@@ -78,6 +78,16 @@ Read whatever memory files are present. If any file is missing or unreadable, sk
 - Read `forge-memory/preferences.md` — extract verbosity level, stack preferences, and any user overrides
 - Read `FORGE.md` — extract the Project section (description, stack, settings) and the Skills/Agents tables
 
+- **Check for conflicts:** Compare memory against the current project state:
+  - Read `package.json`, `requirements.txt`, `go.mod`, `.csproj`, or other manifest files
+  - If the stack in `forge-memory/patterns.md` doesn't match detected frameworks (e.g., memory says "Python/FastAPI" but `package.json` has Express), surface the conflict:
+    > ⚠️ **Stack conflict detected:** Your memory says **{stack from memory}** but I found **{detected stack from manifest files}**. Which is correct?
+    > 1. **{detected stack}** — Update my memory to match the current project
+    > 2. **{memory stack}** — Keep the existing memory (maybe I'm in a different branch)
+    > 3. **Both are relevant** — This is a polyglot project
+  - Record the resolution in `forge-memory/decisions.md`
+  - If no conflict is detected, proceed normally
+
 Present a context summary to the user:
 
 > 👋 **Welcome back!** I found your project context:
@@ -329,13 +339,37 @@ Each agent file must follow this format:
 ## System Prompt
 {The actual system prompt the agent uses. Write this as executable instructions — another LLM should be able to follow it verbatim.}
 
+## Interaction Style
+
+Experience level: {beginner|intermediate|advanced} *(from Question 5)*
+
+**How this affects every response:**
+- **beginner**: Explain WHY before WHAT. Show examples for non-obvious code. Define technical terms on first use. When suggesting a fix, explain what the original problem was. Use encouraging tone.
+- **intermediate**: Standard explanations. Skip basic concepts. Focus on the reasoning behind decisions.
+- **advanced**: Terse and direct. Code over prose. Only explain non-obvious architectural decisions.
+
+This setting persists across sessions — it's not just for generated files. Every time this agent responds, it adjusts its communication style to match the user's level.
+
 ## Boundaries
 - **I handle:** {list}
 - **I don't handle:** {list}
 
+## Escalation
+
+When a request falls outside this agent's scope:
+- Say: "This is outside my area — the **{other agent}** agent handles {topic}. Ask: '{trigger phrase}'"
+- Never attempt work that belongs to another agent
+- Common handoffs:
+  - Code quality questions → **reviewer** agent
+  - Test-related questions → **tester** agent
+  - Project setup or new skills → **planner** agent
+  - Building from a plan → say "run the plan" to trigger the plan executor
+
 ## Skills
 - {skill-name} — {why this agent uses it}
 ```
+
+**Important:** The Interaction Style section is NOT just for generation — it must be respected in ALL ongoing interactions. A beginner-mode reviewer explains *why* something is wrong and suggests the fix. An advanced-mode reviewer just flags the issue. This is what makes CopilotForge feel personalized beyond day one.
 
 ---
 
@@ -618,6 +652,70 @@ Output this as the very last thing the wizard shows:
 > your project's conventions, team setup, and goals — no need to re-explain anything.
 
 The copy-paste prompt references FORGE.md and forge-memory/ — the artifacts the wizard just created. The one-liner alternative is for users who want to keep it simple. Both work because the AI assistant reads the project's memory files to understand context automatically.
+
+---
+
+### Ongoing — Conversational Cookbook
+
+When this skill is active, listen for recipe requests during any conversation:
+
+**Trigger phrases:**
+- "I need error handling" / "show me error handling"
+- "forge recipe: {name}" / "recipe: {name}"
+- "how do I do {concept}?"
+- "show me the {name} recipe"
+
+**Action:** Look up the matching recipe from `cookbook/` and present it in-context. Don't just give the file path — show the actual code with explanation.
+
+**Recipe mapping** (concept → file):
+| User says | Recipe file | What it does |
+|---|---|---|
+| "error handling" | `cookbook/hello-world.{ext}` | Basic error handling patterns |
+| "task loop" / "autonomous" | `cookbook/task-loop.{ext}` | Autonomous task execution |
+| "auto experiments" / "research" | `cookbook/auto-research.{ext}` | Automated experimentation |
+| "knowledge wiki" | `cookbook/knowledge-wiki.{ext}` | Personal knowledge base |
+| "CLI hooks" | `cookbook/copilot-hooks.{ext}` | Session hooks and logging |
+| "blog" / "blog writer" | `cookbook/blog-writer.{ext}` | PR-to-blog pipeline |
+| "templates" / "readme" | `cookbook/template-creator.{ext}` | Document generation |
+| "dashboard" / "PR dashboard" | `cookbook/pr-visualization.{ext}` | PR analytics |
+| "command center" | `cookbook/command-center.{ext}` | Terminal dashboard |
+| "Copilot Studio" | `cookbook/copilot-studio-guide.md` | Enterprise agent building |
+| "code apps" / "Power Apps" | `cookbook/code-apps-guide.md` | React/TS Power Apps |
+| "custom agents" / "agent.md" | `cookbook/copilot-agents-guide.md` | GitHub Copilot agents |
+
+**For recipes that don't exist yet:** If the user asks for a recipe that wasn't generated during setup, offer to create it:
+> That recipe wasn't included in your initial setup. Want me to generate it now? I'll create `cookbook/{name}.{ext}` with patterns for your {stack} project.
+
+**Use the right file extension:** Check `forge-memory/patterns.md` or `FORGE.md` for the user's stack to determine `.ts`, `.py`, `.go`, etc.
+
+---
+
+### Ongoing — Memory Feedback Loop
+
+CopilotForge isn't just a one-time generator. During any session where this skill is active, listen for memory-writing triggers:
+
+**Explicit triggers:** If the user says any of these, write the decision to `forge-memory/decisions.md`:
+- "remember that..." / "forge remember: ..."
+- "let's use X from now on"
+- "we decided to..."
+- "going forward, always..."
+
+**Format for writing decisions:**
+```
+### {today's date}: {brief title}
+**What:** {the decision or convention}
+**Why:** {context — why was this chosen?}
+```
+
+**Auto-capture:** If you make a significant architectural decision during a session (naming convention, library choice, folder structure), proactively suggest writing it to memory:
+> 💡 I just decided to {decision}. Want me to save this to `forge-memory/decisions.md` so I remember it next time?
+
+If the user agrees (or if they previously said "always remember decisions"), append it.
+
+**Pattern capture:** If a code pattern is used 3+ times in a session, suggest adding it to `forge-memory/patterns.md`:
+> 💡 I've used the same {pattern description} pattern three times now. Want me to add it to `forge-memory/patterns.md` as a project convention?
+
+This closes the feedback loop: wizard → files → AI → **back to memory** → smarter next session.
 
 ---
 

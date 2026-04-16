@@ -400,3 +400,22 @@ If the user names a specific task ID:
 - **One commit per task.** This creates a clean git history where each commit maps to one plan task. It also makes it easy to revert a single task if needed.
 - **Don't modify the plan format.** When updating checkboxes, only change `[ ]` to `[x]` or `[!]`. Don't reformat the file, don't change task IDs, don't reorder tasks.
 - **Handle missing context gracefully.** If `FORGE.md` doesn't exist, you can still run the plan. If `forge-memory/` doesn't exist, skip the decision logging. Never fail because an optional file is missing.
+
+---
+
+### Memory Feedback Loop
+
+During autonomous execution, write significant decisions back to memory:
+
+- After each completed task, append a one-liner to `forge-memory/decisions.md`:
+  ```
+  ### {date}: Completed {task-id}
+  **What:** {brief description of what was built}
+  **Stack choices:** {any libraries or patterns chosen during implementation}
+  ```
+
+- If you establish a new pattern (e.g., chose a specific error handling approach), add it to `forge-memory/patterns.md`
+
+- If the user says "remember that..." or "forge remember: ...", immediately write it to `forge-memory/decisions.md`
+
+This ensures the memory system improves with every task, not just during wizard runs.

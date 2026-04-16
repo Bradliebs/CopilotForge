@@ -189,6 +189,7 @@ async function run(args) {
   console.log();
   info(`${colors.dim('\uD83D\uDCD6 Quick guide: docs/GETTING-STARTED.md')}`);
   info(`${colors.dim('\uD83D\uDCCB Control panel: FORGE.md')}`);
+  info(`${colors.dim('🔍 Verify setup: npx copilotforge doctor')}`);
   separator();
 }
 

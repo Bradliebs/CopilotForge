@@ -1,5 +1,8 @@
 'use strict';
 
+const pkg = require('../package.json');
+const VERSION_STAMP = `<!-- copilotforge: v${pkg.version} -->`;
+
 // Embedded templates for default scaffold mode.
 // These are starter files; the wizard replaces placeholders with real values.
 
@@ -55,6 +58,8 @@ Recipes live in \`cookbook/\` and provide copy-paste code patterns.
 | hello-world | TS / PY | Minimal Copilot SDK example |
 
 > Say "set up my project" to generate recipes tailored to your stack.
+
+${VERSION_STAMP}
 `;
 
 const PLANNER_AGENT_MD = `# Planner — Wizard Orchestrator
@@ -896,6 +901,8 @@ That's it! Your AI assistant generates skills, agents, and recipes customized fo
 - [Full documentation](https://github.com/Bradliebs/CopilotForge)
 - [Examples](https://github.com/Bradliebs/CopilotForge/tree/main/examples)
 - [Cookbook recipes](https://github.com/Bradliebs/CopilotForge/tree/main/cookbook)
+
+${VERSION_STAMP}
 `;
 
 const COPILOT_STUDIO_GUIDE_MD = `# 🏗️ Copilot Studio — Build Enterprise Agents from VS Code
