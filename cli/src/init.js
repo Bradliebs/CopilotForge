@@ -187,9 +187,23 @@ async function run(args) {
   info(`${colors.bold('3.')} Answer a few questions about what you're building`);
   info(`${colors.bold('4.')} Your AI assistant creates skills, agents, and recipes — customized for your stack!`);
   console.log();
-  info(`${colors.dim('\uD83D\uDCD6 Quick guide: docs/GETTING-STARTED.md')}`);
-  info(`${colors.dim('\uD83D\uDCCB Control panel: FORGE.md')}`);
+  info(`${colors.dim('📖 Quick guide: docs/GETTING-STARTED.md')}`);
+  info(`${colors.dim('📋 Control panel: FORGE.md')}`);
   info(`${colors.dim('🔍 Verify setup: npx copilotforge doctor')}`);
+
+  // Auto-open the Command Center dashboard pointed at this project
+  const dashboard = require('./dashboard');
+  const dashboardOpened = dashboard.tryOpen(cwd);
+  if (dashboardOpened) {
+    console.log();
+    info(`${colors.green('📊 Opening CopilotForge Command Center...')}`);
+    info(colors.dim('  The dashboard will show your plan and Ralph status live.'));
+    info(colors.dim(`  If it closes, reopen it with: ${colors.cyan('npx copilotforge dashboard')}`));
+  } else {
+    console.log();
+    info(colors.dim(`📊 Want a live dashboard? Install it: ${colors.cyan('npx copilotforge dashboard')}`));
+  }
+
   separator();
 }
 

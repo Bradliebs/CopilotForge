@@ -67,6 +67,15 @@ switch (command) {
     break;
   }
 
+  case 'dashboard': {
+    const dashboard = require('../src/dashboard');
+    dashboard.run().catch((err) => {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    });
+    break;
+  }
+
   case 'interactive':
   case '': {
     const interactive = require('../src/interactive');
@@ -105,6 +114,7 @@ function printHelp() {
     npx copilotforge upgrade --force  Update without confirmation prompts
     npx copilotforge upgrade --dry-run  Preview what would change
     npx copilotforge uninstall        Remove CopilotForge files
+    npx copilotforge dashboard        Open the live dashboard app
     npx copilotforge --version        Show version
 
   ${colors.bold('Flags:')}
