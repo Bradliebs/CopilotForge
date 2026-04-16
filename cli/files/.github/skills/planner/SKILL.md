@@ -1,4 +1,4 @@
----
+﻿---
 name: "copilotforge-planner"
 description: "Guided wizard that scaffolds Copilot skills, agents, memory, and cookbook recipes into any repo from a plain-English project description"
 domain: "scaffolding"
@@ -166,13 +166,15 @@ Skip this question entirely — memory is already enabled. Use `yes`.
 
 *If no memory files exist:*
 > Do you want memory across sessions? This creates `forge-memory/` files so agents remember decisions and patterns between conversations.
->
-> **1.** ✅ Yes — remember my decisions across sessions *(recommended)*
-> **2.** ❌ No — start fresh every time
->
-> *(Type **1** or **2**, or just say yes/no)*
 
-If the user skips or says nothing, default to **yes** (option 1).
+Call `ask_user` with these choices:
+```
+choices:
+  - "✅ Yes — remember my decisions across sessions (recommended)"
+  - "❌ No — start fresh every time"
+```
+
+If the user skips or says nothing, default to **yes** (first option).
 
 **Question 4 — Test Automation**
 
@@ -186,13 +188,15 @@ If the user skips or says nothing, default to **yes** (option 1).
 
 *If not in memory and no test files found:*
 > Do you want test automation? This generates a tester agent and testing skill with conventions for your stack.
->
-> **1.** ✅ Yes — set up testing for my stack *(recommended)*
-> **2.** ❌ No — skip test automation
->
-> *(Type **1** or **2**, or just say yes/no)*
 
-If the user skips or says nothing, default to **yes** (option 1).
+Call `ask_user` with these choices:
+```
+choices:
+  - "✅ Yes — set up testing for my stack (recommended)"
+  - "❌ No — skip test automation"
+```
+
+If the user skips or says nothing, default to **yes** (first option).
 
 **Question 5 — Skill Level**
 
@@ -202,14 +206,16 @@ If the user skips or says nothing, default to **yes** (option 1).
 
 *If not in memory:*
 > What's your experience level? This controls how much detail appears in generated files.
->
-> **1.** 🟢 **Beginner** — extra comments, explanations in every file *(recommended for first-timers)*
-> **2.** 🟡 **Intermediate** — standard detail, assumes you know your stack
-> **3.** 🔴 **Advanced** — minimal comments, just the essentials
->
-> *(Type **1**, **2**, or **3**)*
 
-If the user skips or says nothing, default to **beginner** (option 1).
+Call `ask_user` with these choices:
+```
+choices:
+  - "🟢 Beginner — extra comments, explanations in every file (recommended for first-timers)"
+  - "🟡 Intermediate — standard detail, assumes you know your stack"
+  - "🔴 Advanced — minimal comments, just the essentials"
+```
+
+If the user skips or says nothing, default to **beginner** (first option).
 
 **Question 6 — Extras**
 
@@ -218,26 +224,40 @@ If the user skips or says nothing, default to **beginner** (option 1).
 > Want to change these? *(yes / no — or name specific additions/removals)*
 
 *If not in memory:*
-> **Optional extras** — powerful features you can add now or anytime later. Pick any that sound useful, or skip them all — the core setup works great on its own.
->
-> **1.** 🔄 **Task automation** — An AI creates a step-by-step build plan from your project description, then works through it autonomously
-> **2.** 🧪 **Auto-experiments** — An AI tries changes to your code, runs tests, keeps what works
-> **3.** 📚 **Knowledge wiki** — Drop in articles and notes, get a searchable personal Wikipedia
-> **4.** 🔗 **CLI hooks** — Automatic actions during AI chat sessions — logging, safety checks
-> **5.** ✍️ **Blog writer** — Turns your pull requests and code changes into blog posts
-> **6.** 📋 **Template factory** — Generates README files, issue templates, and project docs
-> **7.** 📊 **PR dashboard** — Charts showing pull requests, age, reviewers
-> **8.** 🏠 **Command center** — Terminal dashboard showing your project at a glance
-> **9.** 🏗️ **Copilot Studio** — Build enterprise agents with the VS Code extension *(requires Power Platform)*
-> **10.** 💻 **Code Apps** — Create Power Apps with React/TypeScript code *(requires Power Platform)*
-> **11.** 🧩 **Custom agents** — Create `.agent.md` profiles for GitHub Copilot
->
-> *(Type numbers like **1, 3, 8** to select, or **none** to skip. You can always add these later.)*
 
-**Default suggestions by experience level** (from Question 5):
-- **beginner** → Suggest "none" with reassurance: *"These are all optional — I'd recommend starting simple. Just type **none** and you can add any of these later."*
-- **intermediate** → Suggest options 1 and 8: *"I'd suggest **1** (task automation) and **8** (command center) — they pair well with most projects. Type **1, 8** or pick your own."*
-- **advanced** → Suggest options 1, 2, and 11: *"Popular picks: **1, 2, 11** — task automation, experiments, and custom agents. Type those numbers or customize."*
+**Present extras using the `ask_user` tool so the user sees clickable buttons — do NOT show a typed numbered list.**
+
+If the user's experience level is **beginner**, say first:
+> "These extras are all optional — most beginners skip them and add things later. The core setup works great on its own! Click anything that sounds useful, or click **'Skip — start simple'**."
+
+Then call `ask_user` with these choices (in this exact order, so "Skip" is always first for beginners):
+```
+choices:
+  - "⏭️ Skip — start simple (you can add extras anytime)"
+  - "🔄 Task automation — AI writes a step-by-step plan and builds it for you"
+  - "🧪 Auto-experiments — AI tries code changes, runs tests, keeps what works"
+  - "📚 Knowledge wiki — drop in notes and articles, get a searchable reference"
+  - "🔗 CLI hooks — auto-logging and safety checks during AI sessions"
+  - "✍️ Blog / docs writer — turns your pull requests into blog posts"
+  - "📋 Template factory — auto-generates READMEs, issue templates, project docs"
+  - "📊 PR dashboard — live charts of open PRs, reviewers, and age"
+  - "🏠 Command center — terminal dashboard showing your project at a glance"
+  - "🏗️ Copilot Studio — build enterprise agents (requires Power Platform)"
+  - "💻 Code Apps — Power Apps with React/TypeScript (requires Power Platform)"
+  - "🧩 Custom agents — .agent.md profiles for GitHub Copilot"
+  - "✅ Done — I've made my selections, continue"
+```
+
+**Multi-select behavior — repeat until done:**
+1. If the user clicks **"Skip — start simple"** → record extras = none, continue to Step 2
+2. If the user clicks **"Done — I've made my selections, continue"** → summarize selections, continue to Step 2
+3. For any other click → acknowledge and track: *"✅ Added **{item}**! Selected so far: {running list}. Click more extras or click **Done** to continue."* Then call `ask_user` again, removing already-selected items from the choices (always keep "Done" as an option)
+4. If the user types a number or name → accept it as a selection and continue the multi-select loop
+
+**Default suggestions by experience level:**
+- **beginner** → "Skip" is shown first; say the reassurance message above before showing choices
+- **intermediate** → Highlight before showing choices: *"I'd suggest **Task automation** and **Command center** — they pair well with most projects. Click to add them, or skip."*
+- **advanced** → Highlight before showing choices: *"Popular picks: **Task automation**, **Auto-experiments**, and **Custom agents**. Click to add or pick your own."*
 
 If the user skips or says nothing, default to **none** (no extras).
 
