@@ -34,3 +34,14 @@
 - **2026-04-16: Planning Mode documentation added.** Updated README, GETTING-STARTED, WHAT-TO-USE, CHEATSHEET, and FAQ to explain Planning Mode. Consistent terminology: "Planning Mode", "IMPLEMENTATION_PLAN.md", "Ralph Loop". All beginner-friendly. Added heroic example flow showing autonomous project build from plan.
 
 - **2026-04-16: Command Center recipe + docs delivered.** Created `cookbook/command-center.ts` and `.py` — terminal dashboard recipes with Widget extensibility pattern. Updated README (new section + recipe table), CHEATSHEET (new row), FAQ (new Q&A), and WHAT-TO-USE (new decision path). Zero external dependencies. Credited command-center-lite as inspiration. All additions are additive — no existing content rewritten.
+
+## Learnings
+
+- **2026-04-16: PRD decomposition completed for Brad's improvement ideas.** Analyzed 9 themes (~50 features) against the current codebase (plain JS CLI, 17 source files, 15 skills, Node >=18, zero external deps beyond @github/copilot-sdk). Key finding: the CLI is architecturally simple enough to absorb incremental improvements without a rewrite, but the zero-dependency constraint makes some ideas (local LLM, TUI frameworks, MCP server) non-trivial. Phase 13 (Path Awareness) is still in-progress with 16 uncompleted tasks — new work should not start until Phase 13 lands or is explicitly deprioritized.
+- **2026-04-16: Upgrade command already has --dry-run.** Brad's #2 priority (rollback/dry-run) is partially shipped — upgrade.js supports --dry-run. Extending this to init and uninstall is low-effort. Full rollback (snapshot-based) is a new subsystem.
+- **2026-04-16: Interactive mode is the default.** Running 
+px copilotforge with no args already routes to interactive.js, which is a readline-based menu. This is the natural extension point for a conversational wizard.
+- **2026-04-16: dashboard.js uses raw https module.** The HTTP/download logic in dashboard.js uses Node's built-in https module with manual redirect following. Replacing with fetch (Node 18+) would simplify this, but it's contained to one file.
+[2026-04-16] — PRD decomposition complete. Brad approved full plan. Neo launched for Phase 13 + immediate wins.
+Key decision: local LLM for wizard routing is a moonshot (200MB dep), defer. Ship conversational wizard first.
+

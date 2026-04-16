@@ -1,3 +1,7 @@
+## D14-01 — 2026-04-16 — PRD Immediate Wins Approved
+Brad approved Morpheus's roadmap. Six immediate wins running in parallel with Phase 13.
+Rationale: Immediate wins are disjoint from Phase 13 (touch different files). No merge conflict risk.
+Owner: Neo
 # Squad Decisions
 
 ## Active Decisions
@@ -308,4 +312,5 @@ Fixed four factually inaccurate claims in README.md that contradicted the actual
 - **Issue:** Cookbook recipes are generated, not extensible
 - **Proposed Solution:** NPM-style plugin registry for third-party recipes
 - **Deferred Reason:** Requires discovery, versioning, and security vetting infrastructure
+
 
