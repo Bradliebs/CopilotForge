@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 const { describe, it } = require('node:test');
 const assert = require('node:assert');
@@ -14,6 +14,19 @@ const {
   getGitData,
   getGreeting,
 } = require('../src/status');
+function cleanupDir(dir) {
+  for (let i = 0; i < 5; i++) {
+    try {
+      fs.rmSync(dir, { recursive: true, force: true });
+      return;
+    } catch (e) {
+      if (e.code !== 'EBUSY' && e.code !== 'EPERM') throw e;
+      // Windows holds handles briefly after child exits — wait and retry
+      const wait = (ms) => { const end = Date.now() + ms; while (Date.now() < end) {} };
+      wait(200 * (i + 1));
+    }
+  }
+}
 
 describe('status - getPlanData', () => {
   it('should return defaults when no plan exists', () => {
@@ -26,7 +39,7 @@ describe('status - getPlanData', () => {
     assert.strictEqual(data.total, 0);
     assert.strictEqual(data.nextTask, null);
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 
   it('should count tasks correctly', () => {
@@ -52,7 +65,7 @@ describe('status - getPlanData', () => {
     assert.ok(data.nextTask);
     assert.strictEqual(data.nextTask.id, 'task2');
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 
   it('should capture first pending task as next', () => {
@@ -71,7 +84,7 @@ describe('status - getPlanData', () => {
     assert.strictEqual(data.nextTask.id, 'next1');
     assert.strictEqual(data.nextTask.title, 'This is next');
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 });
 
@@ -84,7 +97,7 @@ describe('status - getMemoryData', () => {
     assert.strictEqual(data.patterns, 0);
     assert.strictEqual(data.preferences, 0);
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 
   it('should count headings in memory files', () => {
@@ -121,7 +134,7 @@ Content
     assert.strictEqual(data.patterns, 1);
     assert.strictEqual(data.preferences, 2);
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 });
 
@@ -132,7 +145,7 @@ describe('status - getSkillsData', () => {
 
     assert.deepStrictEqual(data.names, []);
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 
   it('should find skill directories with SKILL.md', () => {
@@ -157,7 +170,7 @@ describe('status - getSkillsData', () => {
     assert.ok(data.names.includes('plan-executor'));
     assert.ok(!data.names.includes('incomplete'));
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 });
 
@@ -168,7 +181,7 @@ describe('status - getAgentsData', () => {
 
     assert.deepStrictEqual(data.names, []);
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 
   it('should find agent .md files', () => {
@@ -186,7 +199,7 @@ describe('status - getAgentsData', () => {
     assert.ok(data.names.includes('planner'));
     assert.ok(data.names.includes('reviewer'));
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 });
 
@@ -197,7 +210,7 @@ describe('status - getCookbookData', () => {
 
     assert.strictEqual(data.count, 0);
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 
   it('should count files in cookbook', () => {
@@ -216,7 +229,7 @@ describe('status - getCookbookData', () => {
 
     assert.strictEqual(data.count, 3);
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 });
 
@@ -240,7 +253,7 @@ describe('status - getGitData', () => {
     assert.strictEqual(data.commitsToday, 0);
     assert.strictEqual(data.lastCommit, '');
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 });
 

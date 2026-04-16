@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 const { describe, it } = require('node:test');
 const assert = require('node:assert');
@@ -6,6 +6,19 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const utils = require('../src/utils');
+function cleanupDir(dir) {
+  for (let i = 0; i < 5; i++) {
+    try {
+      fs.rmSync(dir, { recursive: true, force: true });
+      return;
+    } catch (e) {
+      if (e.code !== 'EBUSY' && e.code !== 'EPERM') throw e;
+      // Windows holds handles briefly after child exits — wait and retry
+      const wait = (ms) => { const end = Date.now() + ms; while (Date.now() < end) {} };
+      wait(200 * (i + 1));
+    }
+  }
+}
 
 describe('utils - colors', () => {
   it('should have all color functions', () => {
@@ -96,7 +109,7 @@ describe('utils - writeFile', () => {
     assert.strictEqual(fs.readFileSync(testFile, 'utf8'), content);
 
     // Cleanup
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 });
 
@@ -117,7 +130,7 @@ describe('utils - removeFile', () => {
     assert.strictEqual(removed, true);
     assert.strictEqual(fs.existsSync(testFile), false);
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 
   it('should return false for non-existent file', () => {

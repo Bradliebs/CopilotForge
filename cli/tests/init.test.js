@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 const { describe, it } = require('node:test');
 const assert = require('node:assert');
@@ -6,6 +6,19 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const { execSync } = require('child_process');
+function cleanupDir(dir) {
+  for (let i = 0; i < 5; i++) {
+    try {
+      fs.rmSync(dir, { recursive: true, force: true });
+      return;
+    } catch (e) {
+      if (e.code !== 'EBUSY' && e.code !== 'EPERM') throw e;
+      // Windows holds handles briefly after child exits — wait and retry
+      const wait = (ms) => { const end = Date.now() + ms; while (Date.now() < end) {} };
+      wait(200 * (i + 1));
+    }
+  }
+}
 
 describe('init - full initialization', () => {
   it('should create all expected files', () => {
@@ -13,9 +26,9 @@ describe('init - full initialization', () => {
     const cliRoot = path.resolve(__dirname, '..');
     const binPath = path.join(cliRoot, 'bin', 'copilotforge.js');
 
-    // Run init command with --minimal flag and echo n to skip git commit
+    // Run init command with --yes to bypass all interactive prompts
     try {
-      execSync(`echo n | node "${binPath}" init`, {
+      execSync(`node "${binPath}" init --yes`, {
         cwd: tmpDir,
         stdio: 'pipe',
         encoding: 'utf8',
@@ -57,7 +70,7 @@ describe('init - full initialization', () => {
     );
 
     // Cleanup
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 });
 
@@ -68,7 +81,7 @@ describe('init - SKILL.md validation', () => {
     const binPath = path.join(cliRoot, 'bin', 'copilotforge.js');
 
     try {
-      execSync(`echo n | node "${binPath}" init`, {
+      execSync(`node "${binPath}" init --yes`, {
         cwd: tmpDir,
         stdio: 'pipe',
       });
@@ -95,7 +108,7 @@ describe('init - SKILL.md validation', () => {
       assert.ok(foundSecondDelimiter, 'SKILL.md should have closing --- delimiter');
     }
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 });
 
@@ -130,7 +143,7 @@ describe('init - minimal flag', () => {
     const hasForge = fs.existsSync(path.join(tmpDir, 'FORGE.md'));
     // The actual behavior depends on implementation - just verify init ran
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 });
 
@@ -142,7 +155,7 @@ describe('init - doctor command after init', () => {
 
     try {
       // Run init
-      execSync(`echo n | node "${binPath}" init`, {
+      execSync(`node "${binPath}" init --yes`, {
         cwd: tmpDir,
         stdio: 'pipe',
       });
@@ -163,7 +176,7 @@ describe('init - doctor command after init', () => {
       );
     }
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 });
 
@@ -174,7 +187,7 @@ describe('init - file content validation', () => {
     const binPath = path.join(cliRoot, 'bin', 'copilotforge.js');
 
     try {
-      execSync(`echo n | node "${binPath}" init`, {
+      execSync(`node "${binPath}" init --yes`, {
         cwd: tmpDir,
         stdio: 'pipe',
       });
@@ -195,7 +208,7 @@ describe('init - file content validation', () => {
       }
     }
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 });
 
@@ -206,7 +219,7 @@ describe('init - reference files', () => {
     const binPath = path.join(cliRoot, 'bin', 'copilotforge.js');
 
     try {
-      execSync(`echo n | node "${binPath}" init`, {
+      execSync(`node "${binPath}" init --yes`, {
         cwd: tmpDir,
         stdio: 'pipe',
       });
@@ -228,7 +241,7 @@ describe('init - reference files', () => {
       assert.ok(content.length > 0, 'executor reference.md should not be empty');
     }
 
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    cleanupDir(tmpDir);
   });
 });
 
@@ -266,7 +279,7 @@ describe('init - --yes flag', () => {
         'Files should be created despite errors'
       );
     } finally {
-      fs.rmSync(tmpDir, { recursive: true, force: true });
+      cleanupDir(tmpDir);
     }
   });
 
@@ -277,7 +290,7 @@ describe('init - --yes flag', () => {
 
     try {
       // First init with 'n' to skip commit prompt
-      execSync(`echo n | node "${binPath}" init`, {
+      execSync(`node "${binPath}" init --yes`, {
         cwd: tmpDir,
         stdio: 'pipe',
       });
@@ -302,7 +315,7 @@ describe('init - --yes flag', () => {
     } catch (err) {
       // Continue
     } finally {
-      fs.rmSync(tmpDir, { recursive: true, force: true });
+      cleanupDir(tmpDir);
     }
   });
 
@@ -335,7 +348,7 @@ describe('init - --yes flag', () => {
         'Files should be created with -y flag'
       );
     } finally {
-      fs.rmSync(tmpDir, { recursive: true, force: true });
+      cleanupDir(tmpDir);
     }
   });
 
@@ -368,7 +381,7 @@ describe('init - --yes flag', () => {
         'Core files should be created with --yes --minimal'
       );
     } finally {
-      fs.rmSync(tmpDir, { recursive: true, force: true });
+      cleanupDir(tmpDir);
     }
   });
 });
