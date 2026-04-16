@@ -65,6 +65,30 @@ const FULL_FILES = [
     dest: 'IMPLEMENTATION_PLAN.md',
     content: templates.IMPLEMENTATION_PLAN_MD,
   },
+  {
+    dest: path.join('cookbook', 'copilot-studio-guide.md'),
+    content: templates.COPILOT_STUDIO_GUIDE_MD,
+  },
+  {
+    dest: path.join('cookbook', 'copilot-studio-agent.yaml'),
+    content: templates.COPILOT_STUDIO_AGENT_YAML,
+  },
+  {
+    dest: path.join('cookbook', 'code-apps-guide.md'),
+    content: templates.CODE_APPS_GUIDE_MD,
+  },
+  {
+    dest: path.join('cookbook', 'code-apps-setup.ts'),
+    content: templates.CODE_APPS_SETUP_TS,
+  },
+  {
+    dest: path.join('cookbook', 'copilot-agents-guide.md'),
+    content: templates.COPILOT_AGENTS_GUIDE_MD,
+  },
+  {
+    dest: path.join('cookbook', 'copilot-agents-example.agent.md'),
+    content: templates.COPILOT_AGENTS_EXAMPLE_MD,
+  },
 ];
 
 async function run(args) {

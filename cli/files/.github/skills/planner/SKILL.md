@@ -119,6 +119,8 @@ Skip this greeting — the welcome-back summary from Step 0 replaces it. Proceed
 
 Ask each question one at a time. Wait for the user's answer before asking the next. If the user gives a single block of answers covering multiple questions, accept them and move on.
 
+**⚡ Interactive options rule:** For every question with fixed choices (Q3, Q4, Q5, Q6), present options as **numbered items** so the user can respond with just a number, a click, or a short word. Think interview, not form — keep it conversational. Inspired by the [plan-then-implement workflow](https://github.blog/engineering/copilot/build-a-personal-organization-command-center-with-github-copilot-cli/).
+
 **For returning users:** Each question checks memory first. If the answer is already known, show it and ask for confirmation instead of asking from scratch. This makes re-runs fast — most questions become one-word confirmations.
 
 **Question 1 — Project Description**
@@ -154,9 +156,13 @@ Skip this question entirely — memory is already enabled. Use `yes`.
 
 *If no memory files exist:*
 > Do you want memory across sessions? This creates `forge-memory/` files so agents remember decisions and patterns between conversations.
-> *(yes / no — default: **yes**)*
+>
+> **1.** ✅ Yes — remember my decisions across sessions *(recommended)*
+> **2.** ❌ No — start fresh every time
+>
+> *(Type **1** or **2**, or just say yes/no)*
 
-If the user skips or says nothing, default to **yes**.
+If the user skips or says nothing, default to **yes** (option 1).
 
 **Question 4 — Test Automation**
 
@@ -170,9 +176,13 @@ If the user skips or says nothing, default to **yes**.
 
 *If not in memory and no test files found:*
 > Do you want test automation? This generates a tester agent and testing skill with conventions for your stack.
-> *(yes / no — default: **yes**)*
+>
+> **1.** ✅ Yes — set up testing for my stack *(recommended)*
+> **2.** ❌ No — skip test automation
+>
+> *(Type **1** or **2**, or just say yes/no)*
 
-If the user skips or says nothing, default to **yes**.
+If the user skips or says nothing, default to **yes** (option 1).
 
 **Question 5 — Skill Level**
 
@@ -181,14 +191,15 @@ If the user skips or says nothing, default to **yes**.
 > Keep this? *(yes / change)*
 
 *If not in memory:*
-> What's your experience level? This controls how verbose the generated files are.
-> - **beginner** — extra comments, explanations in every file
-> - **intermediate** — standard detail, assumes you know your stack
-> - **advanced** — minimal comments, just the essentials
+> What's your experience level? This controls how much detail appears in generated files.
 >
-> *(default: **beginner**)*
+> **1.** 🟢 **Beginner** — extra comments, explanations in every file *(recommended for first-timers)*
+> **2.** 🟡 **Intermediate** — standard detail, assumes you know your stack
+> **3.** 🔴 **Advanced** — minimal comments, just the essentials
+>
+> *(Type **1**, **2**, or **3**)*
 
-If the user skips or says nothing, default to **beginner**.
+If the user skips or says nothing, default to **beginner** (option 1).
 
 **Question 6 — Extras**
 
@@ -199,24 +210,24 @@ If the user skips or says nothing, default to **beginner**.
 *If not in memory:*
 > **Optional extras** — powerful features you can add now or anytime later. Pick any that sound useful, or skip them all — the core setup works great on its own.
 >
-> | Extra | What it does (plain English) |
-> |-------|----------------------------|
-> | 🔄 **Task automation** | An AI creates a step-by-step build plan from your project description, then works through it autonomously — picks a task, does it, commits, moves to the next |
-> | 🧪 **Auto-experiments** | An AI tries changes to your code, runs tests, keeps what works. Like a tireless intern optimizing overnight |
-> | 📚 **Knowledge wiki** | Drop in articles and notes, get a searchable personal Wikipedia with cross-references |
-> | 🔗 **CLI hooks** | Automatic actions during AI chat sessions — logging, safety checks, blocking dangerous commands |
-> | ✍️ **Blog writer** | Turns your pull requests and code changes into blog posts automatically |
-> | 📋 **Template factory** | Generates README files, issue templates, and project docs in bulk |
-> | 📊 **PR dashboard** | Charts showing what pull requests are open, how old they are, who's reviewing |
-> | 🏠 **Command center** | A terminal dashboard showing your project at a glance — plan progress, skills, agents, git status, all in one view |
+> **1.** 🔄 **Task automation** — An AI creates a step-by-step build plan from your project description, then works through it autonomously
+> **2.** 🧪 **Auto-experiments** — An AI tries changes to your code, runs tests, keeps what works
+> **3.** 📚 **Knowledge wiki** — Drop in articles and notes, get a searchable personal Wikipedia
+> **4.** 🔗 **CLI hooks** — Automatic actions during AI chat sessions — logging, safety checks
+> **5.** ✍️ **Blog writer** — Turns your pull requests and code changes into blog posts
+> **6.** 📋 **Template factory** — Generates README files, issue templates, and project docs
+> **7.** 📊 **PR dashboard** — Charts showing pull requests, age, reviewers
+> **8.** 🏠 **Command center** — Terminal dashboard showing your project at a glance
+> **9.** 🏗️ **Copilot Studio** — Build enterprise agents with the VS Code extension *(requires Power Platform)*
+> **10.** 💻 **Code Apps** — Create Power Apps with React/TypeScript code *(requires Power Platform)*
+> **11.** 🧩 **Custom agents** — Create `.agent.md` profiles for GitHub Copilot
 >
-> Type the ones you want (e.g., "task automation, wiki") or say **"none"** to skip.
-> *(You can always add these later — see `cookbook/CHEATSHEET.md`)*
+> *(Type numbers like **1, 3, 8** to select, or **none** to skip. You can always add these later.)*
 
 **Default suggestions by experience level** (from Question 5):
-- **beginner** → Suggest "none" with reassurance: *"These are optional — I'd recommend starting simple. You can always add them later."*
-- **intermediate** → Suggest "task automation" as a starting point: *"Task automation pairs well with most projects. Want to add it? Command center is also popular — shows project status at a glance."*
-- **advanced** → Suggest "task automation, auto-experiments": *"These two are popular with experienced devs. Want them?"*
+- **beginner** → Suggest "none" with reassurance: *"These are all optional — I'd recommend starting simple. Just type **none** and you can add any of these later."*
+- **intermediate** → Suggest options 1 and 8: *"I'd suggest **1** (task automation) and **8** (command center) — they pair well with most projects. Type **1, 8** or pick your own."*
+- **advanced** → Suggest options 1, 2, and 11: *"Popular picks: **1, 2, 11** — task automation, experiments, and custom agents. Type those numbers or customize."*
 
 If the user skips or says nothing, default to **none** (no extras).
 
@@ -392,6 +403,9 @@ Generate code recipes based on the project's detected stack. Recipes are copy-pa
 | Blog writer | PR-to-blog pipeline — reads code changes, writes blog posts | TypeScript, Python |
 | Template factory | Document generator — README, issue templates, project docs | TypeScript, Python |
 | PR dashboard | Pull request analytics — charts, age tracking, reviewer stats | TypeScript, Python |
+| Copilot Studio | Enterprise agent builder — clone, edit YAML, sync to Copilot Studio | Guide + YAML example |
+| Code Apps | Power Apps with React/TypeScript — scaffold, connect, publish | TypeScript + Guide |
+| Custom agents | GitHub Copilot `.agent.md` profiles — tools, MCP, specialized prompts | Guide + Example |
 
 **How recipes are selected:**
 
@@ -412,6 +426,9 @@ The goal is: every recipe matches something you actually use. No generic filler.
 - Template factory → `template-creator.{ext}`
 - PR dashboard → `pr-visualization.{ext}`
 - Command center → `command-center.{ext}`
+- Copilot Studio → `copilot-studio-guide.md` + `copilot-studio-agent.yaml`
+- Code Apps → `code-apps-guide.md` + `code-apps-setup.ts`
+- Custom agents → `copilot-agents-guide.md` + `copilot-agents-example.agent.md`
 
 Extras recipes are only generated if explicitly selected. They are never auto-included.
 

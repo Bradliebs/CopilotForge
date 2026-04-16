@@ -308,13 +308,19 @@ When the user selects extras in Question 6, generate the corresponding recipe fi
 | Template factory | `cookbook/template-creator.{ext}` | Scans repo, generates README, CONTRIBUTING, issue templates, and more |
 | PR dashboard | `cookbook/pr-visualization.{ext}` | Fetches PR data via GitHub API, generates charts and summary reports |
 | Command center | `cookbook/command-center.{ext}` | Terminal dashboard — plan progress, skills, agents, git status at a glance |
+| Copilot Studio | `cookbook/copilot-studio-guide.md` | Enterprise agent builder — clone, edit YAML, sync to Copilot Studio |
+| | `cookbook/copilot-studio-agent.yaml` | Example YAML agent definition |
+| Code Apps | `cookbook/code-apps-guide.md` | Power Apps with React/TypeScript — scaffold, connect, publish |
+| | `cookbook/code-apps-setup.ts` | Prerequisite checker and scaffold helper |
+| Custom agents | `cookbook/copilot-agents-guide.md` | GitHub Copilot custom agent profiles — tools, MCP, prompts |
+| | `cookbook/copilot-agents-example.agent.md` | Example custom agent profile |
 
 `{ext}` = `ts` for TypeScript/JavaScript stacks, `py` for Python stacks, `ts` as default for other stacks.
 
 ### Extras Edge Cases
 
-- **"I want everything"** / **"all of them"** → Select all 8 extras. Warn: "That's a lot of files! I'll generate them all — you can always delete ones you don't use."
-- **"I want the wiki"** → Map fuzzy names: "wiki" = Knowledge wiki, "loops" / "automation" = Task automation, "research" / "experiments" = Auto-experiments, "hooks" = CLI hooks, "blog" = Blog writer, "templates" / "docs" = Template factory, "dashboard" / "PRs" = PR dashboard, "command center" / "status" = Command center.
+- **"I want everything"** / **"all of them"** → Select all 11 extras. Warn: "That's a lot of files! I'll generate them all — you can always delete ones you don't use."
+- **"I want the wiki"** → Map fuzzy names: "wiki" = Knowledge wiki, "loops" / "automation" = Task automation, "research" / "experiments" = Auto-experiments, "hooks" = CLI hooks, "blog" = Blog writer, "templates" / "docs" = Template factory, "dashboard" / "PRs" = PR dashboard, "command center" / "status" = Command center, "studio" / "copilot studio" = Copilot Studio, "code apps" / "power apps" / "code app" = Code Apps, "custom agents" / ".agent.md" / "agent profiles" = Custom agents.
 - **User picks an extra that needs TypeScript/Python but their stack is Go/Rust** → Generate anyway with a comment: `// NOTE: This recipe is optimized for TypeScript. Adapt patterns for your {stack}.`
 - **Returning user** → Read extras list from `preferences.md`. Show current selections. Only ask about changes.
 
@@ -324,6 +330,62 @@ When the user selects extras in Question 6, generate the corresponding recipe fi
 - **CLI integration:** Users can also run `npx copilotforge status` for a built-in dashboard.
 - **Stack mapping:** TypeScript → `command-center.ts`, Python → `command-center.py`
 - **Beginner note:** This is a "read-only" feature — it shows you what's in your project but doesn't change anything. Safe to enable at any level.
+
+### 🏗️ Copilot Studio
+- **What it does:** Guides you through building enterprise agents using the Copilot Studio VS Code extension. You clone an existing agent from the cloud, edit its YAML definition locally, and sync changes back. Full Git version control for agent development.
+- **Prerequisites:** VS Code, [Copilot Studio VS Code extension](https://marketplace.visualstudio.com/items?itemName=microsoft-IsvExpTools.microsoft-copilot-studio), Power Platform environment with Copilot Studio access.
+- **Setup steps the guide walks through:**
+  1. Install the Copilot Studio extension in VS Code
+  2. Clone an existing agent from Copilot Studio to your local workspace
+  3. Edit agent components using YAML — topics, tools, triggers, knowledge sources
+  4. Use IntelliSense for YAML editing (syntax highlighting, code completion)
+  5. Apply changes back to your Copilot Studio environment
+  6. Test the agent in Copilot Studio
+  7. Deploy to production channels
+- **Files generated:** `cookbook/copilot-studio-guide.md` (step-by-step guide), `cookbook/copilot-studio-agent.yaml` (example agent YAML definition)
+- **Stack mapping:** Language-independent — YAML definitions work for any project
+- **Beginner note:** This connects your local IDE to Microsoft's cloud agent platform. You need a Power Platform license. If you don't have one, skip this and use "Custom agents" instead (free with GitHub Copilot).
+
+### 💻 Code Apps
+- **What it does:** Guides you through creating Power Apps using React and TypeScript code. Unlike traditional low-code Power Apps, Code Apps give you a full IDE experience with access to Power Platform connectors for data.
+- **Prerequisites:** Node.js LTS, [Power Platform CLI](https://learn.microsoft.com/power-platform/developer/cli/introduction) (`pac`), Power Platform environment with [code apps enabled](https://learn.microsoft.com/power-apps/developer/code-apps/overview#enable-code-apps-on-a-power-platform-environment).
+- **Setup steps the guide walks through:**
+  1. Scaffold a new app from the Vite template: `npx degit github:microsoft/PowerAppsCodeApps/templates/vite my-app`
+  2. Authenticate with Power Platform: `pac auth create`
+  3. Select your environment: `pac env select --environment <id>`
+  4. Install dependencies and initialize: `npm install` + `pac code init --displayname "My App"`
+  5. Run locally: `npm run dev` (opens Local Play URL)
+  6. Build and publish: `npm run build | pac code push`
+  7. Connect to Power Platform data sources using generated models/services
+- **Files generated:** `cookbook/code-apps-guide.md` (step-by-step guide), `cookbook/code-apps-setup.ts` (prerequisite checker and scaffold helper)
+- **Architecture:** Your app → Power Apps client library (`@microsoft/power-apps`) → Power Platform connectors → Data sources. The `power.config.json` file manages metadata.
+- **Stack mapping:** TypeScript only (Code Apps are React/TypeScript)
+- **Beginner note:** Code Apps combine the power of React with Power Platform's data connectors. You need a Power Platform license with code apps enabled. The guide walks you through every step.
+
+### 🧩 Custom Agents
+- **What it does:** Guides you through creating custom agent profiles (`.agent.md` files) for GitHub Copilot. Custom agents let you create specialized AI assistants with specific tools, MCP server access, and behavioral instructions.
+- **Prerequisites:** GitHub Copilot subscription (Pro, Pro+, Business, or Enterprise), VS Code or GitHub.com access.
+- **Setup steps the guide walks through:**
+  1. Create a `.github/agents/` directory in your repository
+  2. Create a `{name}.agent.md` file with YAML frontmatter
+  3. Configure the agent: name, description, tools list, model preference
+  4. Optionally configure MCP servers for extended capabilities
+  5. Write the agent's system prompt (behavioral instructions) in the Markdown body
+  6. Commit to the default branch
+  7. Select the agent from the dropdown in Copilot Chat
+- **Files generated:** `cookbook/copilot-agents-guide.md` (step-by-step guide), `cookbook/copilot-agents-example.agent.md` (example custom agent profile)
+- **Agent profile format:**
+  ```yaml
+  ---
+  name: my-agent
+  description: What this agent does
+  tools: ["read", "edit", "search"]
+  model: claude-sonnet-4
+  ---
+  You are a specialist in...
+  ```
+- **Stack mapping:** Language-independent — `.agent.md` files work for any project
+- **Beginner note:** This is the lowest-barrier option. If you have GitHub Copilot, you already have everything you need. No extra licenses, no cloud services. Just create a markdown file and your AI assistant gets a new personality.
 
 ### Planning Mode (Task Automation)
 

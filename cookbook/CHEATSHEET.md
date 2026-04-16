@@ -30,6 +30,9 @@
 | **I want AI to build my project from a plan** | Ralph Loop + IMPLEMENTATION_PLAN.md | `cookbook/ralph-loop.ts` | beginner+ |
 | **Execute my implementation plan** | Say "run the plan" | Plan Executor skill reads IMPLEMENTATION_PLAN.md, implements tasks one by one |
 | **I want to see my project status at a glance** | Command Center | `cookbook/command-center.ts` / `.py` | beginner+ |
+| **Build enterprise agents with Copilot Studio** | Copilot Studio Guide | `copilot-studio-guide.md` + `copilot-studio-agent.yaml` |
+| **Create Power Apps with React/TypeScript** | Code Apps Guide | `code-apps-guide.md` + `code-apps-setup.ts` |
+| **Create custom GitHub Copilot agent profiles** | Custom Agents Guide | `copilot-agents-guide.md` + `copilot-agents-example.agent.md` |
 | **See delegation in action** | Delegation Example | `delegation-example.ts` |
 | **Create custom skills** | Skill Creation | `skill-creation-example.ts` |
 

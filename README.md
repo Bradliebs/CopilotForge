@@ -328,6 +328,9 @@ Optional add-ons you can generate right now or add later:
 - **Blog writer** (blog-writer) — Convert PRs into blog posts automatically
 - **Template factory** (template-creator) — Generate documentation and templates in bulk
 - **PR dashboard** (pr-visualization) — Analytics and charts for your pull requests
+- **Copilot Studio** (copilot-studio-guide) — Build enterprise agents with Microsoft Copilot Studio
+- **Code Apps** (code-apps-guide) — Create Power Apps using React and TypeScript
+- **Custom Agents** (copilot-agents-guide) — Define custom GitHub Copilot agent profiles
 
 Default is **none** — perfectly fine for beginners. If you're intermediate, **task automation** is a great first extra. Advanced users often combine **task automation** with **auto-experiments**.
 

@@ -52,6 +52,15 @@ What do you want to do?
 ├─ "I want AI to build my project from a plan"
 │   └─ → Enable **Task automation** in Q6. Edit `IMPLEMENTATION_PLAN.md` to describe what you want built, then run the ralph-loop recipe. The AI works through tasks autonomously.
 │
+├─ "I want to build enterprise agents"
+│   └─ → Copilot Studio Guide (`cookbook/copilot-studio-guide.md`)
+│
+├─ "I want to create Power Apps with code"
+│   └─ → Code Apps Guide (`cookbook/code-apps-guide.md`)
+│
+├─ "I want specialized Copilot agent profiles"
+│   └─ → Custom Agents Guide (`cookbook/copilot-agents-guide.md`)
+│
 ├─ "I have a plan and want to execute it"
 │   └─ → Say "run the plan" — the Plan Executor skill reads
 │       `IMPLEMENTATION_PLAN.md` and works through tasks autonomously.
