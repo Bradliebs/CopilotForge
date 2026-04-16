@@ -6,35 +6,35 @@
 
 ## I Want To...
 
-| Goal | Recipe | File |
-|------|--------|------|
-| **Say hello to the Copilot SDK** | Hello World | `hello-world.ts` / `.py` |
-| **Manage chat sessions** | Session Example | `session-example.ts` / `.py` |
-| **Handle multiple conversations** | Multiple Sessions | `multiple-sessions.ts` / `.py` |
-| **Save/restore conversations** | Persisting Sessions | `persisting-sessions.ts` / `.py` |
-| **Handle errors gracefully** | Error Handling | `error-handling.ts` / `.py` |
-| **Build an MCP server** | MCP Integration | `mcp-server.ts` / `.py` |
-| **Make API calls** | API Client | `api-client.ts` / `.py` |
-| **Add authentication** | Auth Middleware | `auth-middleware.ts` / `.py` |
-| **Query a database** | Database Patterns | `db-query.ts` / `.py` |
-| **Set up route handlers** | Route Handlers | `route-handler.ts` / `.py` |
-| **Read CopilotForge memory** | Memory Reader | `memory-reader.ts` / `.py` |
-| **Organize files** | File Management | `managing-local-files.ts` / `.py` |
-| **Write blog posts from code** | Blog Writer | `blog-writer.ts` / `.py` |
-| **Generate project templates** | Template Creator | `template-creator.ts` / `.py` |
-| **Visualize PR activity** | PR Visualization | `pr-visualization.ts` / `.py` |
-| **Add Copilot CLI hooks** | Copilot Hooks | `copilot-hooks.ts` / `.py` |
-| **Run autonomous experiments** | Auto-Research | `auto-research.ts` / `.py` |
-| **Build a personal knowledge base** | Knowledge Wiki | `knowledge-wiki.ts` / `.py` |
-| **Build an autonomous dev loop** | Ralph Loop | `ralph-loop.ts` / `.py` |
-| **I want AI to build my project from a plan** | Ralph Loop + IMPLEMENTATION_PLAN.md | `cookbook/ralph-loop.ts` | beginner+ |
-| **Execute my implementation plan** | Say "run the plan" | Plan Executor skill reads IMPLEMENTATION_PLAN.md, implements tasks one by one |
-| **I want to see my project status at a glance** | Command Center | `cookbook/command-center.ts` / `.py` | beginner+ |
-| **Build enterprise agents with Copilot Studio** | Copilot Studio Guide | `copilot-studio-guide.md` + `copilot-studio-agent.yaml` |
-| **Create Power Apps with React/TypeScript** | Code Apps Guide | `code-apps-guide.md` + `code-apps-setup.ts` |
-| **Create custom GitHub Copilot agent profiles** | Custom Agents Guide | `copilot-agents-guide.md` + `copilot-agents-example.agent.md` |
-| **See delegation in action** | Delegation Example | `delegation-example.ts` |
-| **Create custom skills** | Skill Creation | `skill-creation-example.ts` |
+| Goal | Recipe | File | Level |
+|------|--------|------|-------|
+| **Say hello to the Copilot SDK** | Hello World | `hello-world.ts` / `.py` | 🟢 |
+| **Manage chat sessions** | Session Example | `session-example.ts` / `.py` | 🟢 |
+| **Handle errors gracefully** | Error Handling | `error-handling.ts` / `.py` | 🟢 |
+| **Read CopilotForge memory** | Memory Reader | `memory-reader.ts` / `.py` | 🟢 |
+| **Make API calls** | API Client | `api-client.ts` / `.py` | 🟡 |
+| **Add authentication** | Auth Middleware | `auth-middleware.ts` / `.py` | 🟡 |
+| **Set up route handlers** | Route Handlers | `route-handler.ts` / `.py` | 🟡 |
+| **Query a database** | Database Patterns | `db-query.ts` / `.py` | 🟡 |
+| **Organize files** | File Management | `managing-local-files.ts` / `.py` | 🟡 |
+| **Save/restore conversations** | Persisting Sessions | `persisting-sessions.ts` / `.py` | 🟡 |
+| **Add Copilot CLI hooks** | Copilot Hooks | `copilot-hooks.ts` / `.py` | 🟡 |
+| **Build an autonomous dev loop** | Ralph Loop | `ralph-loop.ts` / `.py` | 🔴 |
+| **Handle multiple conversations** | Multiple Sessions | `multiple-sessions.ts` / `.py` | 🔴 |
+| **Build an MCP server** | MCP Integration | `mcp-server.ts` / `.py` | 🔴 |
+| **Run autonomous experiments** | Auto-Research | `auto-research.ts` / `.py` | 🔴 |
+| **Build a personal knowledge base** | Knowledge Wiki | `knowledge-wiki.ts` / `.py` | 🔴 |
+| **I want to see my project status at a glance** | Command Center | `cookbook/command-center.ts` / `.py` | 🔴 |
+| **Visualize PR activity** | PR Visualization | `pr-visualization.ts` / `.py` | 🔴 |
+| **See delegation in action** | Delegation Example | `delegation-example.ts` | 🔴 |
+| **Create custom skills** | Skill Creation | `skill-creation-example.ts` | 🔴 |
+| **Generate project templates** | Template Creator | `template-creator.ts` / `.py` | 🔴 |
+| **Write blog posts from code** | Blog Writer | `blog-writer.ts` / `.py` | 🔴 |
+| **I want AI to build my project from a plan** | Ralph Loop + IMPLEMENTATION_PLAN.md | `cookbook/ralph-loop.ts` | 🔴 |
+| **Execute my implementation plan** | Say "run the plan" | Plan Executor skill reads IMPLEMENTATION_PLAN.md, implements tasks one by one | — |
+| **Build enterprise agents with Copilot Studio** | Copilot Studio Guide | `copilot-studio-guide.md` + `copilot-studio-agent.yaml` | 🏗️ |
+| **Create Power Apps with React/TypeScript** | Code Apps Guide | `code-apps-guide.md` + `code-apps-setup.ts` | 🏗️ |
+| **Create custom GitHub Copilot agent profiles** | Custom Agents Guide | `copilot-agents-guide.md` + `copilot-agents-example.agent.md` | 🏗️ |
 
 ---
 

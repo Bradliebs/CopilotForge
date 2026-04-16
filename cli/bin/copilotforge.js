@@ -31,6 +31,15 @@ switch (command) {
     break;
   }
 
+  case 'upgrade': {
+    const upgrade = require('../src/upgrade');
+    upgrade.run(args.slice(1)).catch((err) => {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    });
+    break;
+  }
+
   case 'status': {
     const status = require('../src/status');
     status.run();
@@ -66,6 +75,8 @@ function printHelp() {
     npx copilotforge init --minimal   Set up with planner skill only (2 files)
     npx copilotforge status           Show project dashboard (command center)
     npx copilotforge doctor           Check if setup is correct
+    npx copilotforge upgrade            Update framework files to latest version
+    npx copilotforge upgrade --dry-run  Preview what would change
     npx copilotforge uninstall        Remove CopilotForge files
     npx copilotforge --version        Show version
 
