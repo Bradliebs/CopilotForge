@@ -22,6 +22,8 @@ const templates = require('./templates');
 const CORE_FILES = [
   path.join('.github', 'skills', 'planner', 'SKILL.md'),
   path.join('.github', 'skills', 'planner', 'reference.md'),
+  path.join('.github', 'skills', 'plan-executor', 'SKILL.md'),
+  path.join('.github', 'skills', 'plan-executor', 'reference.md'),
 ];
 
 // Extra files installed by default (skipped with --minimal)
