@@ -253,4 +253,4 @@ function run() {
   console.log();
 }
 
-module.exports = { run };
+module.exports = { run, readPathStamp, PATH_NAMES };
