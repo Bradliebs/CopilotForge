@@ -43,7 +43,7 @@ npx copilotforge init
 
 That's it. One command copies everything you need into your project.
 
-> 💡 **Want starter templates too?** Use `npx copilotforge init --full` to include example agents, memory files, and starter recipes.
+> 💡 **Minimal setup?** Use `npx copilotforge init --minimal` for planner skill only (2 files). **Preview first?** Use `npx copilotforge init --dry-run` to see what will be created before writing any files.
 >
 > **Skip prompts?** Use `npx copilotforge init --yes` for autonomous mode (auto-overwrite, auto-commit, perfect for CI/scripting)
 
@@ -146,6 +146,18 @@ Working project with 12 commits, each building on the last
 
 You can also edit the plan manually — add tasks, reorder them, or mark tasks as done. Ralph picks up where you left off.
 
+**Starting the Ralph Loop:**
+
+```bash
+# Persistent — runs continuously, polls every 10 seconds
+npx copilotforge watch
+
+# One-shot — runs through pending tasks once, then exits
+npx copilotforge run
+```
+
+Or use the **Start Build** button in the live dashboard (`npx copilotforge dashboard`).
+
 ### The Complete Flow
 
 1. **Describe** — Say "set up my project" and answer six questions
@@ -197,7 +209,7 @@ This bridges the gap between describing your project and actually building it.
 | Method | Command | Best For |
 |--------|---------|----------|
 | **npx** (recommended) | `npx copilotforge init` | Quick setup, any existing project |
-| **npx full** | `npx copilotforge init --full` | Full setup with starter templates |
+| **npx minimal** | `npx copilotforge init --minimal` | Planner skill only (2 files) |
 | **Manual copy** | Copy `.github/skills/planner/` | No Node.js, airgapped environments |
 | **GitHub Template** | Click "Use this template" | Starting a brand new project |
 
@@ -220,6 +232,37 @@ Opens the live browser dashboard at `http://localhost:3731`.
 ```bash
 npx copilotforge uninstall
 ```
+
+### Watch — Persistent Plan Executor
+
+```bash
+npx copilotforge watch
+```
+
+Runs a persistent terminal process that polls your `IMPLEMENTATION_PLAN.md` every 10 seconds, executes the next pending task, and marks it done or failed. Immune to Copilot Chat interruptions — it lives in a terminal, not a chat turn.
+
+```bash
+npx copilotforge watch --interval 30   # Poll every 30 seconds
+npx copilotforge watch --health        # Check if watch is running
+npx copilotforge watch --log-file watch.log  # Append logs to a file
+```
+
+📖 **[Full watch documentation →](docs/WATCH.md)**
+
+### Run — One-Shot Plan Executor
+
+```bash
+npx copilotforge run
+```
+
+Checks your setup, shows a table of pending tasks, then launches the task executor once and exits when done. Good for a single pass through the plan.
+
+```bash
+npx copilotforge run --dry-run        # Preview pending tasks without executing
+npx copilotforge run --task <id>      # Run a single task by ID and exit
+```
+
+> 💡 **watch vs run:** Use `watch` for continuous autonomous building (leaves a process running). Use `run` for a single controlled pass or CI pipelines.
 
 ---
 
@@ -611,6 +654,21 @@ Here's the full layout of the CopilotForge repo:
 
 ```
 Oracle_Prime/
+├── cli/                             # npx copilotforge CLI tool
+│   ├── bin/
+│   │   └── copilotforge.js         # CLI entry point — routes all subcommands
+│   ├── src/
+│   │   ├── init.js                 # `init` command — wizard + scaffolding
+│   │   ├── doctor.js               # `doctor` command — health check
+│   │   ├── status.js               # `status` command — terminal dashboard
+│   │   ├── upgrade.js              # `upgrade` command — update framework files
+│   │   ├── uninstall.js            # `uninstall` command — remove CopilotForge files
+│   │   ├── dashboard.js            # `dashboard` command — browser dashboard server
+│   │   ├── watch.js                # `watch` command — persistent plan executor
+│   │   ├── run.js                  # `run` command — one-shot plan executor
+│   │   └── interactive.js          # Interactive mode (default with no args)
+│   └── tests/                      # Node built-in test suite (node --test)
+│
 ├── .copilot/
 │   └── agents/                  # Agent definitions (the AI team)
 │       ├── planner.md           # Wizard orchestrator
