@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 const http = require('http');
 const fs = require('fs');
@@ -7,6 +7,17 @@ const { execSync, spawn } = require('child_process');
 const { colors, info } = require('./utils');
 
 const PORT = 3731;
+
+function readWatchState(projectPath) {
+  const p = path.join(projectPath, '.forge-watch-state.json');
+  if (!fs.existsSync(p)) return null;
+  try {
+    const s = JSON.parse(fs.readFileSync(p, 'utf-8'));
+    let running = false;
+    try { process.kill(s.pid, 0); running = true; } catch {}
+    return { ...s, running };
+  } catch { return null; }
+}
 
 function readForge(projectPath) {
   const forgePath = path.join(projectPath, 'FORGE.md');
@@ -67,23 +78,26 @@ function buildStatus(projectPath) {
   const done    = tasks.filter(t => t.status === 'done').length;
   const failed  = tasks.filter(t => t.status === 'failed').length;
   const pending = tasks.filter(t => t.status === 'pending').length;
-  return { projectPath, forge, tasks, done, failed, pending, total: tasks.length, ralph, doctor, commits };
+  return { projectPath, forge, tasks, done, failed, pending, total: tasks.length, ralph, doctor, commits, watch: readWatchState(projectPath) };
 }
 
 function spawnLoop(projectPath) {
-  const hasRalph = fs.existsSync(path.join(projectPath, 'cookbook', 'ralph-loop.ts'));
   const hasTask  = fs.existsSync(path.join(projectPath, 'cookbook', 'task-loop.ts'));
+  const hasRalph = fs.existsSync(path.join(projectPath, 'cookbook', 'ralph-loop.ts'));
   if (!hasRalph && !hasTask) return { ok: false, error: 'No loop script found. Run: npx copilotforge init --full' };
 
-  const scriptFile = hasRalph ? 'ralph-loop.ts' : 'task-loop.ts';
-  const cmd = hasRalph
-    ? `npx tsx cookbook/${scriptFile} build 50`
-    : `npx tsx cookbook/${scriptFile}`;
+  let cmd;
+  let scriptFile;
+  if (hasTask) {
+    cmd = 'npx copilotforge watch';
+    scriptFile = 'watch';
+  } else {
+    scriptFile = 'ralph-loop.ts';
+    cmd = `npx tsx cookbook/${scriptFile} build 50`;
+  }
 
   let child;
-  // Open in a visible terminal so the user can see output
   if (process.platform === 'win32') {
-    // Opens a new cmd window that stays open after the command finishes
     child = spawn('cmd', ['/c', 'start', 'cmd', '/k', cmd], {
       cwd: projectPath,
       shell: false,
@@ -93,7 +107,6 @@ function spawnLoop(projectPath) {
       '-e', `tell app "Terminal" to do script "cd '${projectPath}' && ${cmd}"`,
     ]);
   } else {
-    // Linux: try x-terminal-emulator, fall back to detached
     try {
       child = spawn('x-terminal-emulator', ['-e', `bash -c "cd '${projectPath}' && ${cmd}; exec bash"`]);
     } catch {
@@ -105,9 +118,9 @@ function spawnLoop(projectPath) {
 }
 
 function pauseLoop(projectPath) {
+  fs.writeFileSync(path.join(projectPath, '.copilotforge-stop'), 'Paused at ' + new Date().toISOString() + '\n');
   fs.writeFileSync(path.join(projectPath, 'RALPH_PAUSE'), 'Paused at ' + new Date().toISOString() + '\n');
 }
-
 function buildHtml(projectPath) {
   const escaped = JSON.stringify(projectPath);
   return `<!DOCTYPE html>
@@ -189,6 +202,7 @@ h2{font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:#8b949e;mar
       <div class="stat-row"><span class="stat-label">State</span><span class="stat-value ralph-idle" id="ralphState">Idle</span></div>
       <div class="stat-row"><span class="stat-label">Iteration</span><span class="stat-value" id="ralphIter">&#x2014;</span></div>
       <div class="stat-row"><span class="stat-label">Current task</span><span class="stat-value" id="ralphTask" style="max-width:160px;text-align:right;font-size:12px">&#x2014;</span></div>
+      <div class="stat-row"><span class="stat-label">Watch</span><span class="stat-value" id="watchState">&#x26AB; Not started</span></div>
       <div class="controls">
         <button class="btn btn-green" id="btnStart" onclick="startBuild()">&#x25B6; Start Build</button>
         <button class="btn btn-yellow" id="btnPause" onclick="pauseBuild()">&#x23F8; Pause</button>
@@ -259,6 +273,19 @@ function render(d) {
     document.getElementById('ralphState').className = 'stat-value ralph-idle';
     document.getElementById('ralphIter').textContent = rph.iteration ? 'Last: ' + rph.iteration : '\u2014';
     document.getElementById('ralphTask').textContent = '\u2014';
+  }
+
+  // Watch
+  const wch = d.watch;
+  if (wch && wch.running) {
+    document.getElementById('watchState').textContent = '\uD83D\uDFE2 Running (PID ' + wch.pid + ') \u2014 ' + wch.totalDone + ' done, ' + wch.totalFailed + ' failed';
+    document.getElementById('watchState').style.color = '#3fb950';
+  } else if (wch && wch.lastPollAt) {
+    document.getElementById('watchState').textContent = '\u26AB Idle \u2014 last ran ' + wch.lastPollAt;
+    document.getElementById('watchState').style.color = '#8b949e';
+  } else {
+    document.getElementById('watchState').textContent = '\u26AB Not started \u2014 use "Start Build" or npx copilotforge watch';
+    document.getElementById('watchState').style.color = '#8b949e';
   }
 
   // Doctor

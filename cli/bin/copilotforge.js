@@ -76,6 +76,17 @@ switch (command) {
     break;
   }
 
+  case 'watch': {
+    const watch = require('../src/watch');
+    try {
+      watch.run(args.slice(1));
+    } catch (err) {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    }
+    break;
+  }
+
   case 'interactive':
   case '': {
     const interactive = require('../src/interactive');
@@ -119,6 +130,9 @@ function printHelp() {
     npx copilotforge uninstall        Remove CopilotForge files
     npx copilotforge uninstall --dry-run  Preview what would be deleted
     npx copilotforge dashboard        Open the live dashboard app
+    npx copilotforge watch            Start autonomous plan executor (persistent)
+    npx copilotforge watch --health   Check if watch is running and show status
+    npx copilotforge watch --interval 30  Poll every 30 seconds (default: 10)
     npx copilotforge --version        Show version
 
   ${colors.bold('Flags:')}

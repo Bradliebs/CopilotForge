@@ -333,8 +333,67 @@ function ralphLoop(planPath: string, maxIterations: number = 10): void {
   writeHealthSummary(tasks, startTime, `max iterations reached (${maxIterations})`);
 }
 
+// --- Single-Task Mode (used by watch.js) ---
+
+function runSingleTask(planPath: string, taskId: string): void {
+  if (!existsSync(planPath)) {
+    console.error(`[Ralph] Plan not found: ${planPath}`);
+    process.exit(1);
+  }
+
+  const tasks = parsePlan(planPath);
+  const task = tasks.find((t) => t.id === taskId);
+
+  if (!task) {
+    console.error("[Ralph] Task not found: " + taskId);
+    process.exit(1);
+  }
+
+  if (task.status === "done" || task.status === "failed") {
+    console.log("[Ralph] Task " + taskId + " already " + task.status + " — skipping");
+    process.exit(0);
+  }
+
+  console.log(`[Ralph] Running single task: ${task.id} — "${task.title}"`);
+
+  const startTime = Date.now();
+  implementTask(task);
+  const implementedFile = join("src", `${task.id}.ts`);
+
+  const passed = validateTask(task);
+
+  const freshTasks = parsePlan(planPath);
+  const target = freshTasks.find((t) => t.id === task.id);
+  if (target) {
+    target.status = passed ? "done" : "failed";
+    writePlan(planPath, freshTasks);
+  }
+
+  if (passed) {
+    console.log(`[Ralph] ✅ Task ${task.id} passed — committing.`);
+    gitCommit(`feat: ${task.id} — ${task.title}`, [implementedFile]);
+    writeHealthSummary(freshTasks, startTime, `single task: ${task.id} done`);
+    process.exit(0);
+  } else {
+    console.log(`[Ralph] ❌ Task ${task.id} failed.`);
+    writeHealthSummary(freshTasks, startTime, `single task: ${task.id} failed`);
+    process.exit(1);
+  }
+}
+
 // --- Entry Point ---
 
-const maxIterations = parseInt(process.env.FORGE_MAX_ITERATIONS || "10", 10);
 const planFile = join(".", "IMPLEMENTATION_PLAN.md");
-ralphLoop(planFile, maxIterations);
+
+const singleTaskIdx = process.argv.indexOf("--single-task");
+if (singleTaskIdx >= 0) {
+  const taskId = process.argv[singleTaskIdx + 1];
+  if (!taskId) {
+    console.error("[Ralph] --single-task requires a task id");
+    process.exit(1);
+  }
+  runSingleTask(planFile, taskId);
+} else {
+  const maxIterations = parseInt(process.env.FORGE_MAX_ITERATIONS || "10", 10);
+  ralphLoop(planFile, maxIterations);
+}
