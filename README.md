@@ -106,6 +106,24 @@ Inspired by [command-center-lite](https://github.com/brittanyellich/command-cent
 
 Want a custom dashboard? See `cookbook/command-center.ts` for an extensible recipe with a widget system you can plug your own data sources into.
 
+### 🌐 Live Dashboard — Browser View
+
+For a richer view, run:
+
+```bash
+npx copilotforge dashboard
+```
+
+This starts a local server and opens a live browser dashboard at `http://localhost:3731`. It shows:
+
+- **Plan progress** — tasks done vs. remaining with a progress bar
+- **Ralph status** — whether the Ralph Loop is running and what it's doing
+- **Project health** — checklist of key files (FORGE.md, IMPLEMENTATION_PLAN.md, etc.)
+- **Recent commits** — last 5 git commits at a glance
+- **Start Build / Pause buttons** — launch or pause the Ralph Loop from your browser
+
+The dashboard auto-refreshes every 4 seconds. No install required — it's built into the CLI.
+
 ### 🔄 The Ralph Loop — Let AI Build Your Project
 
 Select **Task automation** in Question 6 and CopilotForge generates two things:
@@ -189,6 +207,14 @@ This bridges the gap between describing your project and actually building it.
 npx copilotforge doctor
 ```
 
+### Dashboard
+
+```bash
+npx copilotforge dashboard
+```
+
+Opens the live browser dashboard at `http://localhost:3731`.
+
 ### Uninstall
 
 ```bash
@@ -237,6 +263,29 @@ your-project/
 │
 └── FORGE.md                    # Your control panel — start here
 ```
+
+---
+
+## Build Paths — Which Path Is Right for You?
+
+When you run `npx copilotforge init`, CopilotForge detects what you're building and selects the right **Build Path** — a pre-configured scaffold optimised for your use case.
+
+| Path | Use Case | Best For |
+|------|----------|----------|
+| **A — Standard App** | General web apps, APIs, CLIs | Most projects |
+| **B — Power Platform (Canvas App)** | Microsoft Canvas Apps + Power Fx | Power Platform makers |
+| **C — Power Platform (Copilot Studio)** | Copilot Studio agents | Bot/agent builders |
+| **D — Power Platform (Power Automate)** | Flow automation | Process automation |
+| **E — Power Platform (PCF)** | Custom controls | Advanced Power Platform devs |
+| **F — Power Platform (Full Suite)** | Mixed Power Platform work | Power Platform teams |
+| **G — Data & Analytics** | Power BI, dashboards, ML | Data engineers |
+| **H — DevOps & Infrastructure** | CI/CD, IaC, cloud | DevOps teams |
+| **I — Agentic / AI-Native** | MCP, LLM apps, agents | AI developers |
+| **J — Trading & Finance** | Algo trading, quant | Finance/trading devs |
+
+CopilotForge auto-detects your path from keywords in your project description. You can also set it explicitly with `--path <letter>` on `init`.
+
+> 💡 **Power Platform users:** Paths B–F include Power Platform-specific skills, agent definitions, and cookbook recipes. The wizard asks three extra questions to configure your environment (tenant ID, environment name, solution publisher prefix).
 
 ---
 
