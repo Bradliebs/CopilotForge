@@ -74,11 +74,34 @@ function spawnLoop(projectPath) {
   const hasRalph = fs.existsSync(path.join(projectPath, 'cookbook', 'ralph-loop.ts'));
   const hasTask  = fs.existsSync(path.join(projectPath, 'cookbook', 'task-loop.ts'));
   if (!hasRalph && !hasTask) return { ok: false, error: 'No loop script found. Run: npx copilotforge init --full' };
+
   const scriptFile = hasRalph ? 'ralph-loop.ts' : 'task-loop.ts';
-  const args = hasRalph ? ['tsx', 'cookbook/' + scriptFile, 'build', '50'] : ['tsx', 'cookbook/' + scriptFile];
-  const child = spawn('npx', args, { cwd: projectPath, detached: true, stdio: 'ignore', shell: true });
-  child.unref();
-  return { ok: true, script: scriptFile, pid: child.pid };
+  const cmd = hasRalph
+    ? `npx tsx cookbook/${scriptFile} build 50`
+    : `npx tsx cookbook/${scriptFile}`;
+
+  let child;
+  // Open in a visible terminal so the user can see output
+  if (process.platform === 'win32') {
+    // Opens a new cmd window that stays open after the command finishes
+    child = spawn('cmd', ['/c', 'start', 'cmd', '/k', cmd], {
+      cwd: projectPath,
+      shell: false,
+    });
+  } else if (process.platform === 'darwin') {
+    child = spawn('osascript', [
+      '-e', `tell app "Terminal" to do script "cd '${projectPath}' && ${cmd}"`,
+    ]);
+  } else {
+    // Linux: try x-terminal-emulator, fall back to detached
+    try {
+      child = spawn('x-terminal-emulator', ['-e', `bash -c "cd '${projectPath}' && ${cmd}; exec bash"`]);
+    } catch {
+      child = spawn('npx', cmd.split(' ').slice(1), { cwd: projectPath, detached: true, stdio: 'ignore', shell: true });
+      child.unref();
+    }
+  }
+  return { ok: true, script: scriptFile };
 }
 
 function pauseLoop(projectPath) {
@@ -257,7 +280,7 @@ async function startBuild() {
     const r = await fetch('/api/start', { method: 'POST' });
     const d = await r.json();
     if (!d.ok) alert('Could not start: ' + d.error);
-    else alert('Build started! Check your terminal for output.');
+    else alert('Build started! A terminal window should open showing the output.\n\nScript: ' + d.script);
   } catch(e) { alert('Error: ' + e.message); }
   setTimeout(() => { document.getElementById('btnStart').disabled = false; load(); }, 2000);
 }
