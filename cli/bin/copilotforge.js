@@ -87,6 +87,17 @@ switch (command) {
     break;
   }
 
+  case 'run': {
+    const runCmd = require('../src/run');
+    try {
+      runCmd.run(args.slice(1));
+    } catch (err) {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    }
+    break;
+  }
+
   case 'interactive':
   case '': {
     const interactive = require('../src/interactive');
@@ -133,6 +144,9 @@ function printHelp() {
     npx copilotforge watch            Start autonomous plan executor (persistent)
     npx copilotforge watch --health   Check if watch is running and show status
     npx copilotforge watch --interval 30  Poll every 30 seconds (default: 10)
+    npx copilotforge run              Check setup, show pending tasks, start executor
+    npx copilotforge run --dry-run    Preview what run would do without executing
+    npx copilotforge run --task <id>  Run a single task by ID and exit
     npx copilotforge --version        Show version
 
   ${colors.bold('Flags:')}
