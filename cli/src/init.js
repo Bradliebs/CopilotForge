@@ -62,6 +62,10 @@ const FULL_FILES = [
     content: templates.TASK_LOOP_PY,
   },
   {
+    dest: path.join('cookbook', 'ralph-loop.ts'),
+    content: templates.RALPH_LOOP_TS,
+  },
+  {
     dest: 'IMPLEMENTATION_PLAN.md',
     content: templates.IMPLEMENTATION_PLAN_MD,
   },
