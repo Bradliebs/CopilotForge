@@ -43,7 +43,7 @@ npx copilotforge init
 
 That's it. One command copies everything you need into your project.
 
-> 💡 **Minimal setup?** Use `npx copilotforge init --minimal` for planner skill only (2 files). **Preview first?** Use `npx copilotforge init --dry-run` to see what will be created before writing any files.
+> 💡 **Full setup (default):** `npx copilotforge init` creates all files — skills, cookbook recipes, memory files, and docs. Use `--full` explicitly for clarity (same result). Use `--minimal` for planner skill only (2 files). **Preview first?** Add `--dry-run` to see what would be created before writing anything.
 >
 > **Skip prompts?** Use `npx copilotforge init --yes` for autonomous mode (auto-overwrite, auto-commit, perfect for CI/scripting)
 
@@ -208,7 +208,8 @@ This bridges the gap between describing your project and actually building it.
 
 | Method | Command | Best For |
 |--------|---------|----------|
-| **npx** (recommended) | `npx copilotforge init` | Quick setup, any existing project |
+| **npx** (recommended) | `npx copilotforge init` | Full setup — skills, cookbook, memory, docs |
+| **npx full** | `npx copilotforge init --full` | Same as above (explicit alias) |
 | **npx minimal** | `npx copilotforge init --minimal` | Planner skill only (2 files) |
 | **Manual copy** | Copy `.github/skills/planner/` | No Node.js, airgapped environments |
 | **GitHub Template** | Click "Use this template" | Starting a brand new project |

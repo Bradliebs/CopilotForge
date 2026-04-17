@@ -127,7 +127,8 @@ function printHelp() {
 
   ${colors.bold('Usage:')}
     npx copilotforge                  Interactive command center (default)
-    npx copilotforge init             Set up CopilotForge in your project
+    npx copilotforge init             Set up CopilotForge in your project (full setup)
+    npx copilotforge init --full      Full setup with all files (default — same as above)
     npx copilotforge init --minimal   Planner skill only (2 files)
     npx copilotforge init --yes       Skip all prompts (auto-overwrite, auto-commit)
     npx copilotforge init --dry-run   Preview what would be created (no files written)
@@ -152,6 +153,7 @@ function printHelp() {
   ${colors.bold('Flags:')}
     --yes, -y     Skip all confirmation prompts (for init and upgrade)
     --dry-run     Preview changes without writing or deleting files
+    --full        Full setup with all files — skills, cookbook, memory, docs (init default)
     --beginner    Create extra beginner-friendly guide files (for init)
     --json        Output results as JSON (for doctor)
 
