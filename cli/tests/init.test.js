@@ -20,15 +20,53 @@ function cleanupDir(dir) {
   }
 }
 
-describe('init - full initialization', () => {
+describe('init - simple initialization (default)', () => {
+  it('should create planner skill and START-HERE.md', () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'copilotforge-test-'));
+    const cliRoot = path.resolve(__dirname, '..');
+    const binPath = path.join(cliRoot, 'bin', 'copilotforge.js');
+
+    try {
+      execSync(`node "${binPath}" init --yes`, {
+        cwd: tmpDir,
+        stdio: 'pipe',
+        encoding: 'utf8',
+      });
+    } catch (err) {
+      // Continue even if git is not available
+    }
+
+    assert.ok(
+      fs.existsSync(path.join(tmpDir, '.github', 'skills', 'planner', 'SKILL.md')),
+      '.github/skills/planner/SKILL.md should exist'
+    );
+    assert.ok(
+      fs.existsSync(path.join(tmpDir, 'START-HERE.md')),
+      'START-HERE.md should exist'
+    );
+
+    // plan-executor and FORGE.md are --full only
+    assert.ok(
+      !fs.existsSync(path.join(tmpDir, '.github', 'skills', 'plan-executor', 'SKILL.md')),
+      'plan-executor/SKILL.md should NOT exist in simple mode'
+    );
+    assert.ok(
+      !fs.existsSync(path.join(tmpDir, 'FORGE.md')),
+      'FORGE.md should NOT exist in simple mode'
+    );
+
+    cleanupDir(tmpDir);
+  });
+});
+
+describe('init - full initialization (--full flag)', () => {
   it('should create all expected files', () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'copilotforge-test-'));
     const cliRoot = path.resolve(__dirname, '..');
     const binPath = path.join(cliRoot, 'bin', 'copilotforge.js');
 
-    // Run init command with --yes to bypass all interactive prompts
     try {
-      execSync(`node "${binPath}" init --yes`, {
+      execSync(`node "${binPath}" init --full --yes`, {
         cwd: tmpDir,
         stdio: 'pipe',
         encoding: 'utf8',
@@ -37,7 +75,6 @@ describe('init - full initialization', () => {
       // Command might fail if git is not available, but files should still be created
     }
 
-    // Check core skill files
     assert.ok(
       fs.existsSync(path.join(tmpDir, '.github', 'skills', 'planner', 'SKILL.md')),
       '.github/skills/planner/SKILL.md should exist'
@@ -46,8 +83,6 @@ describe('init - full initialization', () => {
       fs.existsSync(path.join(tmpDir, '.github', 'skills', 'plan-executor', 'SKILL.md')),
       '.github/skills/plan-executor/SKILL.md should exist'
     );
-
-    // Check additional files
     assert.ok(
       fs.existsSync(path.join(tmpDir, 'FORGE.md')),
       'FORGE.md should exist'
@@ -69,7 +104,6 @@ describe('init - full initialization', () => {
       'cookbook/task-loop.ts should exist'
     );
 
-    // Cleanup
     cleanupDir(tmpDir);
   });
 });
@@ -113,7 +147,7 @@ describe('init - SKILL.md validation', () => {
 });
 
 describe('init - minimal flag', () => {
-  it('should create only core files with --minimal', () => {
+  it('should create only the planner skill files', () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'copilotforge-test-'));
     const cliRoot = path.resolve(__dirname, '..');
     const binPath = path.join(cliRoot, 'bin', 'copilotforge.js');
@@ -127,21 +161,19 @@ describe('init - minimal flag', () => {
       // Continue
     }
 
-    // Core files should exist
     assert.ok(
       fs.existsSync(path.join(tmpDir, '.github', 'skills', 'planner', 'SKILL.md')),
       'planner SKILL.md should exist'
     );
+    // No extras — not even START-HERE.md
     assert.ok(
-      fs.existsSync(path.join(tmpDir, '.github', 'skills', 'plan-executor', 'SKILL.md')),
-      'plan-executor SKILL.md should exist'
+      !fs.existsSync(path.join(tmpDir, 'START-HERE.md')),
+      'START-HERE.md should NOT exist with --minimal'
     );
-
-    // Optional files should NOT exist with --minimal
-    // Note: Based on the init.js code, --minimal still creates all files
-    // This test verifies the current behavior
-    const hasForge = fs.existsSync(path.join(tmpDir, 'FORGE.md'));
-    // The actual behavior depends on implementation - just verify init ran
+    assert.ok(
+      !fs.existsSync(path.join(tmpDir, 'FORGE.md')),
+      'FORGE.md should NOT exist with --minimal'
+    );
 
     cleanupDir(tmpDir);
   });

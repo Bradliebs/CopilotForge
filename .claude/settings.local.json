@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node C:/CopilotForge-master/cli/bin/copilotforge.js --help)",
+      "Bash(node C:/CopilotForge-master/cli/bin/copilotforge.js init --dry-run)",
+      "Bash(node C:/CopilotForge-master/cli/bin/copilotforge.js init --full --dry-run)",
+      "Bash(node -e \"const { getPlatformForge } = require\\('./cli/src/templates/platform-forge'\\); const r = getPlatformForge\\('A'\\); console.log\\(r.includes\\('Copilot Studio Agent'\\) && r.includes\\('path=A'\\) ? 'PASS A' : 'FAIL A'\\); const r2 = getPlatformForge\\('F'\\); console.log\\(r2.includes\\('PCF Code Component'\\) && r2.includes\\('path=F'\\) ? 'PASS F' : 'FAIL F'\\); const r3 = getPlatformForge\\('J'\\); console.log\\(typeof r3 === 'string' && r3.length > 0 ? 'PASS J fallback' : 'FAIL J'\\);\" --input-type=module)",
+      "Bash(node -e \"const { getPlatformForge } = require\\('./cli/src/templates/platform-forge'\\); const r = getPlatformForge\\('A'\\); console.log\\(r.includes\\('Copilot Studio Agent'\\) && r.includes\\('path=A'\\) ? 'PASS A' : 'FAIL A'\\); const r2 = getPlatformForge\\('F'\\); console.log\\(r2.includes\\('PCF Code Component'\\) && r2.includes\\('path=F'\\) ? 'PASS F' : 'FAIL F'\\); const r3 = getPlatformForge\\('J'\\); console.log\\(typeof r3 === 'string' && r3.length > 0 ? 'PASS J fallback' : 'FAIL J'\\);\")",
+      "Bash(node --test tests/*.test.js)"
+    ]
+  }
+}

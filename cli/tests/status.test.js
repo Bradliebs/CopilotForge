@@ -235,14 +235,24 @@ describe('status - getCookbookData', () => {
 
 describe('status - getGitData', () => {
   it('should return data in a git repo', () => {
-    // Run in the actual repo root
     const repoRoot = path.resolve(__dirname, '..', '..');
     const data = getGitData(repoRoot);
 
-    // In a real git repo, branch should not be 'unknown'
-    assert.notStrictEqual(data.branch, 'unknown');
+    // Always verify shape regardless of git availability
+    assert.strictEqual(typeof data.branch, 'string');
     assert.strictEqual(typeof data.commitsToday, 'number');
     assert.strictEqual(typeof data.lastCommit, 'string');
+
+    // Only assert a real branch name when git is actually available
+    const { execSync } = require('child_process');
+    let isGitRepo = false;
+    try {
+      execSync('git rev-parse --is-inside-work-tree', { stdio: 'pipe', cwd: repoRoot });
+      isGitRepo = true;
+    } catch {}
+    if (isGitRepo) {
+      assert.notStrictEqual(data.branch, 'unknown');
+    }
   });
 
   it('should handle non-git directory gracefully', () => {

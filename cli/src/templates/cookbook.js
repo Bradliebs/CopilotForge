@@ -143,32 +143,39 @@ function writePlan(filePath: string, tasks: Task[]): void {
   writeFileSync(filePath, lines.join("\\n") + "\\n", "utf-8");
 }
 
-// --- Implementation (simulated) ---
+// --- Implementation — WIRE YOUR AI HERE ---
 
 /**
- * Simulate implementing a task — creates or modifies a file.
- * TODO: Replace with actual Copilot SDK call to generate code.
+ * Called once per task. Replace this body with your actual AI call.
+ *
+ * Example using the Anthropic SDK:
+ *   const Anthropic = require("@anthropic-ai/sdk");
+ *   const client = new Anthropic();
+ *   const msg = await client.messages.create({
+ *     model: "claude-sonnet-4-6",
+ *     max_tokens: 4096,
+ *     messages: [{ role: "user", content: \`Implement this task: \${task.title}\` }],
+ *   });
+ *   // write msg.content[0].text to the appropriate file
  */
 function implementTask(task: Task): void {
-  const outDir = join(".", "src");
-  if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
-
-  const filePath = join(outDir, \`\${task.id}.ts\`);
-  const content = \`// Auto-generated for task: \${task.id}\\n// \${task.title}\\nexport {};\\n\`;
-  writeFileSync(filePath, content, "utf-8");
-  console.log(\`[Ralph] Implementing: \${task.id}...\`);
+  // TODO: replace with your AI call (see comment above)
+  throw new Error(\`implementTask not wired up — see the comment in this function for how to connect your AI for task: \${task.id}\`);
 }
 
-// --- Validation (simulated) ---
+// --- Validation — WIRE YOUR CHECKS HERE ---
 
 /**
- * Simulate validation — run tests or a build check.
- * TODO: Replace with actual validation (e.g., execSync("npm test")).
+ * Called after implementTask. Return true if the task output is acceptable.
+ * Common choices: run your test suite, do a build check, or lint the output.
+ *
+ * Example:
+ *   execSync("npm test", { stdio: "inherit" });
+ *   return true; // if execSync didn't throw
  */
 function validateTask(task: Task): boolean {
-  console.log(\`[Ralph] Validating: \${task.id}...\`);
-  // Simulate: all tasks pass. Replace with real checks.
-  return true;
+  // TODO: replace with a real check (see comment above)
+  throw new Error(\`validateTask not wired up — see the comment in this function for how to add validation for task: \${task.id}\`);
 }
 
 // --- Git Helpers ---
