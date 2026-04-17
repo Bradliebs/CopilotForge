@@ -146,7 +146,7 @@ async function run(args) {
         info(`    ${colors.yellow('→')} ${entry.dest}`);
       }
       console.log();
-      const proceed = await ask('Update cookbook recipes?', false);
+      const proceed = await ask('Update cookbook recipes?', true);
       if (!proceed) {
         for (const entry of cookbookNeedsUpdate) {
           info(`  ${colors.dim('⊘')} ${entry.dest} ${colors.dim('(skipped)')}`);
@@ -200,7 +200,7 @@ async function run(args) {
   // Offer to commit
   if (!dryRun && updatedFiles.length > 0 && hasGit()) {
     console.log();
-    const commit = await ask('Commit upgraded files?', false);
+    const commit = await ask('Commit upgraded files?', true);
     if (commit) {
       try {
         gitCommit(updatedFiles, 'chore: upgrade CopilotForge framework files');

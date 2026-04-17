@@ -303,9 +303,9 @@ async function run(args) {
 
   separator();
 
-  // Offer to commit if git is available
+  // Offer to commit if git is available — default YES so Enter just works
   if (hasGit() && createdFiles.length > 0) {
-    const commit = yes || await ask('Want to commit these files?', false);
+    const commit = yes || await ask('Want to commit these files?', true);
     if (commit) {
       try {
         gitCommit(createdFiles, 'chore: add CopilotForge planner skill');
