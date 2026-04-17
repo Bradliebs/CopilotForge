@@ -114,6 +114,7 @@ async function run(args) {
     }
     if (!full && !minimal) {
       console.log('[DRY RUN] Would create: START-HERE.md');
+      console.log(`[DRY RUN] Would create: ${path.join('.github', 'copilot-instructions.md')}`);
     }
     if (full && !minimal) {
       for (const entry of FULL_EXTRA_FILES) {
@@ -211,7 +212,7 @@ async function run(args) {
       }
     }
   } else if (!minimal) {
-    // Simple mode (default): just write START-HERE.md
+    // Simple mode (default): START-HERE.md + copilot-instructions.md
     console.log();
     const startHereDest = path.join(cwd, 'START-HERE.md');
     if (exists(startHereDest)) {
@@ -220,6 +221,15 @@ async function run(args) {
       writeFile(startHereDest, templates.START_HERE_MD);
       success('Created START-HERE.md');
       createdFiles.push('START-HERE.md');
+    }
+
+    const instructionsDest = path.join(cwd, '.github', 'copilot-instructions.md');
+    if (exists(instructionsDest)) {
+      warn('Skipped .github/copilot-instructions.md (already exists)');
+    } else {
+      writeFile(instructionsDest, templates.COPILOT_INSTRUCTIONS_MD);
+      success('Created .github/copilot-instructions.md');
+      createdFiles.push(path.join('.github', 'copilot-instructions.md'));
     }
   }
 
