@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - 9 jargon leaks in templates/agents/ and templates/utils/
+- **Command Center v1.0.1** — graceful error handling for missing files, project health panel, source repo detection warning (auto-downloaded via `npx copilotforge dashboard`)
 
 ## [1.5.0] - 2026-04-17
 
