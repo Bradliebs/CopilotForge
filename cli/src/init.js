@@ -328,14 +328,31 @@ async function run(args) {
   separator();
 
   info('What to do next:');
-  info(`${colors.bold('1.')} Open your AI assistant (GitHub Copilot Chat, Claude Code, etc.)`);
-  info(`${colors.bold('2.')} Say: ${colors.cyan('"set up my project"')}`);
-  info(`${colors.bold('3.')} Answer a few questions about what you're building`);
-  info(`${colors.bold('4.')} Your AI assistant creates skills, agents, and recipes — customized for your stack!`);
   console.log();
-  info(`${colors.dim('📖 Quick guide: docs/GETTING-STARTED.md')}`);
-  info(`${colors.dim('📋 Control panel: FORGE.md')}`);
-  info(`${colors.dim('🔍 Verify setup: npx copilotforge doctor')}`);
+  info(`${colors.bold('1.')} Open ${colors.cyan('GitHub Copilot Chat')} in VS Code`);
+  info(`   ${colors.dim('Look for the speech-bubble icon in the left sidebar.')}`);
+  info(`   ${colors.dim('Also works with Claude Code, Cursor, or any AI that reads your .github/ folder.')}`);
+  console.log();
+  info(`${colors.bold('2.')} Type exactly: ${colors.cyan('"set up my project"')}`);
+  info(`   ${colors.dim('Your AI reads the new skills and runs a guided setup wizard.')}`);
+  info(`   ${colors.dim('It will ask ~6 questions: stack, what you\'re building, features, automation.')}`);
+  console.log();
+  info(`${colors.bold('3.')} Answer the wizard — takes about 2 minutes.`);
+  info(`   ${colors.dim('Your AI writes a personalised IMPLEMENTATION_PLAN.md just for your project.')}`);
+  console.log();
+  info(`${colors.bold('4.')} Say: ${colors.cyan('"run the plan"')}`);
+  info(`   ${colors.dim('Your AI picks up each task one by one — implements, validates, commits, repeats.')}`);
+  info(`   ${colors.dim('You can watch it build your project step by step, or let it run autonomously.')}`);
+  console.log();
+  info(`${colors.bold(colors.dim('Key files created:'))}`);
+  info(`   ${colors.dim('📋 IMPLEMENTATION_PLAN.md  — your living task list (the AI fills this in)')}`);
+  info(`   ${colors.dim('🎛️  FORGE.md               — your project control panel (edit this to customise)')}`);
+  info(`   ${colors.dim('🧠 forge-memory/           — AI memory: decisions, patterns, preferences')}`);
+  info(`   ${colors.dim('📚 cookbook/               — ready-to-run code recipes and examples')}`);
+  console.log();
+  info(`${colors.dim('📖 Full guide:     docs/GETTING-STARTED.md')}`);
+  info(`${colors.dim('🔍 Verify setup:   npx copilotforge doctor')}`);
+  info(`${colors.dim('🩺 Health check:   npx copilotforge status')}`);
 
   // --beginner banner (Win 6)
   if (beginner) {
