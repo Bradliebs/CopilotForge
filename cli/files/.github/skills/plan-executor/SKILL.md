@@ -41,10 +41,23 @@ When a user says "run the plan" (or any trigger above), you become an autonomous
 - A summary logged to `forge-memory/decisions.md` (if the forge-memory directory exists)
 
 ---
+### Capture Decisions (forge remember)
+
+If the user says **"forge remember: [anything]"** at any point in this conversation,
+immediately acknowledge it ("Got it — logging that.") and append a new entry to
+`forge-memory/decisions.md` in this format:
+
+```
+## [YYYY-MM-DD] [brief label]
+[the user's exact words]
+```
+
+Then continue the conversation without interruption. Do not ask for confirmation.
+
 
 ## Instructions
 
-When this skill is triggered, follow every step below in order. Do not skip steps. Do not ask the user for permission between tasks — the whole point is autonomous execution. If something goes wrong with a task, handle it (see Failure Handling below) and keep going.
+When this skill is triggered, follow every step below in order. Do not skip steps. Do not ask the user for permission between tasks — the whole point is autonomous execution. If the user sends a message, answer briefly and immediately resume. Never stop the plan unless you see an explicit stop command. If something goes wrong with a task, handle it (see Failure Handling below) and keep going.
 
 ---
 
@@ -226,6 +239,44 @@ Go back to Step 3c and pick the next pending task. Continue until no `[ ]` tasks
 
 ---
 
+---
+
+### Handling User Questions Mid-Plan
+
+**If the user sends any message during plan execution, do NOT stop.** Treat it as a question. Handle it inline, then IMMEDIATELY resume without asking for permission.
+
+**Protocol:**
+1. Answer the question in 1–3 sentences (direct and brief — don't elaborate)
+2. On the very next line, show resume banner:
+   ```
+   ▶️ Resuming plan ({done}/{total} done) — next: **{task-id}** — {title}
+   ```
+3. Immediately continue executing the next task — no pause, no "shall I continue?"
+
+**What counts as an interruption (handle inline, then resume):**
+- Questions about the plan ("what does task X do?", "how long will this take?")
+- Requests for clarification ("what file are you editing?")
+- Comments or context ("I changed the API endpoint to /v2")
+- General conversation ("looks good so far")
+
+**What counts as a STOP command (stop the plan, wait for user):**
+- "stop", "pause", "cancel", "hold on", "wait"
+- "change the plan" — stop, help the user edit IMPLEMENTATION_PLAN.md, then ask if they want to resume
+- Rejection of current task result — stop, address the rejection, ask how to proceed
+
+**Inline context capture:** If the user provides new information ("I changed the API endpoint to /v2"), capture it:
+- Note it in your working context for remaining tasks
+- If it affects upcoming tasks, say: "📌 Noted — I'll use /v2 for the remaining API tasks. Resuming..."
+- Do NOT stop to ask follow-up questions about it
+
+**Example of correct behavior:**
+
+User: "what is ralph loop?"
+Response: "Ralph Loop is the autonomous task execution engine — it reads IMPLEMENTATION_PLAN.md and executes tasks one by one. ▶️ Resuming plan (3/8 done) — next: **add-auth** — Add JWT authentication middleware"
+[immediately starts add-auth task]
+
+---
+
 ## Git Safety Protocol
 
 **These rules are mandatory. Violating them can delete user code.**
@@ -362,6 +413,8 @@ If the user says **"continue the plan"** or **"pick up where I left off"**:
    > 📋 **Resuming plan: {done}/{total} tasks already complete.** Picking up at: **{task-id}** — {title}
 
 Previously completed `[x]` tasks are always skipped. Failed `[!]` tasks are also skipped — the user must manually change `[!]` back to `[ ]` in the plan file to retry them.
+
+**Auto-resume after interruption:** After answering any user question, always show the resume banner and continue. The only exception is an explicit stop command or a task rejection.
 
 ---
 
