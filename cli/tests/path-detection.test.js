@@ -8,6 +8,8 @@ const assert = require('node:assert');
 
 const { getPlatformForge } = require('../src/templates/platform-forge');
 const { FORGE_MD } = require('../src/templates/forge');
+const pkg = require('../package.json');
+const CURRENT_VERSION = `v${pkg.version}`;
 const { readPathStamp, PATH_NAMES } = require('../src/doctor');
 
 const JARGON_TERMS = ['skill-writer', 'agent-writer', 'memory-writer', 'cookbook-writer'];
@@ -146,15 +148,15 @@ describe('getPlatformForge - path routing', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. Version stamp — all paths carry v1.6.0
+// 3. Version stamp — all paths carry the current package version
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('getPlatformForge - version stamp', () => {
   for (const letter of PLATFORM_PATHS) {
-    it(`Path ${letter} contains <!-- copilotforge: v1.6.0 -->`, () => {
+    it(`Path ${letter} contains <!-- copilotforge: ${CURRENT_VERSION} -->`, () => {
       assert.ok(
-        getPlatformForge(letter).includes('copilotforge: v1.6.0'),
-        `Path ${letter} template should carry version stamp v1.6.0`
+        getPlatformForge(letter).includes(`copilotforge: ${CURRENT_VERSION}`),
+        `Path ${letter} template should carry version stamp ${CURRENT_VERSION}`
       );
     });
   }

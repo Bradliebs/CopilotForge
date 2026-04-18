@@ -1,5 +1,8 @@
 'use strict';
 
+const pkg = require('../../package.json');
+const VERSION = pkg.version;
+
 // getPlatformForge — returns path-specific FORGE.md template
 // Paths A-I have dedicated config. Path J falls back to the generic FORGE_MD.
 
@@ -109,7 +112,7 @@ function buildForgeTemplate(letter, cfg) {
 
   return `# FORGE.md — [Your Project Name]
 
-<!-- copilotforge: v1.6.0 -->
+<!-- copilotforge: v${VERSION} -->
 <!-- copilotforge: path=${letter} -->
 
 ## Project Summary
