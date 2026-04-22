@@ -259,6 +259,23 @@ async function run(args) {
   console.log(`  ${colors.bold(colors.green('\uD83C\uDF89 Done!'))} Your project is CopilotForge-ready.`);
   separator();
 
+  // Local usage tracking (never transmitted — stays in ~/.copilotforge/usage.json)
+  try {
+    const fs = require('fs');
+    const os = require('os');
+    const usageDir = path.join(os.homedir(), '.copilotforge');
+    const usageFile = path.join(usageDir, 'usage.json');
+    if (!exists(usageDir)) {
+      fs.mkdirSync(usageDir, { recursive: true });
+    }
+    let usage = [];
+    if (exists(usageFile)) {
+      try { usage = JSON.parse(fs.readFileSync(usageFile, 'utf8')); } catch { usage = []; }
+    }
+    usage.push({ path: 'J', mode: full ? 'full' : minimal ? 'minimal' : 'simple', timestamp: new Date().toISOString() });
+    fs.writeFileSync(usageFile, JSON.stringify(usage, null, 2), 'utf8');
+  } catch { /* non-fatal */ }
+
   if (full) {
     // Full mode: show the full next-steps guide
     info('What to do next:');

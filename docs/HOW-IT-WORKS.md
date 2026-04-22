@@ -329,7 +329,7 @@ It's called "The Ralph Loop" because Ralph is the tireless worker who never stop
 
 **Two ways to run it:**
 1. **Natural language:** Say "run the plan" in your AI assistant (uses the plan-executor skill)
-2. **Code:** Run `npx ts-node cookbook/task-loop.ts` or `python cookbook/task-loop.py`
+2. **Code:** Run `npx ts-node cookbook/task-loop.ts`
 
 Both do the same thing — the skill version is conversational, the code version runs headless.
 

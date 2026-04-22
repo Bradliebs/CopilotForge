@@ -120,9 +120,7 @@ describe('CopilotForge E2E Validation', () => {
     it('should create cookbook files', () => {
       const expectedFiles = [
         'cookbook/hello-world.ts',
-        'cookbook/hello-world.py',
         'cookbook/task-loop.ts',
-        'cookbook/task-loop.py',
         'cookbook/copilot-studio-guide.md',
         'cookbook/copilot-studio-agent.yaml',
         'cookbook/code-apps-guide.md',

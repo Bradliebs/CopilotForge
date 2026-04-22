@@ -39,10 +39,10 @@ What do you want to do?
 │   └─ → npx copilotforge init (the wizard handles everything)
 │
 ├─ "Run experiments / optimize code automatically"
-│   └─ → cookbook/auto-research.ts (or .py)
+│   └─ → cookbook/auto-research.ts
 │
 ├─ "Build a personal knowledge base"
-│   └─ → cookbook/knowledge-wiki.ts (or .py)
+│   └─ → cookbook/knowledge-wiki.ts
 │
 ├─ "I want a quick overview of my project"
 │   └─ → Run `npx copilotforge status` for a terminal dashboard.
@@ -144,7 +144,7 @@ This is your permission slip to skip things. Seriously.
 Three safe starting points — pick any one:
 
 1. **Just run the wizard.** Type `npx copilotforge init` and answer the questions. It figures everything out.
-2. **Try the simplest recipe.** Open `cookbook/hello-world.ts` (or `.py`). Copy it. Run it. See what happens.
+2. **Try the simplest recipe.** Open `cookbook/hello-world.ts`. Copy it. Run it. See what happens.
 3. **Ask your AI assistant.** Paste this into your AI chat: *"Read FORGE.md and help me get started with CopilotForge."*
 
 Any of these gets you unstuck in under 5 minutes.

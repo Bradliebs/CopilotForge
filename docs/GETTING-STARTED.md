@@ -204,7 +204,7 @@ The wizard shows you a menu of optional advanced features:
 
 If you picked **Task automation** in Q6, you'll also get:
 - `IMPLEMENTATION_PLAN.md` — your project's build plan (edit this anytime!)
-- `cookbook/task-loop.ts` / `.py` — The Ralph Loop engine (the code that drives it)
+- `cookbook/task-loop.ts` — The Ralph Loop engine (the code that drives it)
 
 To run The Ralph Loop: tell your AI assistant "run the plan" or execute the `task-loop` recipe directly. It reads the plan, picks the next task, implements it, validates, commits, and repeats.
 
@@ -527,7 +527,7 @@ Yes. The SKILL.md file is just a set of instructions that any language model can
 
 ### "I want to use Python, not TypeScript"
 
-Just answer "Python" (and your frameworks) in Question 2. CopilotForge generates Python recipes — FastAPI routes, SQLAlchemy CRUD, Python error handling, pytest conventions. Everything adapts to your stack.
+Just answer "Python" (and your frameworks) in Question 2. The wizard generates skills and agents tailored to your Python stack. Cookbook recipes are TypeScript-only reference implementations, but the generated skills know your language.
 
 ---
 

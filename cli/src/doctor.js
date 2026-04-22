@@ -190,6 +190,22 @@ function run() {
   const memoryDir = path.join(cwd, 'forge-memory');
   if (exists(memoryDir)) {
     recordCheck('forge-memory/', 'pass', 'forge-memory/ found', '');
+
+    // Nudge if memory files still contain placeholder text after 7+ days
+    const patternsPath = path.join(memoryDir, 'patterns.md');
+    if (exists(patternsPath)) {
+      try {
+        const patternsContent = fs.readFileSync(patternsPath, 'utf8');
+        const stat = fs.statSync(patternsPath);
+        const ageMs = Date.now() - stat.mtimeMs;
+        const ageDays = ageMs / (1000 * 60 * 60 * 24);
+        if (ageDays > 7 && patternsContent.includes('(Describe your naming conventions here)')) {
+          recordCheck('forge-memory usage', 'warn',
+            'forge-memory/patterns.md still has placeholder text -- fill it in so your AI remembers your conventions',
+            'Tip: describe your naming conventions, file structure, and code style');
+        }
+      } catch { /* ignore read errors */ }
+    }
   } else {
     recordCheck('forge-memory/', 'warn', 'No forge-memory/ found (run the wizard to create memory)', '');
   }

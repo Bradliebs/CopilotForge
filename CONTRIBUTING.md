@@ -6,10 +6,10 @@ Thanks for considering contributing! CopilotForge is designed to make AI coding 
 
 ### Adding a Cookbook Recipe
 
-Cookbook recipes are the hands-on examples that help people learn. Each recipe should have both TypeScript and Python versions.
+Cookbook recipes are the hands-on examples that help people learn. Recipes are TypeScript only (Python duplicates were intentionally removed to reduce maintenance burden).
 
 **Structure:**
-1. Create both `cookbook/recipe-name.ts` and `cookbook/recipe-name.py`
+1. Create `cookbook/recipe-name.ts`
 2. Follow the standard header format:
    ```
    WHAT THIS DOES: [1-2 sentence description]

@@ -13,7 +13,7 @@
 
 - Targeted commits only — never `git add .` or `git add -A`
 - One task per commit
-- Message format: `[phase-13] task-N: short description`
+- Message format: `[phase-14] task-N: short description`
 - Never commit if any test is failing
 - Always update IMPLEMENTATION_PLAN.md before committing
 
@@ -31,13 +31,21 @@ These specialist names must NEVER appear in user-facing output:
 Forbidden paths (run e2e-validate.js after touching these):
   `templates/`  `cli/files/`  `cookbook/`
 
-## Path Stamps (Phase 13)
+## Path Stamps (Phase 13+)
 
 All FORGE.md templates must include:
-  `<!-- copilotforge: v1.6.0 -->`
+  `<!-- copilotforge: v1.6.0 -->` (or current version)
   `<!-- copilotforge: path=[A-J] -->`
 
 doctor.js reads these — missing stamps break path-aware checks.
+
+## Usage Tracking
+
+`init` appends `{ path, mode, timestamp }` to `~/.copilotforge/usage.json` (local only, never transmitted).
+
+## Memory Nudge
+
+doctor.js warns if `forge-memory/patterns.md` still has placeholder text after 7+ days.
 
 ## One Task Per Iteration
 
