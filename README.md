@@ -1,5 +1,11 @@
 # 🔥 CopilotForge
 
+[![npm version](https://img.shields.io/npm/v/copilotforge.svg)](https://www.npmjs.com/package/copilotforge)
+[![Tests](https://img.shields.io/badge/tests-636%20passing-brightgreen.svg)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Zero Dependencies](https://img.shields.io/badge/dependencies-0-blue.svg)](#)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18-green.svg)](https://nodejs.org)
+
 > One command. A fully-configured AI team in your repo.
 
 CopilotForge turns a plain-English description of your project into a working set of AI-powered tools — all inside your repo. You tell it what you're building, answer a few questions, and it creates everything: coding assistants that know your stack, code review checklists, test helpers, ready-to-use code recipes, and a memory system that gets smarter over time.
