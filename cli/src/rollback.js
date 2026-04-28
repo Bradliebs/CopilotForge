@@ -188,6 +188,11 @@ async function run(args = []) {
       info(colors.dim('[dry-run] No files were changed.'));
     } else {
       success(`Restored ${results.restored} file(s), removed ${results.deleted} file(s), skipped ${results.skipped}`);
+      // Record rollback signal for trust tracking
+      try {
+        const { recordSignal } = require('./trust');
+        recordSignal('rollbacks', 1, cwd);
+      } catch { /* trust is optional */ }
     }
     console.log();
     return;
@@ -225,6 +230,11 @@ async function run(args = []) {
     info(colors.dim('[dry-run] No files were changed.'));
   } else {
     success(`Restored ${results.restored} file(s), removed ${results.deleted} file(s), skipped ${results.skipped}`);
+    // Record rollback signal for trust tracking
+    try {
+      const { recordSignal } = require('./trust');
+      recordSignal('rollbacks', 1, cwd);
+    } catch { /* trust is optional */ }
   }
   console.log();
 }

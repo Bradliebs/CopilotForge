@@ -617,3 +617,62 @@ describe('Phase 15 wiring - integration verification', () => {
     assert.ok(content.includes('Trust trajectory'), 'should mention trust trajectory');
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 8. Playbook seeding, rollback trust, and CLI subcommands
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Phase 15 - playbook and trust CLI', () => {
+
+  it('playbook-cli.js exists and exports run()', () => {
+    const playbookCli = require('../src/playbook-cli');
+    assert.ok(typeof playbookCli.run === 'function', 'playbook-cli should export run()');
+  });
+
+  it('trust-cli.js exists and exports run()', () => {
+    const trustCli = require('../src/trust-cli');
+    assert.ok(typeof trustCli.run === 'function', 'trust-cli should export run()');
+  });
+
+  it('copilotforge.js routes playbook command', () => {
+    const binContent = fs.readFileSync(path.join(repoRoot, 'cli', 'bin', 'copilotforge.js'), 'utf8');
+    assert.ok(binContent.includes("case 'playbook'"), 'should route playbook command');
+  });
+
+  it('copilotforge.js routes trust command', () => {
+    const binContent = fs.readFileSync(path.join(repoRoot, 'cli', 'bin', 'copilotforge.js'), 'utf8');
+    assert.ok(binContent.includes("case 'trust'"), 'should route trust command');
+  });
+
+  it('rollback.js records trust signal on restore', () => {
+    const rollbackContent = fs.readFileSync(path.join(repoRoot, 'cli', 'src', 'rollback.js'), 'utf8');
+    assert.ok(rollbackContent.includes("recordSignal('rollbacks'"), 'rollback should record trust signal');
+  });
+
+  it('init.js seeds playbook with starter strategies', () => {
+    const initContent = fs.readFileSync(path.join(repoRoot, 'cli', 'src', 'init.js'), 'utf8');
+    assert.ok(initContent.includes('addPlaybookEntry'), 'init should call addPlaybookEntry');
+    assert.ok(initContent.includes('starter strategies'), 'init should mention starter strategies');
+  });
+
+  it('help text documents playbook and trust commands', () => {
+    const binContent = fs.readFileSync(path.join(repoRoot, 'cli', 'bin', 'copilotforge.js'), 'utf8');
+    assert.ok(binContent.includes('npx copilotforge playbook'), 'help should list playbook');
+    assert.ok(binContent.includes('npx copilotforge trust'), 'help should list trust');
+  });
+
+  it('playbook seeding creates 3 entries in temp dir', () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'playbook-seed-'));
+    fs.mkdirSync(path.join(tmpDir, 'forge-memory'), { recursive: true });
+
+    const { addPlaybookEntry, readPlaybook } = require('../src/experiential-memory');
+    addPlaybookEntry('STRATEGY', 'Test seed 1', 'Content 1', tmpDir);
+    addPlaybookEntry('PATTERN', 'Test seed 2', 'Content 2', tmpDir);
+    addPlaybookEntry('STRATEGY', 'Test seed 3', 'Content 3', tmpDir);
+
+    const { entries } = readPlaybook(tmpDir);
+    assert.strictEqual(entries.length, 3, 'should have 3 seeded entries');
+
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+});

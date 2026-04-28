@@ -120,6 +120,17 @@ switch (command) {
     break;
   }
 
+  case 'playbook': {
+    const playbookCli = require('../src/playbook-cli');
+    try {
+      playbookCli.run(args.slice(1));
+    } catch (err) {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    }
+    break;
+  }
+
   case 'wizard': {
     const wizard = require('../src/wizard');
     wizard.run().catch((err) => {
@@ -212,6 +223,10 @@ function printHelp() {
     npx copilotforge oracle           Show Oracle Prime usage guide and trigger phrases
     npx copilotforge trust            View trust trajectory (level, score, history)
     npx copilotforge trust --reset    Reset trust state to defaults
+    npx copilotforge playbook         View experiential memory playbook entries
+    npx copilotforge playbook <query> Search playbook by keyword
+    npx copilotforge playbook --top   Show highest-scored entries
+    npx copilotforge playbook --consolidate  Prune low-score entries
     npx copilotforge wizard           Run the conversational setup wizard (Q1-Q6)
     npx copilotforge rollback         Restore files from a previous init/upgrade snapshot
     npx copilotforge rollback --list  Show available snapshots
