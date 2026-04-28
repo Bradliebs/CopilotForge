@@ -265,3 +265,8 @@ module.exports = {
   markdownToHtml,
   htmlPage,
 };
+
+// Allow standalone execution: node docs-site.js build
+if (require.main === module) {
+  run(process.argv.slice(2));
+}

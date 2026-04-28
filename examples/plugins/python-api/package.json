@@ -1,0 +1,10 @@
+{
+  "name": "copilotforge-plugin-python-api",
+  "version": "0.1.0",
+  "description": "CopilotForge plugin for Python API projects (FastAPI/Flask/Django)",
+  "main": "index.js",
+  "copilotforge-plugin": true,
+  "keywords": ["copilotforge", "copilotforge-plugin", "python", "fastapi", "flask"],
+  "license": "MIT",
+  "engines": { "node": ">=18.0.0" }
+}
