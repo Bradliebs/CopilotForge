@@ -15,7 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Playbook auto-discovery** (`cli/src/discover.js`) — scan codebase for patterns and auto-generate entries
 - **`copilotforge discover`** subcommand — find stack, git, and structure patterns with `--apply` option
 - **VS Code Chat participant** — `@copilotforge` in Copilot Chat with /init, /doctor, /detect, /discover, /status commands
-- 30+ Phase 18 tests covering smart detection, MCP chaining, and auto-discovery
+- **AI-assisted code review** (`cli/src/review.js`) — 5 rules for secret detection, code quality, anti-pattern matching
+- **`copilotforge review`** subcommand — scan project files with `--playbook` for anti-pattern checks
+- **Recipe generator** (`cli/src/generate.js`) — 4 recipe types with framework-aware TypeScript/JS generation
+- **`copilotforge generate`** subcommand — generate api-route, test-suite, error-handler, config-loader recipes
+- **GitHub Actions generator** (`cli/src/ci-generator.js`) — auto-generate CI workflow for Node/Python/generic projects
+- **`copilotforge ci`** subcommand — generate .github/workflows/ci.yml with `--dry-run` preview
+- **Smart detect in init** — auto-detect and display build path during `copilotforge init`
+- 60+ Phase 18 tests covering detection, chaining, discovery, review, generation, and CI
 
 ## [2.0.0] - Phase 17: Ecosystem & Collaboration
 

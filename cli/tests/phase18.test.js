@@ -341,6 +341,33 @@ describe('CLI routing - Phase 18 commands', () => {
     }
   });
 
+  it('help includes review command', () => {
+    try {
+      const output = execSync(`node "${binPath}" --help`, { encoding: 'utf8', timeout: 5000 });
+      assert.ok(output.includes('review'), 'help should mention review');
+    } catch (err) {
+      if (err.stdout) assert.ok(err.stdout.includes('review'));
+    }
+  });
+
+  it('help includes generate command', () => {
+    try {
+      const output = execSync(`node "${binPath}" --help`, { encoding: 'utf8', timeout: 5000 });
+      assert.ok(output.includes('generate'), 'help should mention generate');
+    } catch (err) {
+      if (err.stdout) assert.ok(err.stdout.includes('generate'));
+    }
+  });
+
+  it('help includes ci command', () => {
+    try {
+      const output = execSync(`node "${binPath}" --help`, { encoding: 'utf8', timeout: 5000 });
+      assert.ok(output.includes('ci'), 'help should mention ci');
+    } catch (err) {
+      if (err.stdout) assert.ok(err.stdout.includes('ci'));
+    }
+  });
+
   it('detect command runs without error', () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cli-detect-'));
     try {
@@ -350,5 +377,221 @@ describe('CLI routing - Phase 18 commands', () => {
       if (err.stdout) assert.ok(err.stdout.includes('Build path'));
     }
     fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 18: Code Review tests
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('review - module structure', () => {
+  const rev = require('../src/review');
+
+  it('exports run function', () => {
+    assert.strictEqual(typeof rev.run, 'function');
+  });
+
+  it('exports reviewProject function', () => {
+    assert.strictEqual(typeof rev.reviewProject, 'function');
+  });
+
+  it('exports scanFile function', () => {
+    assert.strictEqual(typeof rev.scanFile, 'function');
+  });
+
+  it('exports RULES array', () => {
+    assert.ok(Array.isArray(rev.RULES));
+    assert.ok(rev.RULES.length >= 4);
+  });
+});
+
+describe('review - scanning', () => {
+  const { scanFile, RULES, reviewProject } = require('../src/review');
+
+  it('detects hardcoded secrets', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rev-test-'));
+    const file = path.join(dir, 'test.js');
+    fs.writeFileSync(file, 'const api_key = "sk-1234567890abcdef";\n');
+    const findings = scanFile(file, RULES);
+    assert.ok(findings.some((f) => f.rule === 'hardcoded-secret'));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('detects TODO markers', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rev-todo-'));
+    const file = path.join(dir, 'test.js');
+    fs.writeFileSync(file, '// TODO: fix this later\n');
+    const findings = scanFile(file, RULES);
+    assert.ok(findings.some((f) => f.rule === 'todo-marker'));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('detects eval usage', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rev-eval-'));
+    const file = path.join(dir, 'test.js');
+    fs.writeFileSync(file, 'const result = eval("1+1");\n');
+    const findings = scanFile(file, RULES);
+    assert.ok(findings.some((f) => f.rule === 'eval-usage'));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('detects large files', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rev-large-'));
+    const file = path.join(dir, 'big.js');
+    fs.writeFileSync(file, Array(600).fill('const x = 1;\n').join(''));
+    const findings = scanFile(file, RULES);
+    assert.ok(findings.some((f) => f.rule === 'large-file'));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('reviewProject returns summary', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rev-proj-'));
+    fs.writeFileSync(path.join(dir, 'clean.js'), 'const x = 1;\n');
+    const result = reviewProject(dir);
+    assert.ok(result.filesScanned >= 1);
+    assert.ok(typeof result.totalFindings === 'number');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 18: Recipe Generator tests
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('generate - module structure', () => {
+  const gen = require('../src/generate');
+
+  it('exports run function', () => {
+    assert.strictEqual(typeof gen.run, 'function');
+  });
+
+  it('exports RECIPE_TYPES', () => {
+    assert.ok(gen.RECIPE_TYPES);
+    assert.ok(gen.RECIPE_TYPES['api-route']);
+    assert.ok(gen.RECIPE_TYPES['test-suite']);
+    assert.ok(gen.RECIPE_TYPES['error-handler']);
+    assert.ok(gen.RECIPE_TYPES['config-loader']);
+  });
+
+  it('exports analyzeProject', () => {
+    assert.strictEqual(typeof gen.analyzeProject, 'function');
+  });
+});
+
+describe('generate - recipe generation', () => {
+  const { RECIPE_TYPES, analyzeProject } = require('../src/generate');
+
+  it('analyzeProject detects TypeScript', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'gen-ts-'));
+    fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({
+      devDependencies: { typescript: '^5.0.0' },
+    }));
+    const pkg = analyzeProject(dir);
+    assert.ok(pkg.hasTypeScript);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('generates api-route recipe', () => {
+    const pkg = { deps: ['express'], devDeps: [], hasTypeScript: false, scripts: {} };
+    const recipe = RECIPE_TYPES['api-route'];
+    const { filename, content } = recipe.generate(pkg);
+    assert.ok(filename.endsWith('.js'));
+    assert.ok(content.includes('router'));
+    assert.ok(content.includes('/api/items'));
+  });
+
+  it('generates TypeScript api-route', () => {
+    const pkg = { deps: ['express'], devDeps: [], hasTypeScript: true, scripts: {} };
+    const { filename, content } = RECIPE_TYPES['api-route'].generate(pkg);
+    assert.ok(filename.endsWith('.ts'));
+    assert.ok(content.includes('Request'));
+    assert.ok(content.includes('Response'));
+  });
+
+  it('generates test-suite recipe', () => {
+    const pkg = { deps: [], devDeps: ['jest'], hasTypeScript: false, scripts: {} };
+    const { content } = RECIPE_TYPES['test-suite'].generate(pkg);
+    assert.ok(content.includes('describe'));
+    assert.ok(content.includes('expect'));
+  });
+
+  it('generates config-loader recipe', () => {
+    const pkg = { deps: [], devDeps: [], hasTypeScript: true, scripts: {} };
+    const { filename, content } = RECIPE_TYPES['config-loader'].generate(pkg);
+    assert.ok(filename.endsWith('.ts'));
+    assert.ok(content.includes('Config'));
+    assert.ok(content.includes('requireEnv'));
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 18: CI Generator tests
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('ci-generator - module structure', () => {
+  const ci = require('../src/ci-generator');
+
+  it('exports run function', () => {
+    assert.strictEqual(typeof ci.run, 'function');
+  });
+
+  it('exports detectProjectType', () => {
+    assert.strictEqual(typeof ci.detectProjectType, 'function');
+  });
+
+  it('exports generateNodeCI', () => {
+    assert.strictEqual(typeof ci.generateNodeCI, 'function');
+  });
+
+  it('exports generatePythonCI', () => {
+    assert.strictEqual(typeof ci.generatePythonCI, 'function');
+  });
+});
+
+describe('ci-generator - detection and generation', () => {
+  const { detectProjectType, generateNodeCI, generatePythonCI, generateGenericCI } = require('../src/ci-generator');
+
+  it('detects Node.js project', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ci-node-'));
+    fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({
+      name: 'test',
+      scripts: { test: 'jest' },
+    }));
+    const result = detectProjectType(dir);
+    assert.strictEqual(result.type, 'node');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('detects Python project', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ci-py-'));
+    fs.writeFileSync(path.join(dir, 'requirements.txt'), 'flask\n');
+    const result = detectProjectType(dir);
+    assert.strictEqual(result.type, 'python');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('falls back to generic', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ci-gen-'));
+    const result = detectProjectType(dir);
+    assert.strictEqual(result.type, 'generic');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('generates Node CI with test command', () => {
+    const workflow = generateNodeCI({ scripts: { test: 'jest', lint: 'eslint .' }, deps: ['typescript'], devDeps: [] });
+    assert.ok(workflow.includes('jest'));
+    assert.ok(workflow.includes('Lint'));
+    assert.ok(workflow.includes('[18, 20, 22]'));
+  });
+
+  it('generates Python CI', () => {
+    const workflow = generatePythonCI({});
+    assert.ok(workflow.includes('python'));
+    assert.ok(workflow.includes('pytest'));
+  });
+
+  it('generates generic CI', () => {
+    const workflow = generateGenericCI();
+    assert.ok(workflow.includes('Validate'));
   });
 });

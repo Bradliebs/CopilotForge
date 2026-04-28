@@ -258,6 +258,6 @@
 - [x] mcp-chain — MCP tool chaining for multi-step workflows. New MCP tool: `copilotforge_chain` accepting an array of steps, sequential execution with stop-on-error, aggregate results.
 - [x] auto-discovery — Playbook auto-discovery from codebase analysis. New file: `cli/src/discover.js` scanning stack patterns (test frameworks, UI frameworks, TypeScript, linters), git commit patterns (conventional commits, ticket references), and file structure (monorepo, src/test separation, docs). New CLI command: `copilotforge discover [--apply] [--dry-run]`.
 - [x] chat-participant — VS Code Copilot Chat participant (@copilotforge). New file: `vscode-extension/src/chat-participant.ts` with slash commands (/init, /doctor, /detect, /discover, /status), manifest chatParticipants configuration.
-- [ ] ai-review — AI-assisted code review with playbook-driven suggestions
-- [ ] recipe-generator — Generate custom cookbook recipes from project context
-- [ ] github-actions-gen — Generate CI/CD workflows for detected build paths
+- [x] ai-review — AI-assisted code review with playbook-driven suggestions. New file: `cli/src/review.js` with 5 built-in rules (hardcoded secrets, TODO markers, console.log, eval, empty catch), large file detection, playbook anti-pattern matching. New CLI command: `copilotforge review [file] [--playbook]`.
+- [x] recipe-generator — Generate custom cookbook recipes from project context. New file: `cli/src/generate.js` with 4 recipe types (api-route, test-suite, error-handler, config-loader), TypeScript/JavaScript auto-detection, framework-aware generation. New CLI command: `copilotforge generate <type> [--list] [--dry-run]`.
+- [x] github-actions-gen — Generate CI/CD workflows for detected build paths. New file: `cli/src/ci-generator.js` with Node/Python/generic project detection, test/lint/build step generation. New CLI command: `copilotforge ci [--dry-run]`.

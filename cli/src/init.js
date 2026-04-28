@@ -302,6 +302,16 @@ async function run(args) {
   console.log('  Setting up your project...');
   console.log();
 
+  // Smart build path detection (Phase 18)
+  try {
+    const { detectBuildPath } = require('./smart-detect');
+    const detection = detectBuildPath(cwd);
+    if (detection.confidence !== 'low') {
+      info(`  Detected build path: ${colors.cyan(detection.path)} — ${detection.name} (${detection.confidence})`);
+      console.log();
+    }
+  } catch { /* smart-detect is optional */ }
+
   // Check for existing planner directory
   const plannerDir = path.join(cwd, '.github', 'skills', 'planner');
   if (exists(plannerDir)) {

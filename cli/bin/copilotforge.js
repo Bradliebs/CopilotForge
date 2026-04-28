@@ -224,6 +224,24 @@ switch (command) {
     break;
   }
 
+  case 'review': {
+    const review = require('../src/review');
+    review.run(args.slice(1));
+    break;
+  }
+
+  case 'generate': {
+    const generate = require('../src/generate');
+    generate.run(args.slice(1));
+    break;
+  }
+
+  case 'ci': {
+    const ciGen = require('../src/ci-generator');
+    ciGen.run(args.slice(1));
+    break;
+  }
+
   case 'rollback': {
     const rollback = require('../src/rollback');
     rollback.run(args.slice(1)).catch((err) => {
@@ -328,6 +346,12 @@ function printHelp() {
     npx copilotforge detect             Auto-detect build path from project files
     npx copilotforge discover            Scan codebase for playbook patterns
     npx copilotforge discover --apply    Add discovered patterns to playbook
+    npx copilotforge review              Scan project for code quality issues
+    npx copilotforge review --playbook   Include playbook anti-pattern checks
+    npx copilotforge generate --list     List available recipe types
+    npx copilotforge generate <type>     Generate a cookbook recipe
+    npx copilotforge ci                  Generate GitHub Actions CI workflow
+    npx copilotforge ci --dry-run        Preview CI workflow without writing
     npx copilotforge --version        Show version
 
   ${colors.bold('Flags:')}

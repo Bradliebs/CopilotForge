@@ -137,6 +137,9 @@ The CLI is the human-facing entry point. It installs, upgrades, diagnoses, and m
 | `src/telemetry.js` | Telemetry dashboard — local opt-in usage analytics and reporting (Phase 17) |
 | `src/smart-detect.js` | Smart template selection — auto-detect build path from project files (Phase 18) |
 | `src/discover.js` | Playbook auto-discovery — scan codebase for patterns and entries (Phase 18) |
+| `src/review.js` | AI-assisted code review — 5 rules, secret detection, anti-pattern matching (Phase 18) |
+| `src/generate.js` | Recipe generator — 4 recipe types with framework-aware generation (Phase 18) |
+| `src/ci-generator.js` | GitHub Actions CI generator — Node/Python/generic workflows (Phase 18) |
 
 ### Templates Modular Split (Phase 13)
 
