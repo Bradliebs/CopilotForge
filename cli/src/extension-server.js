@@ -93,6 +93,76 @@ async function verifySignature(payload, signature, keyId) {
   }
 }
 
+// ── LLM passthrough ─────────────────────────────────────────────────────
+
+/**
+ * Forward conversation to GitHub Copilot's LLM for conversational responses.
+ * Uses the X-GitHub-Token from the incoming request to authenticate.
+ * Falls back to static help text if the token is missing or the API fails.
+ */
+function llmPassthrough(messages, token, res) {
+  if (!token) {
+    sseText(res, getHelpText());
+    sseDone(res);
+    return;
+  }
+
+  const systemMessage = {
+    role: 'system',
+    content: 'You are the CopilotForge assistant (@copilotforge). You help developers set up and manage AI-powered coding assistants. You know about CopilotForge commands: init, doctor, status, rollback, trust, playbook, plan, wizard, compact, extension, mcp. Be concise and helpful. When users ask about setting up AI tools, suggest relevant CopilotForge commands.',
+  };
+
+  const payload = JSON.stringify({
+    model: 'gpt-4o',
+    messages: [systemMessage, ...messages],
+    stream: true,
+  });
+
+  const options = {
+    hostname: 'api.githubcopilot.com',
+    path: '/chat/completions',
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'Accept': 'text/event-stream',
+      'User-Agent': 'CopilotForge-Extension/1.0',
+    },
+  };
+
+  const apiReq = https.request(options, (apiRes) => {
+    if (apiRes.statusCode !== 200) {
+      // Fallback to static help on API failure
+      sseText(res, getHelpText());
+      sseDone(res);
+      return;
+    }
+
+    // Pipe the SSE stream from the API directly to the client
+    apiRes.on('data', (chunk) => {
+      res.write(chunk);
+    });
+
+    apiRes.on('end', () => {
+      res.end();
+    });
+  });
+
+  apiReq.on('error', () => {
+    sseText(res, getHelpText());
+    sseDone(res);
+  });
+
+  apiReq.setTimeout(30000, () => {
+    apiReq.destroy();
+    sseText(res, getHelpText());
+    sseDone(res);
+  });
+
+  apiReq.write(payload);
+  apiReq.end();
+}
+
 // ── Tool execution ──────────────────────────────────────────────────────
 
 function parseIntent(message) {
@@ -126,7 +196,7 @@ function parseIntent(message) {
     return { tool: 'help', args: {} };
   }
 
-  return { tool: 'help', args: {} };
+  return { tool: 'chat', args: {} };
 }
 
 function getHelpText() {
@@ -314,6 +384,14 @@ async function handleRequest(req, res) {
   // Parse intent and execute
   const intent = parseIntent(userText);
   const cwd = process.cwd();
+  const token = req.headers['x-github-token'] || '';
+
+  // Route to LLM passthrough for conversational messages
+  if (intent.tool === 'chat') {
+    llmPassthrough(messages, token, res);
+    return;
+  }
+
   const result = executeTool(intent, cwd);
 
   sseText(res, result);
@@ -352,4 +430,4 @@ function run(args = []) {
   process.on('SIGINT', () => { server.close(); process.exit(0); });
 }
 
-module.exports = { run, handleRequest, parseIntent, verifySignature };
+module.exports = { run, handleRequest, parseIntent, verifySignature, llmPassthrough };

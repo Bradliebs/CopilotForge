@@ -130,7 +130,8 @@ The CLI is the human-facing entry point. It installs, upgrades, diagnoses, and m
 | `src/compact-cli.js` | CLI wrapper for five-layer compaction pipeline (Phase 16) |
 | `src/playbook-cli.js` | CLI wrapper for playbook search, top entries, consolidation (Phase 16) |
 | `src/trust-cli.js` | CLI wrapper for trust trajectory display and reset (Phase 16) |
-| `src/extension-server.js` | GitHub Copilot Extension HTTP/SSE agent server (Phase 17) |
+| `src/extension-server.js` | GitHub Copilot Extension HTTP/SSE agent server with LLM passthrough (Phase 17) |
+| `src/team.js` | Team workspaces — shared forge-memory via git hooks, playbook merge (Phase 17) |
 
 ### Templates Modular Split (Phase 13)
 

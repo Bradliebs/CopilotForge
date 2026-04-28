@@ -179,6 +179,12 @@ switch (command) {
     break;
   }
 
+  case 'team': {
+    const team = require('../src/team');
+    team.run(args.slice(1));
+    break;
+  }
+
   case 'rollback': {
     const rollback = require('../src/rollback');
     rollback.run(args.slice(1)).catch((err) => {
@@ -268,6 +274,10 @@ function printHelp() {
     npx copilotforge mcp              Start MCP server (stdio transport for AI clients)
     npx copilotforge extension        Start Copilot Extension agent server (HTTP/SSE)
     npx copilotforge extension --port 8080  Use a custom port (default: 3456)
+    npx copilotforge team init        Install git hooks for shared team memory
+    npx copilotforge team sync        Pull and merge remote memory changes
+    npx copilotforge team status      Show team workspace sync status
+    npx copilotforge team uninstall   Remove team workspace git hooks
     npx copilotforge --version        Show version
 
   ${colors.bold('Flags:')}

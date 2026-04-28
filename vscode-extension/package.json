@@ -1,0 +1,99 @@
+{
+  "name": "copilotforge-vscode",
+  "displayName": "CopilotForge",
+  "description": "AI-powered project scaffolding — trust indicators, playbook sidebar, and inline suggestions",
+  "version": "0.1.0",
+  "publisher": "copilotforge",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bradliebs/CopilotForge"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Machine Learning",
+    "Snippets"
+  ],
+  "keywords": [
+    "copilot",
+    "ai",
+    "scaffolding",
+    "agents",
+    "skills"
+  ],
+  "activationEvents": [
+    "workspaceContains:FORGE.md",
+    "workspaceContains:forge-memory/playbook.md",
+    "workspaceContains:.github/skills/planner/SKILL.md"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "copilotforge.init",
+        "title": "CopilotForge: Initialize Project"
+      },
+      {
+        "command": "copilotforge.doctor",
+        "title": "CopilotForge: Health Check"
+      },
+      {
+        "command": "copilotforge.status",
+        "title": "CopilotForge: Show Status"
+      },
+      {
+        "command": "copilotforge.trust",
+        "title": "CopilotForge: Show Trust Level"
+      },
+      {
+        "command": "copilotforge.playbook",
+        "title": "CopilotForge: View Playbook"
+      },
+      {
+        "command": "copilotforge.wizard",
+        "title": "CopilotForge: Run Setup Wizard"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "copilotforge",
+          "title": "CopilotForge",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "copilotforge": [
+        {
+          "id": "copilotforge.trust",
+          "name": "Trust Trajectory"
+        },
+        {
+          "id": "copilotforge.playbook",
+          "name": "Playbook"
+        },
+        {
+          "id": "copilotforge.skills",
+          "name": "Skills & Agents"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "@vscode/vsce": "^2.22.0"
+  }
+}

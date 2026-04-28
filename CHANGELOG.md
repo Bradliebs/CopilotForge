@@ -18,8 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Experiential context loading** in Oracle Prime instructions — top-5 playbook entries injected on analysis start
 - **Copilot Extension agent** (`cli/src/extension-server.js`) — HTTP/SSE server for GitHub Copilot Chat integration
 - **`copilotforge extension`** subcommand — start Copilot Extension agent server with `--port` flag
-- Intent parsing (init/doctor/status/rollback/trust/playbook/plan/wizard/help) with SSE streaming
+- Intent parsing (init/doctor/status/rollback/trust/playbook/plan/wizard/help/chat) with SSE streaming
+- **LLM passthrough** — forwards unmatched messages through Copilot API for conversational responses
 - GitHub signature verification via `api.github.com/meta/public_keys/copilot_api`
+- **Team workspaces** (`cli/src/team.js`) — shared forge-memory via git hooks, playbook merge, conflict resolution
+- **`copilotforge team`** subcommand — init/sync/status/uninstall for team memory hooks
+- **VS Code extension scaffold** (`vscode-extension/`) — sidebar, status bar trust indicator, playbook browser
 - VS Code terminal detection in doctor.js — skip `code --version` when inside VS Code
 - Trust signals in plan-executor: `tasksCompleted` on success, `tasksFailed` on failure
 - E2E pipeline integration test (init → plan gen → verify → trust)

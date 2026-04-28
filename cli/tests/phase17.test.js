@@ -80,15 +80,37 @@ describe('extension-server - intent parsing', () => {
     assert.strictEqual(parseIntent('walk me through it').tool, 'wizard');
   });
 
-  it('defaults to help for unknown input', () => {
-    assert.strictEqual(parseIntent('what is the meaning of life').tool, 'help');
-    assert.strictEqual(parseIntent('hello there').tool, 'help');
+  it('defaults to chat for unknown input', () => {
+    assert.strictEqual(parseIntent('what is the meaning of life').tool, 'chat');
+    assert.strictEqual(parseIntent('hello there').tool, 'chat');
   });
 
   it('returns help for help request', () => {
     assert.strictEqual(parseIntent('what can you do').tool, 'help');
     assert.strictEqual(parseIntent('help me').tool, 'help');
     assert.strictEqual(parseIntent('show commands').tool, 'help');
+  });
+});
+
+describe('extension-server - LLM passthrough', () => {
+  const { llmPassthrough } = require('../src/extension-server');
+
+  it('exports llmPassthrough function', () => {
+    assert.strictEqual(typeof llmPassthrough, 'function');
+  });
+
+  it('falls back to help text when no token provided', (t, done) => {
+    const chunks = [];
+    const mockRes = {
+      write(data) { chunks.push(data); },
+      end() {
+        const body = chunks.join('');
+        assert.ok(body.includes('CopilotForge Agent'), 'should contain help text');
+        assert.ok(body.includes('[DONE]'), 'should end with DONE');
+        done();
+      },
+    };
+    llmPassthrough([{ role: 'user', content: 'hello' }], '', mockRes);
   });
 });
 
@@ -273,5 +295,167 @@ describe('extension-server - CLI routing', () => {
         assert.ok(err.stdout.includes('extension'), 'help should mention extension command');
       }
     }
+  });
+
+  it('team command is recognized by CLI', () => {
+    try {
+      const output = execSync(`node "${binPath}" --help`, { encoding: 'utf8', timeout: 5000 });
+      assert.ok(output.includes('team'), 'help should mention team command');
+    } catch (err) {
+      if (err.stdout) {
+        assert.ok(err.stdout.includes('team'), 'help should mention team command');
+      }
+    }
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Team workspaces tests
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('team - module structure', () => {
+  const team = require('../src/team');
+
+  it('exports run function', () => {
+    assert.strictEqual(typeof team.run, 'function');
+  });
+
+  it('exports getTeamStatus function', () => {
+    assert.strictEqual(typeof team.getTeamStatus, 'function');
+  });
+
+  it('exports installHook function', () => {
+    assert.strictEqual(typeof team.installHook, 'function');
+  });
+
+  it('exports uninstallHook function', () => {
+    assert.strictEqual(typeof team.uninstallHook, 'function');
+  });
+
+  it('exports mergePlaybookEntries function', () => {
+    assert.strictEqual(typeof team.mergePlaybookEntries, 'function');
+  });
+
+  it('exports renderPlaybook function', () => {
+    assert.strictEqual(typeof team.renderPlaybook, 'function');
+  });
+});
+
+describe('team - playbook merge', () => {
+  const { mergePlaybookEntries, renderPlaybook } = require('../src/team');
+
+  it('merges non-overlapping entries', () => {
+    const local = [{ type: 'STRATEGY', title: 'A', content: 'a', score: 1, date: '2026-01-01' }];
+    const remote = [{ type: 'PATTERN', title: 'B', content: 'b', score: 2, date: '2026-01-02' }];
+    const merged = mergePlaybookEntries(local, remote);
+    assert.strictEqual(merged.length, 2);
+    assert.ok(merged.find((e) => e.title === 'A'));
+    assert.ok(merged.find((e) => e.title === 'B'));
+  });
+
+  it('keeps higher-score entry on conflict', () => {
+    const local = [{ type: 'STRATEGY', title: 'A', content: 'local', score: 2, date: '2026-01-01' }];
+    const remote = [{ type: 'STRATEGY', title: 'A', content: 'remote', score: 5, date: '2026-01-01' }];
+    const merged = mergePlaybookEntries(local, remote);
+    assert.strictEqual(merged.length, 1);
+    assert.strictEqual(merged[0].content, 'remote');
+    assert.strictEqual(merged[0].score, 5);
+  });
+
+  it('keeps more recent entry on equal scores', () => {
+    const local = [{ type: 'STRATEGY', title: 'A', content: 'local', score: 3, date: '2026-01-01' }];
+    const remote = [{ type: 'STRATEGY', title: 'A', content: 'remote', score: 3, date: '2026-02-15' }];
+    const merged = mergePlaybookEntries(local, remote);
+    assert.strictEqual(merged.length, 1);
+    assert.strictEqual(merged[0].content, 'remote');
+  });
+
+  it('keeps local entry when equal score and older remote', () => {
+    const local = [{ type: 'STRATEGY', title: 'A', content: 'local', score: 3, date: '2026-03-01' }];
+    const remote = [{ type: 'STRATEGY', title: 'A', content: 'remote', score: 3, date: '2026-01-01' }];
+    const merged = mergePlaybookEntries(local, remote);
+    assert.strictEqual(merged.length, 1);
+    assert.strictEqual(merged[0].content, 'local');
+  });
+
+  it('handles empty inputs', () => {
+    assert.strictEqual(mergePlaybookEntries([], []).length, 0);
+    assert.strictEqual(mergePlaybookEntries([{ type: 'STRATEGY', title: 'X', content: '', score: 1, date: '' }], []).length, 1);
+    assert.strictEqual(mergePlaybookEntries([], [{ type: 'STRATEGY', title: 'Y', content: '', score: 1, date: '' }]).length, 1);
+  });
+
+  it('renderPlaybook produces valid markdown', () => {
+    const entries = [
+      { type: 'STRATEGY', title: 'Use caching', content: 'Cache API responses', score: 3, date: '2026-01-15' },
+      { type: 'PATTERN', title: 'Error retry', content: 'Exponential backoff', score: 1, date: '2026-02-01' },
+    ];
+    const md = renderPlaybook(entries);
+    assert.ok(md.startsWith('# Playbook'));
+    assert.ok(md.includes('## [STRATEGY] Use caching (score: 3)'));
+    assert.ok(md.includes('## [PATTERN] Error retry'));
+    assert.ok(!md.includes('(score: 1)'), 'score 1 should not show score suffix');
+    assert.ok(md.includes('Cache API responses'));
+  });
+});
+
+describe('team - hook management', () => {
+  const fs = require('fs');
+  const os = require('os');
+  const { installHook, uninstallHook } = require('../src/team');
+
+  function createTempHooksDir() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'team-hooks-'));
+    return dir;
+  }
+
+  it('creates new hook file', () => {
+    const dir = createTempHooksDir();
+    const result = installHook(dir, 'post-merge', '#!/bin/sh\n# CopilotForge: test\necho test');
+    assert.strictEqual(result.status, 'created');
+    assert.ok(fs.existsSync(path.join(dir, 'post-merge')));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('detects already-installed hook', () => {
+    const dir = createTempHooksDir();
+    installHook(dir, 'post-merge', '#!/bin/sh\n# CopilotForge: test\necho test');
+    const result = installHook(dir, 'post-merge', '#!/bin/sh\n# CopilotForge: test\necho test');
+    assert.strictEqual(result.status, 'already-installed');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('appends to existing non-CopilotForge hook', () => {
+    const dir = createTempHooksDir();
+    fs.writeFileSync(path.join(dir, 'pre-commit'), '#!/bin/sh\necho existing', 'utf8');
+    const result = installHook(dir, 'pre-commit', '# CopilotForge: validate\necho forge');
+    assert.strictEqual(result.status, 'appended');
+    const content = fs.readFileSync(path.join(dir, 'pre-commit'), 'utf8');
+    assert.ok(content.includes('existing'));
+    assert.ok(content.includes('CopilotForge'));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('uninstalls hook by removing file when only CopilotForge content', () => {
+    const dir = createTempHooksDir();
+    installHook(dir, 'post-merge', '#!/bin/sh\n# CopilotForge: test\necho test');
+    const result = uninstallHook(dir, 'post-merge');
+    assert.strictEqual(result.status, 'removed');
+    assert.ok(!fs.existsSync(path.join(dir, 'post-merge')));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('returns not-found for missing hook', () => {
+    const dir = createTempHooksDir();
+    const result = uninstallHook(dir, 'post-merge');
+    assert.strictEqual(result.status, 'not-found');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('returns not-installed for hook without CopilotForge markers', () => {
+    const dir = createTempHooksDir();
+    fs.writeFileSync(path.join(dir, 'pre-commit'), '#!/bin/sh\necho other', 'utf8');
+    const result = uninstallHook(dir, 'pre-commit');
+    assert.strictEqual(result.status, 'not-installed');
+    fs.rmSync(dir, { recursive: true, force: true });
   });
 });
