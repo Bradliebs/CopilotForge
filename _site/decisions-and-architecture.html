@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DECISIONS AND ARCHITECTURE — CopilotForge</title>
+  <style>
+    :root { --bg: #0d1117; --fg: #c9d1d9; --accent: #58a6ff; --border: #30363d; --code-bg: #161b22; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+    .container { display: flex; max-width: 1200px; margin: 0 auto; }
+    nav { width: 250px; padding: 2rem 1rem; border-right: 1px solid var(--border); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav a { display: block; color: var(--fg); text-decoration: none; padding: 0.3rem 0.5rem; border-radius: 4px; font-size: 0.9rem; }
+    nav a:hover, nav a.active { background: var(--border); color: var(--accent); }
+    nav h3 { color: var(--accent); margin: 1rem 0 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    main { flex: 1; padding: 2rem 3rem; max-width: 800px; }
+    h1 { color: var(--accent); margin-bottom: 1rem; font-size: 2rem; }
+    h2 { color: var(--accent); margin: 2rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { color: var(--fg); margin: 1.5rem 0 0.5rem; }
+    a { color: var(--accent); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 6px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; border: 1px solid var(--border); text-align: left; }
+    th { background: var(--code-bg); }
+    blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: #8b949e; }
+    ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin: 0.25rem 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    .header { padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+    .header h1 { font-size: 1.2rem; margin: 0; }
+    .header .version { color: #8b949e; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔥 CopilotForge</h1>
+    <span class="version">v3.0.0</span>
+  </div>
+  <div class="container">
+    <nav><h3>Documentation</h3>
+<a href="index.html">Home</a>
+<a href="copilot-extension-setup.html">COPILOT EXTENSION SETUP</a>
+<a href="decisions-and-architecture.html" class="active">DECISIONS AND ARCHITECTURE</a>
+<a href="examples-registry-spec.html">EXAMPLES REGISTRY SPEC</a>
+<a href="faq.html">FAQ</a>
+<a href="getting-started.html">GETTING STARTED</a>
+<a href="how-it-works.html">HOW IT WORKS</a>
+<a href="mcp-setup.html">MCP SETUP</a>
+<a href="plugin-api.html">PLUGIN API</a>
+<a href="system-breakdown.html">SYSTEM BREAKDOWN</a>
+<a href="watch.html">WATCH</a>
+<a href="what-to-use.html">WHAT TO USE</a>
+<a href="phase4-architecture.html">Phase4 Architecture</a>
+</nav>
+    <main><h1>🏛️ Decisions & Architecture</h1>
+
+<blockquote>Everything you need to understand <strong>why</strong> CopilotForge works the way it does, <strong>how</strong> the pieces fit together, and <strong>what</strong> each part of the system does for you.</blockquote>
+
+This guide is for end users who want to go deeper than the <a href="../README.md#quick-start">Quick Start</a> without reading internal planning docs. If you just want to get going, start with <a href="GETTING-STARTED.md">Getting Started</a> instead.
+
+<hr>
+
+<h2>Table of Contents</h2>
+
+<ul><li><a href="#why-this-guide-exists">Why This Guide Exists</a></li></ul>
+<ul><li><a href="#key-decisions">Key Decisions</a></li></ul>
+<ul><li><a href="#how-the-system-is-organized">How the System Is Organized</a></li></ul>
+<ul><li><a href="#build-paths--a-through-j">Build Paths — A through J</a></li></ul>
+<ul><li><a href="#what-gets-generated-and-where">What Gets Generated (and Where)</a></li></ul>
+<ul><li><a href="#cli-command-map">CLI Command Map</a></li></ul>
+<ul><li><a href="#code-map--what-each-file-does">Code Map — What Each File Does</a></li></ul>
+<ul><li><a href="#validation-and-safety">Validation and Safety</a></li></ul>
+<ul><li><a href="#decision-timeline">Decision Timeline</a></li></ul>
+<ul><li><a href="#further-reading">Further Reading</a></li></ul>
+
+<hr>
+
+<h2>Why This Guide Exists</h2>
+
+CopilotForge is deliberately simple to use — one command and a few questions. But that simplicity rests on a set of deliberate architecture choices. This guide explains those choices in plain language so you can:
+
+<ul><li>Understand <strong>why</strong> the wizard generates specific files</li></ul>
+<ul><li>Know <strong>what happens</strong> behind the scenes when you pick a build path</li></ul>
+<ul><li>Feel confident <strong>customizing</strong> the output because you understand the structure</li></ul>
+<ul><li>Contribute or report issues with context about how things connect</li></ul>
+
+<hr>
+
+<h2>Key Decisions</h2>
+
+These are the foundational choices that shape everything CopilotForge does.
+
+<h3>1. Zero Dependencies</h3>
+
+| Decision | The entire framework — skills, agents, memory — is plain Markdown. Nothing to install, nothing to break. |
+|----------|:---|
+| <strong>Why</strong> | You should be able to drop CopilotForge into any repo (Python, Go, Rust, an empty folder) without adding a single runtime dependency. Node.js is only needed to run the <code>npx copilotforge init</code> command itself. |
+| <strong>What this means for you</strong> | The files CopilotForge creates have no lock files, no node_modules, no build step. You can read, edit, or delete any of them. |
+
+<h3>2. Markdown as the Universal Format</h3>
+
+| Decision | Every skill, agent, and memory file is a <code>.md</code> file that any AI assistant can read. |
+|----------|:---|
+| <strong>Why</strong> | GitHub Copilot, Claude Code, Cursor, and ChatGPT all understand Markdown. A <code>.md</code> instruction file works everywhere without format-specific tooling. |
+| <strong>What this means for you</strong> | You are never locked into one AI vendor. Switch assistants and the skills still work. |
+
+<h3>3. Memory Lives in Your Repo</h3>
+
+| Decision | Decisions, patterns, and preferences are stored as plain-text files in <code>forge-memory/</code> inside your project. |
+|----------|:---|
+| <strong>Why</strong> | Nothing is sent to external servers. You own the data. You can read it, edit it, or add <code>forge-memory/</code> to <code>.gitignore</code> if you don't want it in version control. |
+| <strong>What this means for you</strong> | Your AI assistant gets smarter over time because it reads the same memory files each session. Delete them to start fresh at any time. |
+
+<h3>4. Skip-on-Exist Safety</h3>
+
+| Decision | The <code>init</code> command never overwrites files that already exist unless you explicitly confirm. |
+|----------|:---|
+| <strong>Why</strong> | You might have customized a skill, written decisions into memory, or edited FORGE.md. Overwriting without asking would destroy your work. |
+| <strong>What this means for you</strong> | Running <code>init</code> twice is safe. It creates missing files and skips existing ones. Use <code>--yes</code> to auto-overwrite when you know what you're doing. |
+
+<h3>5. Ten Build Paths</h3>
+
+| Decision | Projects are classified into one of ten paths (A through J) that determine which files are generated. |
+|----------|:---|
+| <strong>Why</strong> | A Power BI report and a Next.js API need completely different skills, agents, and recipes. One-size-fits-all generation produced irrelevant output for specialized projects. |
+| <strong>What this means for you</strong> | The wizard silently detects your path from your project description. You get only the files relevant to your project — no noise, no extras to delete. |
+
+<h3>6. User-Owned Files Are Sacred</h3>
+
+| Decision | CopilotForge will never modify <code>forge-memory/</code> contents, your root <code>FORGE.md</code>, or files in <code>cli/files/</code> during upgrades. |
+|----------|:---|
+| <strong>Why</strong> | These files contain your decisions, your project state, and scaffolded assets that existing users depend on. Touching them risks data loss or broken setups. |
+| <strong>What this means for you</strong> | The <code>upgrade</code> command updates framework skills and recipes but leaves everything you've written untouched. |
+
+<hr>
+
+<h2>How the System Is Organized</h2>
+
+CopilotForge has six layers. Each layer has a clear job and they connect in one direction: the CLI triggers skills, skills activate agents, and agents produce output files.
+
+``<code>
+You (or your AI assistant)
+        │
+        ▼
+  ┌─────────────────────────────────┐
+  │  CLI                            │  npx copilotforge init / doctor / status
+  │  cli/bin/copilotforge.js        │
+  └─────────────────────────────────┘
+        │
+        ▼
+  ┌─────────────────────────────────┐
+  │  Skills                         │  .github/skills/{name}/SKILL.md
+  │  (Instruction files for AI)     │  The Planner, path guides, code review, testing
+  └─────────────────────────────────┘
+        │
+        ▼
+  ┌─────────────────────────────────┐
+  │  Agents                         │  .copilot/agents/{name}.md
+  │  (AI team members)              │  Planner, Reviewer, Tester, path-specific agents
+  └─────────────────────────────────┘
+        │
+        ▼
+  ┌──────────┬─────────────┬────────┐
+  │ Memory   │  Cookbook    │FORGE.md│
+  │forge-mem/│  cookbook/   │ (root) │
+  └──────────┴─────────────┴────────┘
+</code>`<code>
+
+<blockquote><strong>Skills</strong> are the "how" — written instructions for a specific task.  </blockquote>
+<blockquote><strong>Agents</strong> are the "who" — team members that know which skills to use.  </blockquote>
+<blockquote><strong>Memory</strong> is the "what we decided" — a persistent record of choices.  </blockquote>
+<blockquote><strong>Cookbook</strong> is the "show me the code" — runnable examples for your stack.  </blockquote>
+<blockquote><strong>FORGE.md</strong> is the "control panel" — one file showing the full picture.</blockquote>
+
+For a deeper dive into each layer, see <a href="HOW-IT-WORKS.md">How It Works</a>.
+
+<hr>
+
+<h2>Build Paths — A through J</h2>
+
+When you answer the wizard's first question ("What are you building?"), CopilotForge silently classifies your project into one of ten paths. Paths A–I are for Power Platform projects; Path J is the general developer path for everything else.
+
+| Path | Name | What It's For | Key Tools |
+|------|------|---------------|-----------|
+| <strong>A</strong> | Copilot Studio Agent | No-code conversational agents | Copilot Studio |
+| <strong>B</strong> | Studio + Connector | Agents that call external APIs | Power Automate, REST APIs |
+| <strong>C</strong> | Declarative Agent | Microsoft 365 Copilot agents | Teams Toolkit, VS Code |
+| <strong>D</strong> | Canvas App Agent | No-code/low-code apps with AI | Power Apps, Power Fx |
+| <strong>E</strong> | Power Automate | Automated workflows with AI | Power Automate, Dataverse |
+| <strong>F</strong> | PCF Component | Custom UI components (TypeScript) | Node 16+, pac CLI |
+| <strong>G</strong> | Power BI Report | Data reports and models | Power BI Desktop, DAX |
+| <strong>H</strong> | SharePoint Agent | Knowledge agents for Teams | SharePoint, M365 Copilot |
+| <strong>I</strong> | Power Pages | Websites with AI plugins | Power Pages Studio |
+| <strong>J</strong> | Developer Project | General coding projects | git, Node.js, any stack |
+
+<h3>How Path Detection Works</h3>
+
+1. You describe your project in the wizard (Q1)
+2. The <strong>forge-compass</strong> classifier scans your description for keywords (e.g., "canvas app," "PCF," "Power BI")
+3. If Power Platform signals are detected, you get 3 short follow-up questions to narrow the path
+4. If no signals are detected, you're silently routed to <strong>Path J</strong> with no interruption
+5. Your path is written into FORGE.md as a stamp: </code><!-- copilotforge: path=F --><code>
+
+<h3>How Paths Change What You Get</h3>
+
+Each path generates a tailored set of files:
+
+<ul><li><strong>FORGE.md</strong> — Customized project summary, team roster, and skill index for your path</li></ul>
+<ul><li><strong>Skills</strong> — Only the skills relevant to your path (e.g., Path F gets </code>pcf-component<code>, Path A gets </code>studio-agent<code>)</li></ul>
+<ul><li><strong>Agents</strong> — Path-specific agents that know your tools (e.g., Path G gets a Power BI architect agent)</li></ul>
+<ul><li><strong>Cookbook</strong> — Only recipes that apply (e.g., Path F gets a PCF TypeScript skeleton; Path E gets flow patterns)</li></ul>
+
+<strong>Path J users</strong> — If you're building a general dev project (API, web app, CLI tool, etc.), nothing changes from the standard experience. Path J is the default and produces the same output as previous versions.
+
+<blockquote><strong>Want help choosing a path?</strong> See <a href="WHAT-TO-USE.md">What Should I Use?</a> for a decision flowchart.</blockquote>
+
+<hr>
+
+<h2>What Gets Generated (and Where)</h2>
+
+When you run </code>npx copilotforge init<code>, these files are created in your project:
+
+<h3>Always Created (Core)</h3>
+
+| File | Location | Purpose |
+|------|----------|---------|
+| Planner skill | </code>.github/skills/planner/SKILL.md<code> | The wizard — the AI reads this to run your setup |
+| Planner reference | </code>.github/skills/planner/reference.md<code> | Format spec and re-run rules for the wizard |
+| Plan-executor skill | </code>.github/skills/plan-executor/SKILL.md<code> | Powers The Ralph Loop (autonomous task execution) |
+| Plan-executor reference | </code>.github/skills/plan-executor/reference.md<code> | Format spec for the plan executor |
+
+<h3>Created on Full Install (Default)</h3>
+
+| File | Location | Purpose |
+|------|----------|---------|
+| FORGE.md | repo root | Your project's control panel — shows everything that was set up |
+| Implementation plan | </code>IMPLEMENTATION_PLAN.md<code> | Task list for The Ralph Loop |
+| Planner agent | </code>.copilot/agents/planner.md<code> | AI team member that runs the wizard |
+| Memory files | </code>forge-memory/decisions.md<code>, </code>patterns.md<code>, </code>preferences.md<code> | Decision log, conventions, user settings |
+| Starter recipes | </code>cookbook/hello-world.ts<code>, </code>cookbook/hello-world.py<code> | Minimal runnable examples |
+| Task loop | </code>cookbook/task-loop.ts<code> or </code>.py<code> | The Ralph Loop engine |
+| Getting started | </code>docs/GETTING-STARTED.md<code> | Quick-start guide for your project |
+
+<h3>Created for Power Platform Paths (A–I)</h3>
+
+| What | Example |
+|------|---------|
+| Path-specific skills | </code>.github/skills/pcf-component/SKILL.md<code> (Path F) |
+| Path-specific agents | </code>.copilot/agents/pcf-agent.md<code> (Path F) |
+| Path-specific recipes | </code>cookbook/pcf-component.ts<code>, </code>cookbook/pcf-manifest.md<code> (Path F) |
+| Platform guides | </code>cookbook/copilot-studio-guide.md<code> (Path A) |
+
+<blockquote><strong>Minimal install</strong> (</code>--minimal<code>): Creates only the 2 core planner files. Use this when you want the wizard without any generated output.</blockquote>
+
+<hr>
+
+<h2>CLI Command Map</h2>
+
+Every command CopilotForge provides, what it does, and when to use it.
+
+| Command | What It Does | When to Use It |
+|---------|-------------|----------------|
+| </code>npx copilotforge init<code> | Scaffolds all files into your project | First-time setup |
+| </code>npx copilotforge init --minimal<code> | Creates planner skill only (2 files) | Lightweight setup |
+| </code>npx copilotforge init --yes<code> | Auto-overwrite, auto-commit, no prompts | CI/scripting, </code>/yolo<code> mode |
+| </code>npx copilotforge init --dry-run<code> | Shows what would be created without writing | Preview before committing |
+| </code>npx copilotforge init --beginner<code> | Adds extra explanation files alongside every skill | New to AI coding tools |
+| </code>npx copilotforge doctor<code> | Health check — verifies files, versions, git config | Troubleshooting, after upgrades |
+| </code>npx copilotforge doctor --json<code> | Machine-readable health check output | CI pipelines |
+| </code>npx copilotforge status<code> | Terminal dashboard — plan, memory, skills, git | Quick project overview |
+| </code>npx copilotforge dashboard<code> | Browser dashboard at localhost:3731 | Visual overview with Ralph Loop controls |
+| </code>npx copilotforge upgrade<code> | Updates framework-owned files, preserves your content | After a new CopilotForge release |
+| </code>npx copilotforge upgrade --dry-run<code> | Shows what would change without touching files | Preview before upgrading |
+| </code>npx copilotforge watch<code> | Runs The Ralph Loop continuously (polls every 10s) | Autonomous task execution |
+| </code>npx copilotforge run<code> | Runs through pending tasks once, then exits | One-shot task execution |
+| </code>npx copilotforge uninstall<code> | Removes CLI-installed skill files only | Clean removal |
+| </code>npx copilotforge<code> (no args) | Interactive terminal menu | Exploring commands |
+
+<hr>
+
+<h2>Code Map — What Each File Does</h2>
+
+If you want to understand the codebase itself, here's what each part does:
+
+<h3>Entry Point</h3>
+
+| File | Purpose |
+|------|---------|
+| </code>cli/bin/copilotforge.js<code> | Routes command-line arguments to the right module. Handles </code>--help<code>, </code>--version<code>, and all subcommands. |
+
+<h3>Command Modules (</code>cli/src/<code>)</h3>
+
+| Module | Responsibility |
+|--------|---------------|
+| </code>init.js<code> | Copies core skill files from </code>cli/files/<code>, writes template files from </code>templates/<code>, offers git commit |
+| </code>doctor.js<code> | Runs 10+ health checks: Node version, file existence, git config, write permissions, version stamp, path-specific prerequisites |
+| </code>status.js<code> | Reads plan, memory, skills, agents, cookbook, and git data — exports functions for the dashboard views |
+| </code>dashboard.js<code> | Starts a local web server at port 3731, serves a live HTML dashboard with auto-refresh |
+| </code>watch.js<code> | The Ralph Loop's persistent runner — polls for pending tasks and invokes them |
+| </code>run.js<code> | One-shot task runner — processes pending tasks once and exits |
+| </code>interactive.js<code> | Readline-based terminal menu that loops until you choose Exit |
+| </code>upgrade.js<code> | Diffs framework files against disk, updates only what changed, never touches user-owned files |
+| </code>uninstall.js<code> | Removes CLI-installed planner skill files and cleans up empty directories |
+| </code>utils.js<code> | Shared helpers: terminal colors, user prompts, file I/O, git operations |
+
+<h3>Template System (</code>cli/src/templates/<code>)</h3>
+
+Templates generate the files that get written into your project. They are split into focused modules:
+
+| Module | What It Generates |
+|--------|------------------|
+| </code>forge.js<code> | Generic FORGE.md (Path J / default) |
+| </code>platform-forge.js<code> | 9 path-specific FORGE.md variants (Paths A–I) |
+| </code>agents.js<code> | Agent definition markdown |
+| </code>memory.js<code> | </code>forge-memory/<code> file templates |
+| </code>cookbook.js<code> | Cookbook recipe templates |
+| </code>init.js<code> | Init-phase file templates |
+| </code>platform-guides.js<code> | Power Platform guide content |
+| </code>index.js<code> | Barrel file — re-exports all template modules |
+
+<h3>Source Files (Read-Only, Not Generated)</h3>
+
+| Location | What It Contains |
+|----------|-----------------|
+| </code>cli/files/<code> | Exact copies of skill files shipped to users — these are never modified by upgrades |
+| </code>.github/skills/<code> | The authoritative skill definitions (planner, plan-executor, path skills) |
+| </code>.copilot/agents/<code> | Internal agent definitions used by the planner's delegation system |
+
+<hr>
+
+<h2>Validation and Safety</h2>
+
+CopilotForge has built-in safeguards that protect you and your project.
+
+<h3>Files That Are Never Overwritten</h3>
+
+These files belong to you. CopilotForge will never modify them during </code>init<code> or </code>upgrade<code>:
+
+| File/Folder | Why It's Protected |
+|-------------|-------------------|
+| </code>forge-memory/<code> | Contains your decisions, patterns, and preferences |
+| </code>FORGE.md<code> (project root) | Your project's control panel — you may have customized it |
+| </code>cli/files/<code> | Shipped verbatim to users — changes would break existing installs |
+
+<h3>Health Checks (</code>doctor<code>)</h3>
+
+Run </code>npx copilotforge doctor<code> to verify your setup. It checks:
+
+<ul><li>Node.js version (18+ required)</li></ul>
+<ul><li>Required files exist (SKILL.md, reference.md, FORGE.md)</li></ul>
+<ul><li>Git is configured (user.name, user.email)</li></ul>
+<ul><li>Write permissions on target directories</li></ul>
+<ul><li>Version stamp matches the installed CLI version</li></ul>
+<ul><li><strong>Path-specific checks</strong> (e.g., Path F verifies Node 16+, pac CLI availability)</li></ul>
+
+<h3>Version Stamps</h3>
+
+Every generated FORGE.md includes a version stamp:
+
+</code>`<code>html
+<!-- copilotforge: v1.6.0 -->
+<!-- copilotforge: path=F -->
+</code>`<code>
+
+The </code>doctor<code> command reads these stamps to detect outdated installs or missing path information. If you see a version mismatch warning, run </code>npx copilotforge upgrade<code>.
+
+<h3>User-Facing Content Rules</h3>
+
+All generated files, templates, and documentation follow these rules:
+
+<ul><li><strong>No internal jargon</strong> — Implementation-level vocabulary is kept out of user-facing output</li></ul>
+<ul><li><strong>Beginner-friendly</strong> — Technical terms are explained on first use</li></ul>
+<ul><li><strong>Copy-pasteable</strong> — Every code example runs without modification</li></ul>
+<ul><li><strong>Self-contained</strong> — No file requires reading another file to make sense</li></ul>
+
+<h3>Testing Before Contributions</h3>
+
+If you're contributing to CopilotForge, the repo includes automated checks:
+
+| Check | Command | What It Validates |
+|-------|---------|-------------------|
+| Unit tests | </code>node --test cli/tests/*.test.js<code> | CLI module behavior |
+| Content scan | </code>node tests/e2e-validate.js<code> | No internal terms leaking into user-facing files |
+| Scaffold test | </code>pwsh tests/validate-scaffold.ps1<code> | Generated files are valid |
+
+<hr>
+
+<h2>Decision Timeline</h2>
+
+A summary of how CopilotForge evolved, showing the key decisions at each stage.
+
+| Version | Codename | Key Decisions |
+|---------|----------|---------------|
+| <strong>0.1.0</strong> | Phase 1 — Planner Skill | Markdown-only skills, trigger-phrase activation, template system |
+| <strong>0.2.0</strong> | Phase 2 — Wizard + Agents | 5-question wizard, agent delegation, internal templates |
+| <strong>0.3.0</strong> | Phase 3 — Cookbook | 12 recipe pairs (TS + Python), stack detection from manifest files, FORGE.md live config |
+| <strong>0.4.0</strong> | Phase 4 — Memory | Read-write learning loop, adaptive wizard for returning users, convention extraction |
+| <strong>0.5.0</strong> | Phase 5 — Beginner Polish | Standalone FAQ, cross-platform docs, expanded stack detection, GitHub templates |
+| <strong>1.4.0</strong> | </code>--yes<code> Flag | Autonomous mode for CI/scripting, </code>/yolo<code> detection |
+| <strong>1.5.0</strong> | Memory Conflicts | Memory conflict detection, </code>forge remember:` feedback loop, persistent experience level, The Ralph Loop branding, doctor expansion |
+| <strong>1.6.0</strong> | Phase 13 — Path Awareness | 10 build paths (A–J), forge-compass classifier, 9 path-specific skills, 6 Power Platform agent templates, 16 cookbook recipes, path-stamp system, path-aware doctor checks |
+| <strong>Next</strong> | Phase 14 — Wizard & Distribution <em>(planned)</em> | Zero-arg conversational wizard, snapshot rollback, MCP server for multi-client distribution, examples gallery, typed plugin API |
+
+<blockquote>The full changelog is in <a href="../CHANGELOG.md">CHANGELOG.md</a>.</blockquote>
+
+<hr>
+
+<h2>Further Reading</h2>
+
+| If You Want To... | Read This |
+|-------------------|-----------|
+| Get started with CopilotForge | <a href="GETTING-STARTED.md">Getting Started</a> |
+| Pick the right starting point for your project | <a href="WHAT-TO-USE.md">What Should I Use?</a> |
+| Understand how skills, agents, and memory work | <a href="HOW-IT-WORKS.md">How It Works</a> |
+| See the complete technical breakdown | <a href="SYSTEM-BREAKDOWN.md">System Breakdown</a> |
+| Find a code recipe | <a href="../cookbook/CHEATSHEET.md">Cookbook Cheatsheet</a> |
+| Get quick answers | <a href="FAQ.md">FAQ</a> |
+| Contribute to CopilotForge | <a href="../CONTRIBUTING.md">Contributing</a> |
+
+<hr>
+
+<em>This guide synthesizes decisions from the implementation plan, changelog, and system design docs into one place. For the raw planning history, see <a href="../IMPLEMENTATION_PLAN.md">IMPLEMENTATION_PLAN.md</a> and <a href="../CHANGELOG.md">CHANGELOG.md</a>.</em>
+</main>
+  </div>
+</body>
+</html>

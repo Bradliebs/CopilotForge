@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ — CopilotForge</title>
+  <style>
+    :root { --bg: #0d1117; --fg: #c9d1d9; --accent: #58a6ff; --border: #30363d; --code-bg: #161b22; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+    .container { display: flex; max-width: 1200px; margin: 0 auto; }
+    nav { width: 250px; padding: 2rem 1rem; border-right: 1px solid var(--border); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav a { display: block; color: var(--fg); text-decoration: none; padding: 0.3rem 0.5rem; border-radius: 4px; font-size: 0.9rem; }
+    nav a:hover, nav a.active { background: var(--border); color: var(--accent); }
+    nav h3 { color: var(--accent); margin: 1rem 0 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    main { flex: 1; padding: 2rem 3rem; max-width: 800px; }
+    h1 { color: var(--accent); margin-bottom: 1rem; font-size: 2rem; }
+    h2 { color: var(--accent); margin: 2rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { color: var(--fg); margin: 1.5rem 0 0.5rem; }
+    a { color: var(--accent); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 6px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; border: 1px solid var(--border); text-align: left; }
+    th { background: var(--code-bg); }
+    blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: #8b949e; }
+    ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin: 0.25rem 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    .header { padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+    .header h1 { font-size: 1.2rem; margin: 0; }
+    .header .version { color: #8b949e; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔥 CopilotForge</h1>
+    <span class="version">v3.0.0</span>
+  </div>
+  <div class="container">
+    <nav><h3>Documentation</h3>
+<a href="index.html">Home</a>
+<a href="copilot-extension-setup.html">COPILOT EXTENSION SETUP</a>
+<a href="decisions-and-architecture.html">DECISIONS AND ARCHITECTURE</a>
+<a href="examples-registry-spec.html">EXAMPLES REGISTRY SPEC</a>
+<a href="faq.html" class="active">FAQ</a>
+<a href="getting-started.html">GETTING STARTED</a>
+<a href="how-it-works.html">HOW IT WORKS</a>
+<a href="mcp-setup.html">MCP SETUP</a>
+<a href="plugin-api.html">PLUGIN API</a>
+<a href="system-breakdown.html">SYSTEM BREAKDOWN</a>
+<a href="watch.html">WATCH</a>
+<a href="what-to-use.html">WHAT TO USE</a>
+<a href="phase4-architecture.html">Phase4 Architecture</a>
+</nav>
+    <main><h1>❓ Frequently Asked Questions</h1>
+
+<blockquote>Quick answers to common questions about CopilotForge.</blockquote>
+
+<hr>
+
+<h2>General Questions</h2>
+
+<h3>What if I already have a <code>.copilot/</code> folder?</h3>
+
+CopilotForge won't overwrite existing files. If it finds files that already exist, it skips them and tells you what was skipped in the validation summary. Your existing setup is safe.
+
+<h3>Can I use this with an existing project?</h3>
+
+Yes — that's the main use case. Drop the Planner skill into any repo, run the wizard, and it generates files alongside your existing code. It reads your project's config files (<code>package.json</code>, <code>requirements.txt</code>, etc.) to understand your stack.
+
+<h3>What if I want to start over?</h3>
+
+Delete the generated files (or the whole <code>forge-memory/</code> folder) and run the wizard again. Memory files track choices with append-only entries, so you can also just re-run the wizard — it'll show you your previous answers and let you change them.
+
+Alternatively, tell the wizard "start fresh" and it will bypass memory and run the full 5-question setup again.
+
+<h3>Do I need to understand skills or agents to use this?</h3>
+
+No. CopilotForge creates and configures everything for you. You can use the generated agents and skills without ever opening the files. If you want to customize later, every file is plain markdown with comments explaining what it does.
+
+<h3>What languages and frameworks are supported?</h3>
+
+CopilotForge generates code recipes for <strong>TypeScript</strong>, <strong>Python</strong>, <strong>Go</strong>, and <strong>C#</strong>. It recognizes frameworks like Express, Next.js, React, Prisma, FastAPI, SQLAlchemy, Gin, GORM, ASP.NET, Entity Framework, and more.
+
+The skills and agents work with any language — they're instructions, not code. Only the cookbook recipes are language-specific.
+
+<hr>
+
+<h2>Setup & Scaffolding</h2>
+
+<h3>What are the "extras" in Question 6?</h3>
+
+Optional advanced features you can add during wizard setup. They generate specialized code recipes in your <code>cookbook/</code> folder:
+
+<ul><li><strong>Task automation</strong> — The Ralph Loop: an AI dev loop that works through your plan autonomously (powered by <code>task-loop.{ext}</code>)</li></ul>
+<ul><li><strong>Auto-experiments</strong> (auto-research) — An AI that tries code changes, measures results, keeps improvements</li></ul>
+<ul><li><strong>Knowledge wiki</strong> (knowledge-wiki) — Builds a searchable personal wiki from your notes and docs</li></ul>
+<ul><li><strong>CLI hooks</strong> (copilot-hooks) — Automatic actions during Copilot CLI sessions (logging, safety checks)</li></ul>
+<ul><li><strong>Blog writer</strong> (blog-writer) — Converts your pull requests into blog posts</li></ul>
+<ul><li><strong>Template factory</strong> (template-creator) — Generates project documentation in bulk</li></ul>
+<ul><li><strong>PR dashboard</strong> (pr-visualization) — Analytics and charts for your pull requests</li></ul>
+
+You don't need any of them to use CopilotForge. They're power-ups you can add anytime. See <code>cookbook/CHEATSHEET.md</code> to add them later without re-running the wizard. For beginners, we recommend "none." For intermediate developers, try "task automation." Advanced users often combine "task automation" with "auto-experiments."
+
+<h3>How do I see my project status at a glance?</h3>
+
+Run <code>npx copilotforge status</code> in your terminal. It reads your plan, memory, skills, agents, and git status, then shows everything in a single dashboard view. For a customizable version, check <code>cookbook/command-center.ts</code> — it has a widget system you can extend with your own data sources.
+
+<h3>What is The Ralph Loop?</h3>
+
+The Ralph Loop is what happens when you select "Task automation" in Q6. The wizard generates an <code>IMPLEMENTATION_PLAN.md</code> — a checklist of tasks derived from your project description. The Ralph Loop then works through the plan autonomously: pick a task, implement it, validate, commit, repeat. You can edit the plan at any time to add, remove, or reorder tasks. Ralph always re-reads the file from disk, so changes take effect immediately. (The code that powers it lives in <code>cookbook/task-loop.ts</code> / <code>.py</code>.)
+
+<h3>I got an error during scaffolding — what do I do?</h3>
+
+CopilotForge handles partial failures gracefully. If one part fails, the rest still generates. Check the validation summary at the end — it lists what was created and what was skipped.
+
+Try running the wizard again. It'll detect existing files and only generate what's missing.
+
+<h3>The wizard froze or went silent</h3>
+
+Check that your AI assistant has access to read and write files in your project. Some setups require you to open the project folder first or enable file access permissions.
+
+If the wizard stops mid-flow, just run it again. It will pick up where it left off (or show you the welcome-back screen if memory was already created).
+
+<h3>I have no config files in my repo</h3>
+
+That's perfectly fine! CopilotForge works with brand-new empty repos. When the wizard asks about your stack (Question 2), just describe what you're planning to use:
+<ul><li>"Python with Flask"</li></ul>
+<ul><li>"JavaScript"</li></ul>
+<ul><li>"Go with Gin"</li></ul>
+
+The wizard will generate conventions and recipes for that stack, even though you haven't created config files yet.
+
+<h3>Can I use this with a monorepo?</h3>
+
+Yes, but you'll need to run the wizard separately for each sub-project. Place a <code>.github/skills/planner/</code> folder at the root of each sub-project, or at the monorepo root if you want shared skills and agents.
+
+Generated agents and skills are scoped to the directory where the wizard runs. If you want workspace-wide setup, run it from the monorepo root.
+
+<h3>My recipes don't run — I get "module not found"</h3>
+
+Check the recipe's header comment for the PREREQUISITES section. You need to install the packages listed there:
+<ul><li><strong>TypeScript/JavaScript:</strong> <code>npm install <package-name></code></li></ul>
+<ul><li><strong>Python:</strong> <code>pip install <package-name></code></li></ul>
+<ul><li><strong>Go:</strong> <code>go get <package-name></code></li></ul>
+<ul><li><strong>C#:</strong> <code>dotnet add package <package-name></code></li></ul>
+
+If you get "Cannot find module 'ts-node'", run: <code>npm install -D ts-node typescript @types/node</code>
+
+<hr>
+
+<h2>Memory & Re-Runs</h2>
+
+<h3>How do I add memory to an existing project?</h3>
+
+If you initially said "no" to memory and want to enable it:
+
+1. Run the wizard again
+2. When it asks about memory, say "yes"
+3. It will create the <code>forge-memory/</code> folder and populate it with your current setup
+
+Your existing files (skills, agents, recipes) are preserved. Memory just adds decision tracking for future runs.
+
+<h3>What if I want to start completely over?</h3>
+
+Three options:
+
+1. <strong>Tell the wizard "start fresh"</strong> — bypasses all memory and runs the full setup again
+2. <strong>Delete the <code>forge-memory/</code> folder</strong> — next run treats it like a first-time setup
+3. <strong>Delete all generated files</strong> — completely clean slate
+
+Option 1 is safest because it logs the reset as a decision. Options 2 and 3 permanently delete data.
+
+<hr>
+
+<h2>Privacy & Data</h2>
+
+<h3>Is my data sent anywhere?</h3>
+
+No. CopilotForge is just markdown files with instructions. Everything stays local:
+<ul><li>Memory files are stored in your repo (<code>forge-memory/</code>)</li></ul>
+<ul><li>No data is sent to external servers</li></ul>
+<ul><li>The wizard runs in your AI assistant, which uses your assistant's normal data policies</li></ul>
+
+You can read, edit, or delete any file CopilotForge creates — they're all plain text.
+
+<h3>Should I commit <code>forge-memory/</code> to Git?</h3>
+
+<strong>For private repos:</strong> Yes — memory files are useful context for your team.
+
+<strong>For public repos:</strong> Your choice. Memory files contain decisions and conventions, not secrets or code. If you don't want them visible publicly, add <code>forge-memory/</code> to your <code>.gitignore</code>.
+
+<hr>
+
+<h2>Customization</h2>
+
+<h3>Can I use this without Git?</h3>
+
+Yes. Git is recommended but not required. CopilotForge creates files in your project directory — it doesn't care if they're tracked by Git or not.
+
+If you don't use Git, you won't have version history for your generated files, but everything else works normally.
+
+<h3>What's the difference between a skill and an agent?</h3>
+
+A <strong>skill</strong> is a set of instructions — like a playbook for handling a specific task ("how to review code," "how to write tests").
+
+An <strong>agent</strong> is an AI team member with a job title — it knows which skills to use and when. Think of skills as the "how" and agents as the "who."
+
+<h3>Can I edit the generated files?</h3>
+
+Absolutely. Every file CopilotForge creates is plain markdown or code. Edit anything you want:
+<ul><li>Change coding conventions in skills</li></ul>
+<ul><li>Adjust agent behavior in agent definitions</li></ul>
+<ul><li>Modify recipes to match your actual patterns</li></ul>
+<ul><li>Add custom sections to FORGE.md</li></ul>
+
+CopilotForge won't overwrite your changes on re-runs — it skips files that already exist.
+
+<h3>How do I add a new skill?</h3>
+
+1. Create a new folder in <code>.github/skills/</code> — example: <code>.github/skills/deployment/</code>
+2. Create a <code>SKILL.md</code> file inside it
+3. Follow the format from existing skills (frontmatter + Context + Patterns + Examples + Anti-Patterns)
+4. Update <code>FORGE.md</code> to add it to the Skills table
+
+<h3>How do I add a new agent?</h3>
+
+1. Create a new <code>.md</code> file in <code>.copilot/agents/</code> — example: <code>.copilot/agents/optimizer.md</code>
+2. Define its Role, Scope, System Prompt, Boundaries, and Skills
+3. Use an existing agent as a template
+4. Update <code>FORGE.md</code> to add it to the Agents table
+
+<h3>How do I add a new recipe?</h3>
+
+1. Create a new file in <code>cookbook/</code> — example: <code>cookbook/caching-example.ts</code>
+2. Start with a header comment (WHAT, WHEN, HOW, PREREQUISITES)
+3. Include all imports — no "install this first" surprises
+4. Mark integration points with <code>TODO</code> comments
+5. Add a row to <code>cookbook/README.md</code>
+
+<hr>
+
+
+<h3>Can I use CopilotForge in a monorepo?</h3>
+
+<p>Yes. Copy the Planner skill to your repo root, or into each package that needs its own team. Each package can have its own FORGE.md and forge-memory/ — they work independently.</p>
+
+<h3>My repo is huge — will the wizard be slow?</h3>
+
+<p>No. The wizard only reads configuration files (package.json, requirements.txt, etc.) to detect your stack. It doesn't scan all your source code.</p>
+
+<h3>Can different packages have different FORGE.md files?</h3>
+
+<p>Yes. Each directory with a FORGE.md gets its own team configuration. The Planner scopes its work to the directory where it was triggered.</p>
+
+<h3>Does CopilotForge work with Git submodules?</h3>
+
+<p>Yes, but the Planner only scaffolds within the repo where the skill is installed. Submodules are treated as separate repos.</p>
+
+<h2>Compatibility</h2>
+
+<h3>Does this work with GitHub Copilot?</h3>
+
+Yes. Place the <code>.github/skills/planner/SKILL.md</code> file in your repo. GitHub Copilot reads it automatically. Say "set up my project" in Copilot Chat to trigger the wizard.
+
+<h3>Does this work with Claude Code?</h3>
+
+Yes. Paste the Instructions section from <code>SKILL.md</code> as a prompt in Claude Code, or just say "set up my project" if Claude can read your repo files.
+
+<h3>Does this work with Cursor?</h3>
+
+Yes. Cursor supports GitHub Copilot skills. Follow the same steps as GitHub Copilot.
+
+<h3>Does this work with ChatGPT or other LLMs?</h3>
+
+Yes, with some manual steps. Copy the wizard instructions (Steps 1-4 from <code>SKILL.md</code>) into a chat session. You'll need to manually create files based on the LLM's output, since most LLMs can't write files directly.
+
+<hr>
+
+<h2>Troubleshooting</h2>
+
+<h3>"The wizard didn't start when I said 'set up my project'"</h3>
+
+Check that the SKILL.md file is in the right location:
+``<code>
+your-project/.github/skills/planner/SKILL.md
+</code>`<code>
+
+The path must be exact. Also check that your AI assistant can read repo files — some setups require you to open the project folder first or enable file access.
+
+<h3>"FORGE.md has placeholder values like </code>{{project-name}}<code>"</h3>
+
+You're looking at the template, not a generated file. The template lives in </code>templates/FORGE.md<code>. After running the wizard, the real </code>FORGE.md<code> at your repo root has your actual values filled in.
+
+<h3>"The generated files don't match my stack"</h3>
+
+Be specific in Question 2 (tech stack). Instead of "JavaScript," say "TypeScript, Express, Prisma." The more specific you are, the more targeted the output.
+
+CopilotForge also reads your config files (</code>package.json<code>, </code>requirements.txt`, etc.) to auto-detect frameworks. Make sure these files are up to date.
+
+<h3>"I want to remove something that was generated"</h3>
+
+Just delete the file. CopilotForge won't re-create deleted files unless you run the wizard again — and even then, it asks before regenerating. Your choices are always respected.
+
+<hr>
+
+<h2>Cost & Licensing</h2>
+
+<h3>Is this free?</h3>
+
+CopilotForge itself is free. It's just markdown files. You need access to an AI coding assistant (GitHub Copilot, Claude Code, etc.) to run the wizard, but CopilotForge doesn't add any cost on top of that.
+
+<h3>What's the license?</h3>
+
+MIT — use it however you want. Modify it, redistribute it, use it in commercial projects. No restrictions.
+
+<hr>
+
+<strong>Still have questions?</strong> Open an issue on the CopilotForge repository or check the full docs:
+
+<ul><li><a href="GETTING-STARTED.md">Getting Started Guide</a></li></ul>
+<ul><li><a href="HOW-IT-WORKS.md">How It Works</a></li></ul>
+<ul><li><a href="../README.md">Main README</a></li></ul>
+
+</main>
+  </div>
+</body>
+</html>

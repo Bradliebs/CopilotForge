@@ -442,3 +442,127 @@ describe('CopilotForge E2E Validation', () => {
     });
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 20 E2E: New commands validation
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Phase 20 E2E — New Commands', () => {
+  function createTempDir() {
+    return fs.mkdtempSync(path.join(os.tmpdir(), 'e2e-p20-'));
+  }
+
+  function runCLI(command, cwd) {
+    try {
+      return { success: true, output: execSync(`node "${CLI_PATH}" ${command}`, { cwd, encoding: 'utf8', timeout: 15000, stdio: 'pipe' }) };
+    } catch (err) {
+      return { success: false, output: err.stdout?.toString() || '', error: err.stderr?.toString() || '' };
+    }
+  }
+
+  it('detect command returns a build path', () => {
+    const dir = createTempDir();
+    const result = runCLI('detect', dir);
+    assert.ok(result.output.includes('Build path'), 'detect should show Build path');
+    assert.ok(result.output.includes('Confidence'), 'detect should show Confidence');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('discover command scans patterns', () => {
+    const dir = createTempDir();
+    const result = runCLI('discover', dir);
+    assert.ok(result.success || result.output, 'discover should run');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('review command scans files', () => {
+    const dir = createTempDir();
+    fs.writeFileSync(path.join(dir, 'test.js'), 'const x = 1;\n');
+    const result = runCLI('review', dir);
+    assert.ok(result.output.includes('Code Review') || result.output.includes('Scanned'), 'review should run');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('generate --list shows recipe types', () => {
+    const dir = createTempDir();
+    const result = runCLI('generate --list', dir);
+    assert.ok(result.output.includes('api-route') || result.output.includes('Recipe'), 'generate should list types');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('ci --dry-run previews workflow', () => {
+    const dir = createTempDir();
+    const result = runCLI('ci --dry-run', dir);
+    assert.ok(result.output.includes('CI') || result.output.includes('Generating'), 'ci should preview');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('config shows defaults', () => {
+    const dir = createTempDir();
+    const result = runCLI('config', dir);
+    assert.ok(result.output.includes('verbosity') || result.output.includes('Config'), 'config should show settings');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('migrate checks for migrations', () => {
+    const dir = createTempDir();
+    const result = runCLI('migrate', dir);
+    assert.ok(result.output.includes('Migration') || result.output.includes('No CopilotForge'), 'migrate should report status');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('compose --list shows pipelines', () => {
+    const dir = createTempDir();
+    const result = runCLI('compose --list', dir);
+    assert.ok(result.output.includes('health-check') || result.output.includes('Pipeline'), 'compose should list pipelines');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('graph shows memory stats', () => {
+    const dir = createTempDir();
+    const result = runCLI('graph', dir);
+    assert.ok(result.output.includes('Memory Graph') || result.output.includes('Nodes'), 'graph should show stats');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('workspace status shows progress', () => {
+    const dir = createTempDir();
+    const result = runCLI('workspace status', dir);
+    assert.ok(result.output.includes('Workspace') || result.output.includes('No IMPLEMENTATION'), 'workspace should show status');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('federation status shows state', () => {
+    const dir = createTempDir();
+    const result = runCLI('federation status', dir);
+    assert.ok(result.output.includes('Federation') || result.output.includes('Published'), 'federation should show status');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('--version shows 3.0.0', () => {
+    const result = runCLI('--version', os.tmpdir());
+    assert.ok(result.output.includes('3.0.0'), 'version should be 3.0.0');
+  });
+
+  it('full pipeline: init → detect → review → workspace', () => {
+    const dir = createTempDir();
+
+    // Init
+    const initResult = runCLI('init --yes', dir);
+    assert.ok(initResult.success || initResult.output.includes('Created'), 'init should succeed');
+
+    // Detect
+    const detectResult = runCLI('detect', dir);
+    assert.ok(detectResult.output.includes('Build path'), 'detect should work after init');
+
+    // Review
+    const reviewResult = runCLI('review', dir);
+    assert.ok(reviewResult.output.includes('Code Review') || reviewResult.output.includes('Scanned'), 'review should work');
+
+    // Workspace
+    const wsResult = runCLI('workspace status', dir);
+    assert.ok(wsResult.output, 'workspace should run');
+
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});

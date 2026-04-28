@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WHAT TO USE — CopilotForge</title>
+  <style>
+    :root { --bg: #0d1117; --fg: #c9d1d9; --accent: #58a6ff; --border: #30363d; --code-bg: #161b22; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+    .container { display: flex; max-width: 1200px; margin: 0 auto; }
+    nav { width: 250px; padding: 2rem 1rem; border-right: 1px solid var(--border); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav a { display: block; color: var(--fg); text-decoration: none; padding: 0.3rem 0.5rem; border-radius: 4px; font-size: 0.9rem; }
+    nav a:hover, nav a.active { background: var(--border); color: var(--accent); }
+    nav h3 { color: var(--accent); margin: 1rem 0 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    main { flex: 1; padding: 2rem 3rem; max-width: 800px; }
+    h1 { color: var(--accent); margin-bottom: 1rem; font-size: 2rem; }
+    h2 { color: var(--accent); margin: 2rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { color: var(--fg); margin: 1.5rem 0 0.5rem; }
+    a { color: var(--accent); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 6px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; border: 1px solid var(--border); text-align: left; }
+    th { background: var(--code-bg); }
+    blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: #8b949e; }
+    ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin: 0.25rem 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    .header { padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+    .header h1 { font-size: 1.2rem; margin: 0; }
+    .header .version { color: #8b949e; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔥 CopilotForge</h1>
+    <span class="version">v3.0.0</span>
+  </div>
+  <div class="container">
+    <nav><h3>Documentation</h3>
+<a href="index.html">Home</a>
+<a href="copilot-extension-setup.html">COPILOT EXTENSION SETUP</a>
+<a href="decisions-and-architecture.html">DECISIONS AND ARCHITECTURE</a>
+<a href="examples-registry-spec.html">EXAMPLES REGISTRY SPEC</a>
+<a href="faq.html">FAQ</a>
+<a href="getting-started.html">GETTING STARTED</a>
+<a href="how-it-works.html">HOW IT WORKS</a>
+<a href="mcp-setup.html">MCP SETUP</a>
+<a href="plugin-api.html">PLUGIN API</a>
+<a href="system-breakdown.html">SYSTEM BREAKDOWN</a>
+<a href="watch.html">WATCH</a>
+<a href="what-to-use.html" class="active">WHAT TO USE</a>
+<a href="phase4-architecture.html">Phase4 Architecture</a>
+</nav>
+    <main><h1>🧭 What Should I Use?</h1>
+
+<blockquote>You don't need everything. Most people use 1–2 features.</blockquote>
+<blockquote>This guide helps you find exactly what you need in under 2 minutes.</blockquote>
+
+CopilotForge has 4 layers (skills, agents, memory, cookbook) and 24+ recipes.
+That sounds like a lot. It isn't — because <strong>you won't use most of it.</strong> Let's figure out what <em>you</em> actually need.
+
+<strong>Jump to:</strong>
+<a href="#i-am-a">I am a...</a> · <a href="#decision-flowchart">Flowchart</a> · <a href="#whats-the-difference">What's the difference?</a> · <a href="#you-dont-need">What to skip</a> · <a href="#still-not-sure">Still lost?</a> · <a href="#quick-links">Quick links</a>
+
+<hr>
+
+<h2>"I am a..."</h2>
+
+Find yourself in this table. Follow your path. Ignore everything else.
+
+| I am... | Start here | Skip everything else |
+|---------|-----------|---------------------|
+| <strong>A total beginner</strong> who's never used AI coding tools | <a href="../README.md#quick-start">README Quick Start</a> → then try the <code>hello-world</code> recipe | Agents, memory, advanced recipes |
+| <strong>A developer with a project</strong> who wants AI help | <strong><code>npx copilotforge init</code></strong> → answer a few questions → done | The wizard picks everything for you |
+| <strong>A developer who just wants code recipes</strong> | <a href="../cookbook/CHEATSHEET.md">cookbook/CHEATSHEET.md</a> | Skills, agents, and memory entirely |
+| <strong>Someone interested in AI research / experiments</strong> | <code>auto-research</code> + <code>knowledge-wiki</code> recipes | You don't need the wizard or agents |
+| <strong>Someone facing a complex architecture decision</strong> | <code>npx copilotforge init --oracle-prime</code> or select Oracle Prime in Q6 | You just need the reasoning framework — no full scaffold required |
+| <strong>A team lead</strong> setting up AI for a team | Full <a href="GETTING-STARTED.md">GETTING-STARTED.md</a> walkthrough | You'll use everything — no shortcuts |
+
+<hr>
+
+<h2>Decision Flowchart</h2>
+
+What do you want to do?
+
+``<code>
+What do you want to do?
+│
+├─ "Just show me code I can copy"
+│   └─ → cookbook/CHEATSHEET.md (pick a recipe, run it)
+│
+├─ "Set up AI help for my project"
+│   └─ → npx copilotforge init (the wizard handles everything)
+│
+├─ "Run experiments / optimize code automatically"
+│   └─ → cookbook/auto-research.ts
+│
+├─ "Build a personal knowledge base"
+│   └─ → cookbook/knowledge-wiki.ts
+│
+├─ "I want a quick overview of my project"
+│   └─ → Run </code>npx copilotforge status<code> for a terminal dashboard.
+│       It shows your plan progress, active skills and agents,
+│       memory stats, and git summary — all in one view. No setup needed.
+│
+├─ "I want AI to build my project from a plan"
+│   └─ → Enable <strong>Task automation</strong> in Q6. Edit </code>IMPLEMENTATION_PLAN.md<code> to describe what you want built, then run The Ralph Loop (</code>task-loop<code> recipe). The AI works through tasks autonomously.
+│
+├─ "I want to build enterprise agents"
+│   └─ → Copilot Studio Guide (</code>cookbook/copilot-studio-guide.md<code>)
+│
+├─ "I want to create Power Apps with code"
+│   └─ → Code Apps Guide (</code>cookbook/code-apps-guide.md<code>)
+│
+├─ "I want specialized Copilot agent profiles"
+│   └─ → Custom Agents Guide (</code>cookbook/copilot-agents-guide.md<code>)
+│
+├─ "I need help with a complex decision or risk assessment"
+│   └─ → Oracle Prime (</code>npx copilotforge init --oracle-prime<code>)
+│       Say "deep analysis" or "oracle prime" in Copilot Chat
+│       for structured scenario modeling and counterfactual reasoning.
+│
+├─ "I have a plan and want to execute it"
+│   └─ → Say "run the plan" to start The Ralph Loop — it reads
+│       </code>IMPLEMENTATION_PLAN.md<code> and works through tasks autonomously.
+│       See also: </code>cookbook/task-loop.ts<code> (code version).
+│
+├─ "I want to understand how it all fits together"
+│   └─ → docs/HOW-IT-WORKS.md
+│
+└─ "I don't know what I want"
+    └─ → Start with hello-world.ts — the simplest possible recipe
+</code>`<code>
+
+<hr>
+
+<h2>What's the Difference?</h2>
+
+<h3>Skills vs Agents vs Recipes</h3>
+
+Think of it like a kitchen:
+
+<ul><li>A <strong>skill</strong> is like a recipe card — written instructions for ONE task (e.g., "how to review code"). It's a markdown file that tells your AI what to do.</li></ul>
+<ul><li>An <strong>agent</strong> is like a team member — a chef who knows which recipe cards to grab and when. It has a role, a personality, and a set of skills.</li></ul>
+<ul><li>A <strong>recipe</strong> (cookbook) is a finished dish with the full code — copy-paste and run right now. No setup required.</li></ul>
+
+<blockquote>💡 <strong>Key insight:</strong> You can use recipes without skills or agents. They're completely independent.</blockquote>
+
+<h3>auto-research vs The Ralph Loop</h3>
+
+<strong>auto-research</strong> — Your AI tries changes to your code, runs tests, keeps improvements, discards failures.
+Like a tireless intern running experiments overnight.
+
+<ul><li>Best for: optimization, performance tuning, "make this faster."</li></ul>
+<ul><li>Example: "Try 20 different caching strategies and keep the fastest one."</li></ul>
+
+<strong>The Ralph Loop</strong> (powered by </code>task-loop.{ext}<code>) — Your AI picks a task from a plan, implements it, validates it, commits, moves to the next.
+Like a tireless worker who never stops until the plan is complete.
+
+<ul><li>Best for: knocking out a backlog of tasks or building a project from a plan.</li></ul>
+<ul><li>Example: "Here are 15 small bug fixes. Do them all, one by one."</li></ul>
+
+<h3>knowledge-wiki vs forge-memory</h3>
+
+<strong>knowledge-wiki</strong> — A personal Wikipedia. You drop in articles, notes, and docs. The AI organizes them into a searchable wiki with cross-references.
+
+<ul><li>For: research, learning, business intelligence.</li></ul>
+<ul><li>You set it up yourself. You feed it content.</li></ul>
+
+<strong>forge-memory</strong> — CopilotForge's built-in memory. It remembers your project decisions and coding conventions so the wizard gets smarter over time.
+
+<ul><li>For: project setup. Created automatically by the wizard.</li></ul>
+<ul><li>You don't manage it — it manages itself.</li></ul>
+
+<blockquote>💡 <strong>These are different things.</strong> You don't pick one over the other. knowledge-wiki is a tool you use; forge-memory is a system that runs in the background.</blockquote>
+
+<h3>FORGE.md vs README.md vs SKILL.md</h3>
+
+| File | What it is | Who reads it |
+|------|-----------|-------------|
+| <strong>FORGE.md</strong> | Your project's control panel (generated by the wizard) | You — to see what's set up |
+| <strong>README.md</strong> | The repo's welcome page | Everyone — the front door |
+| <strong>SKILL.md</strong> | Instructions for an AI assistant (lives in </code>.github/skills/<code>) | Your AI — tells it <em>how</em> to do a job |
+
+<hr>
+
+<h2>You DON'T Need...</h2>
+
+This is your permission slip to skip things. Seriously.
+
+<ul><li>❌ <strong>You don't need agents</strong> if you just want code recipes → go straight to </code>cookbook/<code></li></ul>
+<ul><li>❌ <strong>You don't need memory</strong> if this is a one-time project → say "no" to Question 3 in the wizard</li></ul>
+<ul><li>❌ <strong>You don't need the cookbook</strong> if you just want AI-assisted development → the wizard + skills are enough</li></ul>
+<ul><li>❌ <strong>You don't need to understand skills</strong> to use CopilotForge → the wizard creates them for you</li></ul>
+<ul><li>❌ <strong>You don't need ALL 24 recipes</strong> → the wizard picks the right ones for your stack</li></ul>
+<ul><li>❌ <strong>You don't need Oracle Prime</strong> for simple coding tasks → it auto-scales, but is most valuable for complex architecture decisions and risk analysis</li></ul>
+<ul><li>❌ <strong>You don't need npm or Node.js</strong> to use CopilotForge → manual copy works fine (only recipes need a runtime)</li></ul>
+<ul><li>❌ <strong>You don't need to read every doc</strong> → this page points you to the one you need</li></ul>
+
+<hr>
+
+<h2>Still Not Sure?</h2>
+
+Three safe starting points — pick any one:
+
+1. <strong>Just run the wizard.</strong> Type </code>npx copilotforge init<code> and answer the questions. It figures everything out.
+2. <strong>Try the simplest recipe.</strong> Open </code>cookbook/hello-world.ts`. Copy it. Run it. See what happens.
+3. <strong>Ask your AI assistant.</strong> Paste this into your AI chat: <em>"Read FORGE.md and help me get started with CopilotForge."</em>
+
+Any of these gets you unstuck in under 5 minutes.
+
+<hr>
+
+<h2>Quick Links</h2>
+
+Every doc in the project, with a one-line description.
+
+| Doc | What it's for |
+|-----|--------------|
+| <a href="../README.md">README.md</a> | The front door — what CopilotForge is and Quick Start |
+| <a href="GETTING-STARTED.md">GETTING-STARTED.md</a> | Full walkthrough from zero to a scaffolded project |
+| <a href="HOW-IT-WORKS.md">HOW-IT-WORKS.md</a> | Under-the-hood explanation of skills, agents, memory, and the planner |
+| <a href="FAQ.md">FAQ.md</a> | Quick answers to common questions |
+| <a href="../cookbook/CHEATSHEET.md">cookbook/CHEATSHEET.md</a> | Pick a goal → find a recipe → copy it |
+| <a href="../cookbook/README.md">cookbook/README.md</a> | How to install and run cookbook recipes |
+| <strong>You are here →</strong> WHAT-TO-USE.md | This guide — helps you find the right starting point |
+
+<hr>
+
+<em>You don't need to read all the docs. You just needed this one.</em> ✨
+</main>
+  </div>
+</body>
+</html>

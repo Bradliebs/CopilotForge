@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SYSTEM BREAKDOWN — CopilotForge</title>
+  <style>
+    :root { --bg: #0d1117; --fg: #c9d1d9; --accent: #58a6ff; --border: #30363d; --code-bg: #161b22; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+    .container { display: flex; max-width: 1200px; margin: 0 auto; }
+    nav { width: 250px; padding: 2rem 1rem; border-right: 1px solid var(--border); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav a { display: block; color: var(--fg); text-decoration: none; padding: 0.3rem 0.5rem; border-radius: 4px; font-size: 0.9rem; }
+    nav a:hover, nav a.active { background: var(--border); color: var(--accent); }
+    nav h3 { color: var(--accent); margin: 1rem 0 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    main { flex: 1; padding: 2rem 3rem; max-width: 800px; }
+    h1 { color: var(--accent); margin-bottom: 1rem; font-size: 2rem; }
+    h2 { color: var(--accent); margin: 2rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { color: var(--fg); margin: 1.5rem 0 0.5rem; }
+    a { color: var(--accent); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 6px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; border: 1px solid var(--border); text-align: left; }
+    th { background: var(--code-bg); }
+    blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: #8b949e; }
+    ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin: 0.25rem 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    .header { padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+    .header h1 { font-size: 1.2rem; margin: 0; }
+    .header .version { color: #8b949e; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔥 CopilotForge</h1>
+    <span class="version">v3.0.0</span>
+  </div>
+  <div class="container">
+    <nav><h3>Documentation</h3>
+<a href="index.html">Home</a>
+<a href="copilot-extension-setup.html">COPILOT EXTENSION SETUP</a>
+<a href="decisions-and-architecture.html">DECISIONS AND ARCHITECTURE</a>
+<a href="examples-registry-spec.html">EXAMPLES REGISTRY SPEC</a>
+<a href="faq.html">FAQ</a>
+<a href="getting-started.html">GETTING STARTED</a>
+<a href="how-it-works.html">HOW IT WORKS</a>
+<a href="mcp-setup.html">MCP SETUP</a>
+<a href="plugin-api.html">PLUGIN API</a>
+<a href="system-breakdown.html" class="active">SYSTEM BREAKDOWN</a>
+<a href="watch.html">WATCH</a>
+<a href="what-to-use.html">WHAT TO USE</a>
+<a href="phase4-architecture.html">Phase4 Architecture</a>
+</nav>
+    <main><h1>🔥 CopilotForge — Full System Breakdown</h1>
+
+<blockquote>A complete map of every layer, file, command, and design decision in this repo.</blockquote>
+
+<hr>
+
+<h2>Table of Contents</h2>
+
+<ul><li><a href="#project-overview">Project Overview</a></li></ul>
+<ul><li><a href="#architecture-at-a-glance">Architecture at a Glance</a></li></ul>
+<ul><li><a href="#layer-1--cli">Layer 1 — CLI</a></li></ul>
+<ul><li><a href="#layer-2--skills">Layer 2 — Skills</a></li></ul>
+<ul><li><a href="#build-path-routing-phase-13">Build Path Routing (Phase 13)</a></li></ul>
+<ul><li><a href="#layer-3--agents">Layer 3 — Agents</a></li></ul>
+<ul><li><a href="#layer-4--memory">Layer 4 — Memory</a></li></ul>
+<ul><li><a href="#layer-5--cookbook">Layer 5 — Cookbook</a></li></ul>
+<ul><li><a href="#layer-6--forgemd">Layer 6 — FORGE.md</a></li></ul>
+<ul><li><a href="#layer-7--squad-internal-dev-team">Layer 7 — Squad (Internal Dev Team)</a></li></ul>
+<ul><li><a href="#data-flow">Data Flow</a></li></ul>
+<ul><li><a href="#key-design-principles">Key Design Principles</a></li></ul>
+<ul><li><a href="#development-phase-history">Development Phase History</a></li></ul>
+<ul><li><a href="#test-coverage">Test Coverage</a></li></ul>
+<ul><li><a href="#examples">Examples</a></li></ul>
+<ul><li><a href="#open-issues--known-gaps">Open Issues & Known Gaps</a></li></ul>
+
+<hr>
+
+<h2>Project Overview</h2>
+
+| Field | Value |
+|-------|-------|
+| <strong>Name</strong> | CopilotForge (repo: Oracle_Prime) |
+| <strong>Owner</strong> | Brad Liebs |
+| <strong>npm package</strong> | <code>copilotforge</code> |
+| <strong>CLI version</strong> | 1.9.0 |
+| <strong>Node requirement</strong> | >=18.0.0 |
+| <strong>Dependencies</strong> | Zero (pure Node.js + markdown) |
+
+CopilotForge scaffolds AI-powered tooling — skills, agents, memory, cookbook recipes — into any repo from a plain-English project description. One command, no installs, no frameworks required in the target project.
+
+<hr>
+
+<h2>Architecture at a Glance</h2>
+
+``<code>
+User / AI Chat
+      │
+      ▼
+┌──────────────────────────────────────┐
+│  Layer 1: CLI  (npx copilotforge)    │  ← Entry point for humans
+│  cli/bin/copilotforge.js             │
+└──────────────────────────────────────┘
+      │
+      ▼
+┌──────────────────────────────────────┐
+│  Layer 2: Skills                     │  ← Planner + Plan-Executor
+│  .github/skills/{name}/SKILL.md      │
+└──────────────────────────────────────┘
+      │  triggers
+      ▼
+┌──────────────────────────────────────┐
+│  Layer 3: Agents                     │  ← Planner + 4 internal specialists
+│  .copilot/agents/{name}.md           │
+└──────────────────────────────────────┘
+      │  generates
+      ▼
+┌───────────┬──────────────┬───────────┐
+│  Layer 4  │   Layer 5    │  Layer 6  │
+│  Memory   │  Cookbook    │  FORGE.md │
+│forge-mem/ │  cookbook/   │  (root)   │
+└───────────┴──────────────┴───────────┘
+      │
+      ▼
+┌──────────────────────────────────────┐
+│  Layer 7: Squad Team  (.squad/)      │  ← Internal AI team that builds CopilotForge
+└──────────────────────────────────────┘
+</code>`<code>
+
+<hr>
+
+<h2>Layer 1 — CLI</h2>
+
+<strong>Location:</strong> </code>cli/<code>  
+<strong>Entry point:</strong> </code>cli/bin/copilotforge.js<code>  
+<strong>Published as:</strong> </code>copilotforge<code> on npm
+
+The CLI is the human-facing entry point. It installs, upgrades, diagnoses, and manages the framework files. It does NOT run the wizard — that's the Planner skill's job.
+
+<h3>Commands</h3>
+
+| Command | Source file | What it does |
+|---------|-------------|-------------|
+| </code>copilotforge<code> (no args) | </code>src/interactive.js<code> | Interactive terminal UI — dashboard + numbered menu loop |
+| </code>copilotforge init<code> | </code>src/init.js<code> | Copies core skill files + writes template files into the target project |
+| </code>copilotforge init --minimal<code> | </code>src/init.js<code> | Core skill files only (2 files) |
+| </code>copilotforge init --yes<code> | </code>src/init.js<code> | Non-interactive — auto-overwrite + auto-commit |
+| </code>copilotforge upgrade<code> | </code>src/upgrade.js<code> | Updates framework-owned files; preserves all user state |
+| </code>copilotforge upgrade --dry-run<code> | </code>src/upgrade.js<code> | Preview what would change without touching files |
+| </code>copilotforge upgrade --force<code> | </code>src/upgrade.js<code> | Upgrade without confirmation prompts |
+| </code>copilotforge status<code> | </code>src/status.js<code> | Dashboard: plan tasks, memory, skills, agents, cookbook, git |
+| </code>copilotforge doctor<code> | </code>src/doctor.js<code> | Health check: Node version, files, git config, permissions, version stamp |
+| </code>copilotforge uninstall<code> | </code>src/uninstall.js<code> | Removes only CLI-installed skill files; never touches user-generated content |
+
+<h3>Source Modules</h3>
+
+| File | Purpose |
+|------|---------|
+| </code>bin/copilotforge.js<code> | Entry point — routes args to modules, handles </code>--help<code> / </code>--version<code> |
+| </code>src/init.js<code> | Copies </code>CORE_FILES<code> from </code>cli/files/<code>, writes </code>FULL_FILES<code> from templates; offers git commit |
+| </code>src/upgrade.js<code> | Diffs </code>FRAMEWORK_FILES<code> + </code>COOKBOOK_TEMPLATES<code> against disk; only updates changed; never touches user state |
+| </code>src/doctor.js<code> | 10+ checks: Node version, file existence, git config, write perms, FORGE.md version stamp; Phase 13: reads </code><!-- copilotforge: path=[A-J] --><code> stamp, Node≥16/pac CLI/paconn probes per path |
+| </code>src/status.js<code> | Reads IMPLEMENTATION_PLAN.md, forge-memory, FORGE.md, cookbook — exports 7 data-returning functions |
+| </code>src/interactive.js<code> | readline-based home screen — context-aware numbered menu that loops until Exit |
+| </code>src/utils.js<code> | Shared primitives: banner, colors, ask(), copyFile(), writeFile(), exists(), hasGit(), gitCommit(), menu() |
+| </code>src/templates.js<code> | 5-line shim — re-exports from </code>cli/src/templates/<code> (Phase 13 modular split) |
+| </code>src/uninstall.js<code> | Removes only CLI-installed planner skill files; removes empty parent dirs |
+| </code>src/wizard.js<code> | Q1–Q6 conversational terminal wizard with PP signal detection (Phase 14) |
+| </code>src/rollback.js<code> | Snapshot capture/restore/prune for safe undo of init/upgrade (Phase 14) |
+| </code>src/mcp-server.js<code> | MCP JSON-RPC server over stdio for AI client integration (Phase 14) |
+| </code>src/examples.js<code> | Examples gallery — fetch, cache, preview, clone starter projects (Phase 14) |
+| </code>src/plugin-loader.js<code> | Plugin discovery, validation (K–Z paths), path detection integration (Phase 14) |
+| </code>src/oracle.js<code> | Oracle Prime CLI usage guide and trigger phrase reference |
+| </code>src/hooks.js<code> | Hook lifecycle system — 16 events, callback + command hooks, priority ordering (Phase 15) |
+| </code>src/experiential-memory.js<code> | Experiential memory playbook — strategies, patterns, scoring, consolidation (Phase 15) |
+| </code>src/evaluator.js<code> | Generator-evaluator separation — Sprint Contract pattern for task verification (Phase 15) |
+| </code>src/compaction.js<code> | Five-layer graduated context compaction pipeline (Phase 15) |
+| </code>src/trust.js<code> | Trust trajectory tracking — 7 signals, 4 levels, behavior recommendations (Phase 15) |
+| </code>src/plan-generator.js<code> | AI plan generation from project description + stack detection (Phase 16) |
+| </code>src/plan-cli.js<code> | CLI wrapper for plan generation with --stack and --dry-run flags (Phase 16) |
+| </code>src/compact-cli.js<code> | CLI wrapper for five-layer compaction pipeline (Phase 16) |
+| </code>src/playbook-cli.js<code> | CLI wrapper for playbook search, top entries, consolidation (Phase 16) |
+| </code>src/trust-cli.js<code> | CLI wrapper for trust trajectory display and reset (Phase 16) |
+| </code>src/extension-server.js<code> | GitHub Copilot Extension HTTP/SSE agent server with LLM passthrough (Phase 17) |
+| </code>src/team.js<code> | Team workspaces — shared forge-memory via git hooks, playbook merge (Phase 17) |
+| </code>src/marketplace.js<code> | Agent marketplace — browse, search, install community skills/agents (Phase 17) |
+| </code>src/multi-repo.js<code> | Multi-repo support — shared playbook and trust across linked repos (Phase 17) |
+| </code>src/telemetry.js<code> | Telemetry dashboard — local opt-in usage analytics and reporting (Phase 17) |
+| </code>src/smart-detect.js<code> | Smart template selection — auto-detect build path from project files (Phase 18) |
+| </code>src/discover.js<code> | Playbook auto-discovery — scan codebase for patterns and entries (Phase 18) |
+| </code>src/review.js<code> | AI-assisted code review — 5 rules, secret detection, anti-pattern matching (Phase 18) |
+| </code>src/generate.js<code> | Recipe generator — 4 recipe types with framework-aware generation (Phase 18) |
+| </code>src/ci-generator.js<code> | GitHub Actions CI generator — Node/Python/generic workflows (Phase 18) |
+| </code>src/config.js<code> | Config file support — .copilotforgerc, project/global defaults (Phase 19) |
+| </code>src/plugin-scaffold.js<code> | Plugin scaffold generator — create/list/validate plugins (Phase 19) |
+| </code>src/migrate.js<code> | Version migration — detect and migrate older installations (Phase 19) |
+| </code>src/perf.js<code> | Performance profiling — benchmark key CLI operations (Phase 19) |
+| </code>src/ui.js<code> | Terminal UI helpers — progress bar, spinner, box, table (Phase 19) |
+| </code>src/docs-site.js<code> | Documentation site generator — markdown to HTML with dark theme (Phase 19) |
+| </code>src/compose.js<code> | Agent composition pipelines — step execution, branching, builtins (Phase 20) |
+| </code>src/agent-test.js<code> | Agent testing framework — parsing, rules, conflict detection (Phase 20) |
+| </code>src/memory-graph.js<code> | Memory graph — relationship tracking, query, Mermaid export (Phase 20) |
+| </code>src/i18n.js<code> | Internationalization — 5 languages, parameter interpolation (Phase 20) |
+| </code>src/llm-generate.js<code> | LLM code generation — playbook-informed prompts, API + template fallback (Phase 20) |
+| </code>src/workspace.js<code> | Copilot Workspace integration — task export/import, progress tracking (Phase 20) |
+| </code>src/federation.js<code> | Federation — cross-org manifest, discover, import (Phase 20) |
+
+<h3>Templates Modular Split (Phase 13)</h3>
+
+</code>src/templates.js<code> is now a 5-line shim that re-exports from </code>cli/src/templates/<code>:
+
+| Module | Contents |
+|--------|---------|
+| </code>cli/src/templates/forge.js<code> | Generic FORGE.md template (Path J fallback) |
+| </code>cli/src/templates/platform-forge.js<code> | 9 path-specific FORGE.md templates (Paths A–I) |
+| </code>cli/src/templates/agents.js<code> | Agent template strings |
+| </code>cli/src/templates/memory.js<code> | Memory file templates |
+| </code>cli/src/templates/cookbook.js<code> | Cookbook recipe templates |
+| </code>cli/src/templates/init.js<code> | Init file templates |
+| </code>cli/src/templates/platform-guides.js<code> | Platform guide templates |
+| </code>cli/src/templates/index.js<code> | Barrel — re-exports all of the above |
+
+<h3>What </code>init<code> Creates</h3>
+
+<strong>Core files</strong> (always, copied from </code>cli/files/<code>):
+</code>`<code>
+.github/skills/planner/SKILL.md
+.github/skills/planner/reference.md
+.github/skills/plan-executor/SKILL.md
+.github/skills/plan-executor/reference.md
+</code>`<code>
+
+<strong>Full files</strong> (default, skip-if-exists, from </code>src/templates.js<code>):
+</code>`<code>
+FORGE.md
+IMPLEMENTATION_PLAN.md
+.copilot/agents/planner.md
+forge-memory/decisions.md
+forge-memory/patterns.md
+forge-memory/preferences.md
+cookbook/hello-world.ts|.py
+cookbook/task-loop.ts|.py
+cookbook/copilot-studio-guide.md + agent.yaml
+cookbook/code-apps-guide.md + setup.ts
+cookbook/copilot-agents-guide.md + example.agent.md
+docs/GETTING-STARTED.md
+</code>`<code>
+
+<h3>Upgrade Safety Model</h3>
+
+| File category | Upgrade behavior |
+|---------------|-----------------|
+| Core skills (SKILL.md, reference.md) | Always updatable — framework owns these |
+| Planner agent, GETTING-STARTED.md | Always updatable |
+| Cookbook recipes | Ask for confirmation; skip if user declined |
+| </code>forge-memory/<code>, custom agents, FORGE.md | <strong>NEVER touched</strong> — user owns these |
+
+<hr>
+
+<h2>Layer 2 — Skills</h2>
+
+<strong>Location:</strong> </code>.github/skills/<code>
+
+Skills are markdown instruction files that AI assistants read as context. When you say a trigger phrase in Copilot Chat, the matching skill activates and the AI follows its instructions.
+
+<h3>Planner Skill</h3>
+
+<strong>Path:</strong> </code>.github/skills/planner/SKILL.md<code>  
+<strong>Companion:</strong> </code>.github/skills/planner/reference.md<code> (format spec + re-run rules)
+
+<strong>Trigger phrases:</strong> "set up my project", "forge", "copilot forge", "plan my project", "scaffold my repo", "bootstrap this repo"
+
+<strong>The 6 wizard questions:</strong>
+
+| # | Question | What it controls |
+|---|----------|-----------------|
+| 1 | What are you building? | Project description seeded into all files |
+| 2 | What's your tech stack? | Drives recipe selection + skill generation |
+| 3 | Do you want memory? | Creates </code>forge-memory/<code> if yes |
+| 4 | Do you want test automation? | Generates tester skill if yes |
+| 5 | Experience level? | Verbosity of comments in generated files |
+| 6 | Advanced features? | Task automation, auto-experiments, etc. |
+
+<strong>Execution flow:</strong>
+
+</code>`<code>
+1. Check forge-memory/ — returning user OR first-timer?
+2. Run wizard (skip already-answered questions for returning users)
+3. Show summary → wait for user confirmation
+4. Scan repo manifests (package.json, requirements.txt, go.mod, .csproj)
+5. Assemble FORGE-CONTEXT data block
+6. Delegate to specialists:
+     skill-writer   → .github/skills/{name}/SKILL.md
+     agent-writer   → .copilot/agents/{name}.md
+     memory-writer  → forge-memory/*.md  (append-only on re-runs)
+     cookbook-writer→ cookbook/{recipe}.ts|.py
+7. Generate FORGE.md (planner does this itself, not delegated)
+8. Output build-transition prompt (ready-to-use for next AI session)
+</code>`<code>
+
+<strong>Specialist ordering:</strong> </code>skill-writer<code> → </code>agent-writer<code> → (</code>memory-writer<code> ∥ </code>cookbook-writer<code>)
+
+<strong>Data passing between specialists:</strong> FORGE-CONTEXT block (inline in planner instructions)
+
+<h3>FORGE-CONTEXT Schema</h3>
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| </code>PROJECT_NAME<code> | string | — | User's project name |
+| </code>DESCRIPTION<code> | string | — | Plain-English project description |
+| </code>STACK<code> | string | — | Tech stack (from wizard Q2 or manifest scan) |
+| </code>EXPERIENCE<code> | string | intermediate | Verbosity level (beginner / intermediate / advanced) |
+| </code>MEMORY<code> | boolean | false | Whether forge-memory/ was requested |
+| </code>BUILD_PATH<code> | string | J | Build path letter (A–J) — <em>Phase 13</em> |
+| </code>PATH_NAME<code> | string | Developer Project | Human-readable path name — <em>Phase 13</em> |
+| </code>PREREQUISITES_CONFIRMED<code> | boolean | false | User confirmed path prereqs — <em>Phase 13</em> |
+| </code>EXTENSION_REQUIRED<code> | boolean | false | Extension (e.g. PAC CLI) needed for this path — <em>Phase 13</em> |
+| </code>MS_LEARN_ANCHOR<code> | string | null | MS Learn URL for this path — <em>Phase 13</em> |
+
+<strong>No jargon leak rule:</strong> Specialist names (</code>skill-writer<code>, </code>agent-writer<code>, etc.) must NEVER appear in user-facing output.
+
+<h3>Plan-Executor Skill (The Ralph Loop)</h3>
+
+<strong>Path:</strong> </code>.github/skills/plan-executor/SKILL.md<code>  
+<strong>Companion:</strong> </code>.github/skills/plan-executor/reference.md<code>
+
+<strong>Trigger phrases:</strong> "run the plan", "execute the plan", "work through tasks", "continue the plan"
+
+<strong>What it does:</strong>
+
+</code>`<code>
+1. Find IMPLEMENTATION_PLAN.md (error if missing)
+2. Find next pending task [ ]
+3. Implement it — write real, working code
+4. Validate: compile, run tests, check syntax
+5. Mark [x] done  OR  [!] failed
+6. Git commit with task ID + description
+7. Loop back to step 2 until all tasks done
+</code>`<code>
+
+<strong>Failure handling — 4-tier escalation:</strong>
+
+| Tier | Trigger | Action |
+|------|---------|--------|
+| 1 | First failure | Retry once |
+| 2 | Second failure | Skip task, mark [!], move to next |
+| 3 | Multiple failures | Alert user, pause loop |
+| 4 | Unrecoverable | Halt, preserve checkpoint |
+
+<strong>Safety:</strong> No </code>git add .<code> — targeted commits only. Graceful shutdown saves checkpoint (Ctrl+C resumes).
+
+<h3>Path Skills (Phase 13)</h3>
+
+Nine path-specific skills plus two routing/classification skills scaffold Power Platform build workflows:
+
+| Skill | Path | Description |
+|-------|------|-------------|
+| </code>oracle-prime<code> | All | Adaptive precision reasoning — Bayesian scenario analysis, counterfactual stress testing, structured decision support |
+| </code>forge-compass<code> | All | Silent path classifier — reads FORGE-CONTEXT, detects contradictions, gates path transitions |
+| </code>power-platform-guide<code> | All | Master routing oracle — 10-path decision matrix with tiebreakers |
+| </code>studio-agent<code> | A | Copilot Studio Agent (also covers B/H/I path variants) |
+| </code>studio-connector<code> | B | Custom Connector via Copilot Studio + REST API |
+| </code>declarative-agent<code> | C | Declarative Agent for Microsoft 365 |
+| </code>canvas-agent<code> | D | Canvas App Agent using Power Apps + AI Builder |
+| </code>power-automate<code> | E | Power Automate Flow with AI Builder |
+| </code>pcf-component<code> | F | PCF Code Component (TypeScript, Node≥16, pac CLI) |
+| </code>powerbi-report<code> | G | Power BI Report (Desktop + Service, DAX) |
+| </code>sharepoint-agent<code> | H | SharePoint + Teams agent via M365 Copilot |
+| </code>power-pages<code> | I | Power Pages site with Dataverse + AI Plugin |
+
+<hr>
+
+<h2>Build Path Routing (Phase 13)</h2>
+
+CopilotForge v1.6.0 introduced 10 named build paths. The Planner wizard detects the path silently after Q1 and writes </code>BUILD_PATH<code> to FORGE-CONTEXT. </code>forge-compass<code> acts as a gate between path transitions.
+
+| Path | Name | Skill File | Agent Template | Key Tools |
+|------|------|-----------|----------------|-----------|
+| A | Copilot Studio Agent | studio-agent | studio-agent.md | Copilot Studio, PAC CLI |
+| B | Studio Connector | studio-connector | studio-agent.md | Power Automate, paconn |
+| C | Declarative Agent | declarative-agent | declarative-agent.md | Teams Toolkit, VS Code |
+| D | Canvas App Agent | canvas-agent | canvas-agent.md | Power Apps, Power Fx |
+| E | Power Automate | power-automate | automate-agent.md | Power Automate, Dataverse |
+| F | PCF Component | pcf-component | pcf-agent.md | Node≥16, pac CLI, TypeScript |
+| G | Power BI Report | powerbi-report | powerbi-agent.md | Power BI Desktop, DAX |
+| H | SharePoint Agent | sharepoint-agent | studio-agent.md | SharePoint, PAC CLI |
+| I | Power Pages | power-pages | studio-agent.md | Power Pages Studio, paconn |
+| J | Developer Project | (planner default) | (planner default) | git, Node.js |
+
+<strong>Path detection:</strong> After wizard Q1, the Planner silently classifies intent. Ambiguous answers trigger a 3-question Power Platform diagnostic. Path J is the unchanged generic fallback.
+
+<hr>
+
+<h2>Layer 3 — Agents</h2>
+
+<h3>Internal Specialists (in THIS repo — template source)</h3>
+
+These power the Planner's delegation. They are CopilotForge internals, invisible to end users.
+
+<strong>Location:</strong> </code>.copilot/agents/<code>
+
+| Agent | File | Role |
+|-------|------|------|
+| Planner | </code>planner.md<code> | Orchestrator — runs the wizard, delegates to specialists |
+| skill-writer | </code>skill-writer.md<code> | Generates SKILL.md files for the user's project |
+| agent-writer | </code>agent-writer.md<code> | Generates agent definition files |
+| memory-writer | </code>memory-writer.md<code> | Creates/appends forge-memory files |
+| cookbook-writer | </code>cookbook-writer.md<code> | Selects and generates cookbook recipes based on stack |
+
+<h3>Templates for User Agents (</code>templates/agents/<code>)</h3>
+
+These are what get scaffolded INTO the user's repo:
+
+| Template | Resulting agent | Job |
+|----------|----------------|-----|
+| </code>planner.md<code> | Planner | Runs the wizard (orchestrates specialists) |
+| </code>reviewer.md<code> | Reviewer | Reviews code against project conventions |
+| </code>tester.md<code> | Tester | Writes tests using the project's test framework |
+
+<strong>Phase 13 path-specific agent templates:</strong>
+
+| Template | Paths | Role |
+|----------|-------|------|
+| </code>oracle-prime.md<code> | All | Precision reasoning analyst — deep analysis, risk assessment, scenario modeling |
+| </code>studio-agent.md<code> | A, B, H, I | Copilot Studio / SharePoint / Power Pages guide |
+| </code>declarative-agent.md<code> | C | Declarative Agent builder for M365 |
+| </code>canvas-agent.md<code> | D | Canvas App + AI Builder companion |
+| </code>automate-agent.md<code> | E | Power Automate Flow architect |
+| </code>pcf-agent.md<code> | F | PCF Code Component engineer |
+| </code>powerbi-agent.md<code> | G | Power BI Report architect |
+
+<h3>How Agents and Skills Connect</h3>
+
+</code>`<code>
+reviewer agent  ──uses──▶  code-review skill
+tester agent    ──uses──▶  testing skill
+planner agent   ──delegates──▶  skill-writer
+                              agent-writer
+                              memory-writer
+                              cookbook-writer
+</code>`<code>
+
+<hr>
+
+<h2>Layer 4 — Memory</h2>
+
+<strong>Location:</strong> </code>forge-memory/<code>
+
+Four append-only plain-text files. Nothing is sent externally. Add </code>forge-memory/<code> to </code>.gitignore<code> for public repos.
+
+| File | What it stores | Write policy |
+|------|---------------|-------------|
+| </code>decisions.md<code> | Architectural decisions with date + reasoning | Append-only (newest at top) |
+| </code>patterns.md<code> | Coding conventions and project rules | Additive merge |
+| </code>preferences.md<code> | Wizard settings (verbosity, stack, features) | Updated each session |
+| </code>history.md<code> | Session activity log (when wizard ran, what changed) | Append-only |
+
+<h3>How Memory Is Used</h3>
+
+On each wizard run, the Planner reads all 4 files before asking questions:
+<ul><li><strong>First-timer:</strong> All 6 questions asked</li></ul>
+<ul><li><strong>Returning user:</strong> Summary shown ("Welcome back!") → only missing/changed answers asked → 4 action choices instead of a full re-wizard</li></ul>
+
+<h3>Memory Budget</h3>
+
+Soft limit: ~500 total lines across all files. When exceeded, older entries are summarized in-place. Summarization is logged as its own decision entry (so you know it happened).
+
+<h3>Confidence Levels (patterns.md)</h3>
+
+Tracked via invisible HTML comments — machine metadata that doesn't clutter the file:
+
+| Level | Meaning |
+|-------|---------|
+| </code>observed<code> | First time this pattern was noticed |
+| </code>confirmed<code> | Multiple sessions independently saw it |
+| </code>established<code> | Consistently applied, team-agreed |
+
+<hr>
+
+<h2>Layer 5 — Cookbook</h2>
+
+<strong>Location:</strong> </code>cookbook/<code>
+
+Copy-paste code recipes — actual runnable files, not instructions. 50+ files, mostly language-paired (TypeScript + Python).
+
+<h3>Recipe Selection Rules</h3>
+
+1. <strong>ORM-specific beats generic</strong> — If Prisma detected → </code>db-prisma.ts<code> not </code>db-query.ts<code>. Never both.
+2. <strong>MCP recipes are detection-gated</strong> — Only generated if MCP SDK found in dependencies.
+3. <strong>Error handling + API client always included</strong> — Every project gets these basics.
+4. <strong>Stack detected from manifests first</strong> — </code>package.json<code>, </code>requirements.txt<code>, </code>go.mod<code>, </code>.csproj<code> are authoritative; wizard answer is fallback.
+
+<h3>Recipe Catalog</h3>
+
+| Category | TypeScript | Python | Notes |
+|----------|-----------|--------|-------|
+| Starter | </code>hello-world.ts<code> | </code>hello-world.py<code> | Minimal Copilot SDK example |
+| Task automation | </code>task-loop.ts<code> | </code>task-loop.py<code> | Ralph Loop runner (headless) |
+| API client | </code>api-client.ts<code> | </code>api-client.py<code> | HTTP client patterns |
+| Auth middleware | </code>auth-middleware.ts<code> | </code>auth-middleware.py<code> | JWT (Express / FastAPI) |
+| Database | </code>db-query.ts<code> | </code>db-query.py<code> | Generic; replaced if ORM detected |
+| Routes | </code>route-handler.ts<code> | </code>route-handler.py<code> | Express / FastAPI patterns |
+| MCP server | </code>mcp-server.ts<code> | </code>mcp-server.py<code> | Model Context Protocol server |
+| Sessions | </code>session-example.ts<code> | </code>session-example.py<code> | Session management |
+| Persistence | </code>persisting-sessions.ts<code> | </code>persisting-sessions.py<code> | — |
+| Memory reader | </code>memory-reader.ts<code> | </code>memory-reader.py<code> | Reads forge-memory files |
+| Multi-session | </code>multiple-sessions.ts<code> | </code>multiple-sessions.py<code> | — |
+| Command center | </code>command-center.ts<code> | </code>command-center.py<code> | — |
+| Auto-research | </code>auto-research.ts<code> | </code>auto-research.py<code> | — |
+| Copilot hooks | </code>copilot-hooks.ts<code> | </code>copilot-hooks.py<code> | — |
+| PR visualization | </code>pr-visualization.ts<code> | </code>pr-visualization.py<code> | — |
+| Knowledge wiki | — | </code>knowledge-wiki.py<code> | Python only |
+| Managing files | </code>managing-local-files.ts<code> | </code>managing-local-files.py<code> | — |
+| Oracle Prime | </code>oracle-prime.ts<code> | </code>oracle-prime.py<code> | Structured reasoning harness |
+
+<strong>Platform guides (markdown):</strong>
+<ul><li></code>copilot-studio-guide.md<code> + </code>copilot-studio-agent.yaml<code></li></ul>
+<ul><li></code>code-apps-guide.md<code> + </code>code-apps-setup.ts<code></li></ul>
+<ul><li></code>copilot-agents-guide.md<code> + </code>copilot-agents-example.agent.md<code></li></ul>
+
+<strong>Internal-only (contributor reference, NOT scaffolded into user repos):</strong>
+<ul><li></code>delegation-example.ts<code> — shows specialist delegation internals</li></ul>
+<ul><li></code>skill-creation-example.ts<code> — shows skill authoring patterns</li></ul>
+
+<h3>Verbosity Levels</h3>
+
+Every recipe has 3 comment densities, selected based on user's experience level:
+
+| Level | Comment style |
+|-------|--------------|
+| Beginner | Every section explained, with examples and rationale |
+| Intermediate | Non-obvious parts only |
+| Advanced | Minimal — just the code |
+
+<hr>
+
+<h2>Layer 6 — FORGE.md</h2>
+
+<strong>Location:</strong> repo root  
+<strong>Generated by:</strong> Planner (not delegated to a specialist)
+
+The user's control panel. A single markdown file that shows the state of everything CopilotForge created.
+
+<h3>Sections</h3>
+
+| Section | What it shows |
+|---------|--------------|
+| Project Summary | Name, description, stack, creation date |
+| Team Roster | Agents by name, role, and file path |
+| Skills Index | Skill name, trigger phrase, description |
+| Cookbook | Recipe name, language, description |
+
+<h3>Version Stamp</h3>
+
+</code><!-- copilotforge: v1.6.0 --><code> on line 1 — read by </code>doctor<code> to detect outdated installs.
+
+<h3>Re-Run Behavior</h3>
+
+Confirm-and-replace (user gets a prompt before FORGE.md is regenerated). Section-level merge with HTML markers is deferred to a future phase.
+
+<hr>
+
+<h2>Layer 7 — Squad (Internal Dev Team)</h2>
+
+<strong>Location:</strong> </code>.squad/<code>
+
+The AI team that builds and maintains CopilotForge itself. Uses the Squad framework.
+
+<h3>Team Roster (Matrix universe)</h3>
+
+| Name | Role | Emoji |
+|------|------|-------|
+| Morpheus | Lead | 🏗️ |
+| Trinity | Prompt Engineer | ⚛️ |
+| Neo | Developer | 🔧 |
+| Tank | Tester | 🧪 |
+| Scribe | Session Logger | 📋 |
+| Ralph | Work Monitor | 🔄 |
+
+<h3>.squad/ File Structure</h3>
+
+| Path | Purpose |
+|------|---------|
+| </code>team.md<code> | Authoritative team roster |
+| </code>routing.md<code> | Work routing rules (who handles what) |
+| </code>ceremonies.md<code> | Team ceremony definitions and triggers |
+| </code>decisions.md<code> | Canonical architectural decision ledger |
+| </code>decisions/inbox/<code> | Drop-box for agent decision proposals (Scribe merges) |
+| </code>config.json<code> | Model overrides + default model settings |
+| </code>agents/{name}/charter.md<code> | Agent identity, role, and boundaries |
+| </code>agents/{name}/history.md<code> | Agent's personal learnings (append-only) |
+| </code>casting/registry.json<code> | Persistent agent-to-name mapping |
+| </code>casting/history.json<code> | Universe usage history + snapshots |
+| </code>orchestration-log/<code> | Per-agent run logs (written by Scribe, never edited) |
+| </code>log/<code> | Per-session logs |
+| </code>templates/<code> | Format guides for runtime files |
+
+<h3>Squad Tooling (Development Tools)</h3>
+
+| File | What it does |
+|------|-------------|
+| </code>cookbook/ralph-loop.ts<code> | Autonomous build/plan loop runner. </code>npx tsx cookbook/ralph-loop.ts [plan\|build] [max_iterations]<code>. Auto-approves all tool calls. Reads PROMPT_plan.md or PROMPT_build.md per mode. Logs </code>⚙ toolName<code> per iteration. Default 50 iterations. |
+| </code>PROMPT_plan.md<code> | Planning mode prompt: gap analysis vs SYSTEM-BREAKDOWN.md, writes IMPLEMENTATION_PLAN.md. |
+| </code>PROMPT_build.md<code> | Build mode prompt: pick one task, implement, test, commit, exit. One task per iteration. |
+| </code>AGENTS.md<code> | Operational guide loaded every iteration: validation commands, commit rules, sacred files, jargon leak rule. |
+
+<h3>GitHub Workflows (</code>.github/workflows/<code>)</h3>
+
+| Workflow | What it does |
+|---------|-------------|
+| </code>squad-heartbeat.yml<code> | Periodic check for squad work items |
+| </code>squad-issue-assign.yml<code> | Auto-assign issues to squad members via labels |
+| </code>squad-triage.yml<code> | Triage new issues with squad labels |
+| </code>sync-squad-labels.yml<code> | Sync </code>squad:{member}<code> labels from </code>team.md<code> |
+
+<hr>
+
+<h2>Data Flow</h2>
+
+</code>`<code>
+User says "set up my project"
+          │
+          ▼
+   Planner SKILL.md activates
+          │
+          ├── reads forge-memory/ → returning user OR first-timer
+          │
+          ├── asks wizard questions (skips already-answered)
+          │
+          ├── shows summary → waits for confirmation
+          │
+          ├── scans repo manifests (package.json, requirements.txt, etc.)
+          │
+          ├── assembles FORGE-CONTEXT block
+          │
+          ├── scaffolds skills    → .github/skills/{name}/SKILL.md
+          ├── scaffolds agents    → .copilot/agents/{name}.md
+          ├── initializes memory  → forge-memory/*.md  (append-only)
+          ├── generates recipes   → cookbook/{recipe}.ts|.py
+          │
+          ├── generates FORGE.md (planner does this itself)
+          │
+          └── outputs build-transition prompt
+                    │
+                    ▼
+          User copies prompt into AI assistant
+                    │
+                    ▼
+          Plan-Executor runs IMPLEMENTATION_PLAN.md
+          (pick task → implement → validate → commit → repeat)
+</code>`<code>
+
+<hr>
+
+<h2>Key Design Principles</h2>
+
+| Principle | What it means |
+|-----------|--------------|
+| <strong>Zero dependencies</strong> | No npm install in user repos. The wizard is pure markdown — works in any LLM. |
+| <strong>Transparent delegation</strong> | Users see only the Planner. Specialist agents are completely invisible. |
+| <strong>Skip-on-exist</strong> | Generated files never overwrite user edits. Re-runs are safe. |
+| <strong>Append-only memory</strong> | Decisions and history only grow; nothing is ever deleted. |
+| <strong>No jargon leak</strong> | Internal names (skill-writer, agent-writer, etc.) never appear in user-facing output. |
+| <strong>Memory is advisory</strong> | Broken memory degrades to the full wizard — never blocks scaffolding. |
+| <strong>ORM-specific beats generic</strong> | One DB recipe per language — no "which one do I use?" confusion. |
+| <strong>MCP detection-gated</strong> | MCP recipes only appear when the MCP SDK is actually in the project. |
+| <strong>Verbosity as instruction</strong> | Templates include all 3 verbosity variants; the scaffolding process selects based on experience level. |
+| <strong>Adaptive reasoning</strong> | Oracle Prime scales reasoning depth to task complexity — lightweight for simple tasks, full Bayesian pipeline for complex decisions. |
+
+<hr>
+
+<h2>Development Phase History</h2>
+
+| Phase | Status | What was built | Version |
+|-------|--------|---------------|---------|
+| 1 | ✅ Done | Planner skill — 6-question wizard, file generation |
+| 2 | ✅ Done | Specialist delegation — transparent orchestration via FORGE-CONTEXT |
+| 3 | ✅ Done | Full cookbook catalog — 29 recipes, 7 categories, stack detection |
+| 4 | ✅ Done | Memory & iteration — read-back loop, adaptive returning-user wizard |
+| 5 | ✅ Done | Polish & docs |
+| 6 | ✅ Done | Deep polish |
+| 7 | ✅ Done | Beginner navigation |
+| 8 | ✅ Done | Wizard Q6 extras |
+| 9 | ✅ Done | Squad-inspired upgrades — </code>upgrade<code> command, git safety, hardened task loop |
+| 10 | ✅ Done | Interactive Command Center — </code>copilotforge<code> no-args dashboard |
+| 11 | ✅ Done | Autonomy audit |
+| 12 | ✅ Done | Perfect 10 companion |
+| 13 | ✅ Done | Path Awareness — 10 build paths (A–J), forge-compass, power-platform-guide, path-specific skills/agents/cookbook, doctor.js path checks, forge-remember, conflict detection | v1.6.0 |
+| — | ✅ Done | Oracle Prime — adaptive precision reasoning framework (global instructions + deep-analysis skill + agent template) | v1.6.0 |
+| 14 | ✅ Done | Conversational Wizard & Distribution — zero-arg wizard, rollback system, MCP server, examples gallery, plugin API | v1.7.0 |
+| 15 | ✅ Done | Agent Harness Runtime — hook lifecycle (16 events), experiential memory (playbook), generator-evaluator separation, 5-layer compaction pipeline, trust trajectory tracking | v1.7.0 |
+
+<hr>
+
+<h2>Test Coverage</h2>
+
+<h3>CLI Tests (</code>cli/tests/<code>)</h3>
+
+Run with: </code>node --test tests/*.test.js<code>
+
+| File | What it tests |
+|------|--------------|
+| </code>init.test.js<code> | Init command behavior — file creation, skip logic, git commit |
+| </code>upgrade.test.js<code> | Upgrade logic — file diffing, confirmation, dry-run |
+| </code>status.test.js<code> | Dashboard data parsing from plan, memory, cookbook |
+| </code>interactive.test.js<code> | Menu rendering, context-aware item visibility |
+| </code>utils.test.js<code> | File ops, prompts, git helpers |
+
+<strong>Test framework:</strong> Node.js built-in </code>--test<code> runner — zero external dependencies.
+
+<h3>Phase Validators (</code>tests/<code>)</h3>
+
+| Path | Coverage |
+|------|---------|
+| </code>tests/phase2/<code> | 40 scenarios: delegation flow, re-run, specialist self-checks, FORGE-CONTEXT, E2E |
+| </code>tests/phase3/<code> | Cookbook stack detection, recipe selection rules |
+| </code>tests/phase4/<code> | Memory read-back, adaptive wizard, summarization |
+| </code>tests/e2e-validate.js<code> | End-to-end scaffold validation |
+| </code>tests/validate-scaffold.ps1<code> + </code>.sh<code> | Cross-platform scaffold validators |
+| </code>tests/test-scenarios.md<code> | Human-readable test scenario descriptions |
+
+<strong>CI gap:</strong> The wizard is conversational — most scenarios require manual testing. A </code>--dry-run<code> / </code>--non-interactive<code> JSON-input mode would unlock CI for ~30 of 40 scenarios. (Recommended for a future phase.)
+
+<hr>
+
+<h2>Examples</h2>
+
+<strong>Location:</strong> </code>examples/<code>
+
+| Example | What it shows |
+|---------|--------------|
+| </code>examples/minimal/<code> | Bare minimum CopilotForge setup (just the skill files) |
+| </code>examples/nextjs-app/<code> | Next.js project with full scaffold |
+| </code>examples/fastapi-app/<code> | FastAPI project with full scaffold |
+
+<hr>
+
+<h2>Open Issues & Known Gaps</h2>
+
+| Issue | Status | Owner |
+|-------|--------|-------|
+| Jargon leak: specialist names in user-facing templates | ✅ Fixed (Phase 13, Task 1) | Neo |
+| No automated wizard test harness | Carried from Phase 1 | Tank |
+| Specialist agent templates contain cross-references visible to users | Known | Neo |
+| Re-run sub-decisions (3 scenarios still open) | Pending consensus | Tank |
+| Angular component recipes | Deferred Phase 4 | — |
+| Go/C# MCP recipes (SDKs not yet stable) | Deferred Phase 4 | — |
+| Recipe plugin system for custom categories | Deferred Phase 4 | — |
+| Strict mode validator (no </code>{{placeholder}}` in scaffolded output) | Deferred Phase 4 | — |
+| Recipe versioning / update flow for existing users | Deferred Phase 4 | — |
+
+<hr>
+
+<strong>← <a href="../README.md">README</a></strong> | <strong><a href="HOW-IT-WORKS.md">HOW-IT-WORKS.md</a></strong> | <strong><a href="GETTING-STARTED.md">GETTING-STARTED.md</a></strong>
+</main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WATCH — CopilotForge</title>
+  <style>
+    :root { --bg: #0d1117; --fg: #c9d1d9; --accent: #58a6ff; --border: #30363d; --code-bg: #161b22; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+    .container { display: flex; max-width: 1200px; margin: 0 auto; }
+    nav { width: 250px; padding: 2rem 1rem; border-right: 1px solid var(--border); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav a { display: block; color: var(--fg); text-decoration: none; padding: 0.3rem 0.5rem; border-radius: 4px; font-size: 0.9rem; }
+    nav a:hover, nav a.active { background: var(--border); color: var(--accent); }
+    nav h3 { color: var(--accent); margin: 1rem 0 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    main { flex: 1; padding: 2rem 3rem; max-width: 800px; }
+    h1 { color: var(--accent); margin-bottom: 1rem; font-size: 2rem; }
+    h2 { color: var(--accent); margin: 2rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { color: var(--fg); margin: 1.5rem 0 0.5rem; }
+    a { color: var(--accent); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 6px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; border: 1px solid var(--border); text-align: left; }
+    th { background: var(--code-bg); }
+    blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: #8b949e; }
+    ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin: 0.25rem 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    .header { padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+    .header h1 { font-size: 1.2rem; margin: 0; }
+    .header .version { color: #8b949e; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔥 CopilotForge</h1>
+    <span class="version">v3.0.0</span>
+  </div>
+  <div class="container">
+    <nav><h3>Documentation</h3>
+<a href="index.html">Home</a>
+<a href="copilot-extension-setup.html">COPILOT EXTENSION SETUP</a>
+<a href="decisions-and-architecture.html">DECISIONS AND ARCHITECTURE</a>
+<a href="examples-registry-spec.html">EXAMPLES REGISTRY SPEC</a>
+<a href="faq.html">FAQ</a>
+<a href="getting-started.html">GETTING STARTED</a>
+<a href="how-it-works.html">HOW IT WORKS</a>
+<a href="mcp-setup.html">MCP SETUP</a>
+<a href="plugin-api.html">PLUGIN API</a>
+<a href="system-breakdown.html">SYSTEM BREAKDOWN</a>
+<a href="watch.html" class="active">WATCH</a>
+<a href="what-to-use.html">WHAT TO USE</a>
+<a href="phase4-architecture.html">Phase4 Architecture</a>
+</nav>
+    <main><h1><code>copilotforge watch</code> — Autonomous Plan Executor</h1>
+
+<code>copilotforge watch</code> runs as a persistent terminal process that autonomously works through your <code>IMPLEMENTATION_PLAN.md</code> — one task at a time — completely independently of VS Code Copilot Chat. This solves the chat-interruption problem: any message typed in Copilot Chat kills the current run, but <code>watch</code> is immune because it lives in a terminal process, not inside a chat turn.
+
+<h2>Quick Start</h2>
+
+``<code>bash
+npx copilotforge watch
+</code>`<code>
+
+Open a terminal in your project root and run the command above. Leave it running — it will poll your plan every 10 seconds, execute the next pending task, mark it done or failed, and repeat until the board is clear.
+
+<h2>All Flags</h2>
+
+| Flag | Default | Description |
+|---|---|---|
+| </code>--interval <N><code> | </code>10<code> | Poll every N seconds |
+| </code>--log-file <path><code> | _(none)_ | Append log lines to a file in addition to stdout |
+| </code>--health<code> | — | Print current watch status (PID, last poll, tasks done/failed) and exit |
+
+<h3>Examples</h3>
+
+</code>`<code>bash
+<h1>Default — poll every 10 seconds</h1>
+npx copilotforge watch
+
+<h1>Poll every 30 seconds</h1>
+npx copilotforge watch --interval 30
+
+<h1>Log to file</h1>
+npx copilotforge watch --log-file watch.log
+
+<h1>Check if watch is running</h1>
+npx copilotforge watch --health
+</code>`<code>
+
+<h2>How to Stop</h2>
+
+Three ways to stop the watch process:
+
+1. <strong>Ctrl+C</strong> in the terminal where </code>watch<code> is running
+2. <strong>Dashboard Pause button</strong> — the dashboard writes </code>.copilotforge-stop<code> which causes a clean shutdown on the next tick
+3. <strong>Sentinel file</strong> — create </code>.copilotforge-stop<code> in your project root:
+   </code>`<code>bash
+   # Unix/macOS/Linux
+   touch .copilotforge-stop
+   
+   # Windows PowerShell
+   New-Item .copilotforge-stop
+   </code>`<code>
+   The watch process detects this file, deletes it, logs </code>Sentinel file detected<code>, and exits 0.
+
+<h2>Dashboard Integration</h2>
+
+When the CopilotForge dashboard is running (</code>npx copilotforge dashboard<code>), it reads </code>.forge-watch-state.json<code> on every </code>/api/status<code> poll and displays a <strong>Watch</strong> status badge:
+
+<ul><li>🟢 <strong>Watch running (PID {pid}) — N done, N failed</strong> — watch is active</li></ul>
+<ul><li>⚫ <strong>Watch idle — last ran {timestamp}</strong> — watch stopped but has run before</li></ul>
+<ul><li>⚫ <strong>Watch not started</strong> — no state file found</li></ul>
+
+The <strong>Start Build</strong> button in the dashboard launches </code>npx copilotforge watch<code> in a new terminal window (when </code>cookbook/task-loop.ts<code> exists).
+
+The <strong>Pause</strong> button writes </code>.copilotforge-stop<code>, which triggers a clean shutdown on the next watch tick.
+
+<h2>State File</h2>
+
+The watch process writes </code>.forge-watch-state.json<code> to the project root after each cycle:
+
+</code>`<code>json
+{
+  "pid": 12345,
+  "startedAt": "2025-01-09T10:00:00.000Z",
+  "lastPollAt": "2025-01-09T10:01:30.000Z",
+  "currentTask": null,
+  "lastTaskId": "add-auth",
+  "lastTaskStatus": "done",
+  "totalDone": 4,
+  "totalFailed": 0,
+  "consecutiveFailures": 0,
+  "interval": 10
+}
+</code>`<code>
+
+This file is excluded from git via </code>.gitignore<code>.
+
+<h2>Error Escalation</h2>
+
+Watch uses a 4-tier escalation when tasks fail consecutively:
+
+| Consecutive Failures | Action |
+|---|---|
+| 1–2 | Log warning, continue |
+| 3 | Log warning + pause 30 extra seconds before next attempt |
+| 4+ | Write </code>.copilotforge-stop<code> (auto-halt), log CRITICAL |
+
+<h2>Troubleshooting</h2>
+
+<strong>Watch says "Already running" but nothing is happening</strong>
+
+The PID stored in </code>.forge-watch-state.json<code> belongs to a dead process. Delete the state file and restart:
+
+</code>`<code>bash
+Remove-Item .forge-watch-state.json   # PowerShell
+<h1>or</h1>
+rm .forge-watch-state.json            # Unix
+npx copilotforge watch
+</code>`<code>
+
+<strong>Sentinel file issues — watch exits immediately after starting</strong>
+
+If </code>.copilotforge-stop<code> exists from a previous run, watch will exit immediately. Remove it:
+
+</code>`<code>bash
+Remove-Item .copilotforge-stop   # PowerShell
+rm .copilotforge-stop            # Unix
+</code>`<code>
+
+<strong>Retrying failed tasks</strong>
+
+Tasks marked </code>[!]<code> in </code>IMPLEMENTATION_PLAN.md<code> are skipped by watch. To retry, edit the plan and change </code>[!]<code> back to </code>[ ]<code>:
+
+</code>`<code>markdown
+<ul><li>[ ] my-task — Task title   # was [!], now retryable</li></ul>
+</code>`<code>
+
+Watch will pick it up on the next poll cycle.
+
+<strong>Watch runs tasks but they always fail</strong>
+
+Check that </code>npx tsx cookbook/task-loop.ts --single-task <id><code> works manually. The watch process delegates execution entirely to </code>task-loop.ts` — if that script has issues, fix them there.
+</main>
+  </div>
+</body>
+</html>

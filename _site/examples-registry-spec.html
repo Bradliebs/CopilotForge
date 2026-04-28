@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EXAMPLES REGISTRY SPEC — CopilotForge</title>
+  <style>
+    :root { --bg: #0d1117; --fg: #c9d1d9; --accent: #58a6ff; --border: #30363d; --code-bg: #161b22; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+    .container { display: flex; max-width: 1200px; margin: 0 auto; }
+    nav { width: 250px; padding: 2rem 1rem; border-right: 1px solid var(--border); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav a { display: block; color: var(--fg); text-decoration: none; padding: 0.3rem 0.5rem; border-radius: 4px; font-size: 0.9rem; }
+    nav a:hover, nav a.active { background: var(--border); color: var(--accent); }
+    nav h3 { color: var(--accent); margin: 1rem 0 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    main { flex: 1; padding: 2rem 3rem; max-width: 800px; }
+    h1 { color: var(--accent); margin-bottom: 1rem; font-size: 2rem; }
+    h2 { color: var(--accent); margin: 2rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { color: var(--fg); margin: 1.5rem 0 0.5rem; }
+    a { color: var(--accent); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 6px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; border: 1px solid var(--border); text-align: left; }
+    th { background: var(--code-bg); }
+    blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: #8b949e; }
+    ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin: 0.25rem 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    .header { padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+    .header h1 { font-size: 1.2rem; margin: 0; }
+    .header .version { color: #8b949e; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔥 CopilotForge</h1>
+    <span class="version">v3.0.0</span>
+  </div>
+  <div class="container">
+    <nav><h3>Documentation</h3>
+<a href="index.html">Home</a>
+<a href="copilot-extension-setup.html">COPILOT EXTENSION SETUP</a>
+<a href="decisions-and-architecture.html">DECISIONS AND ARCHITECTURE</a>
+<a href="examples-registry-spec.html" class="active">EXAMPLES REGISTRY SPEC</a>
+<a href="faq.html">FAQ</a>
+<a href="getting-started.html">GETTING STARTED</a>
+<a href="how-it-works.html">HOW IT WORKS</a>
+<a href="mcp-setup.html">MCP SETUP</a>
+<a href="plugin-api.html">PLUGIN API</a>
+<a href="system-breakdown.html">SYSTEM BREAKDOWN</a>
+<a href="watch.html">WATCH</a>
+<a href="what-to-use.html">WHAT TO USE</a>
+<a href="phase4-architecture.html">Phase4 Architecture</a>
+</nav>
+    <main><hr>
+title: Examples Registry Specification
+description: Format specification for the copilotforge-examples GitHub repository registry.json
+<hr>
+
+<h1>Examples Registry Specification</h1>
+
+This document defines the <code>registry.json</code> format used by the <code>copilotforge examples</code> command to discover and present starter projects.
+
+<h2>Repository Structure</h2>
+
+The examples live in a separate GitHub repository: <code>Bradliebs/copilotforge-examples</code>
+
+``<code>text
+copilotforge-examples/
+├── registry.json           ← Discovery index (this spec)
+├── hello-agent/
+│   ├── README.md
+│   └── ...project files
+├── canvas-todo/
+│   ├── README.md
+│   └── ...project files
+└── ...more examples
+</code>`<code>
+
+<h2>Registry Schema</h2>
+
+</code>`<code>json
+{
+  "version": 1,
+  "examples": [
+    {
+      "name": "hello-agent",
+      "description": "Minimal Copilot Studio agent — beginner friendly",
+      "path": "A",
+      "tags": ["beginner", "copilot-studio"],
+      "readme": "hello-agent/README.md"
+    }
+  ]
+}
+</code>`<code>
+
+<h3>Top-Level Fields</h3>
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| </code>version<code> | number | Yes | Schema version. Currently </code>1<code>. |
+| </code>examples<code> | array | Yes | Array of example definitions. |
+
+<h3>Example Entry Fields</h3>
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| </code>name<code> | string | Yes | Unique kebab-case identifier. Used as the clone directory name. |
+| </code>description<code> | string | Yes | One-sentence description shown in the listing. |
+| </code>path<code> | string | Yes | Build path letter (A–J for core, K–Z for plugins). |
+| </code>tags<code> | string[] | Yes | Searchable tags. Include difficulty level and key technologies. |
+| </code>readme<code> | string | No | Relative path to the example's README.md for preview. |
+
+<h3>Tag Conventions</h3>
+
+| Tag | Meaning |
+|-----|---------|
+| </code>beginner<code> | Suitable for first-time users |
+| </code>intermediate<code> | Requires some familiarity with the stack |
+| </code>advanced<code> | Complex project structure or advanced patterns |
+| </code>copilot-studio<code> | Uses Copilot Studio |
+| </code>canvas-app<code> | Uses Power Apps Canvas |
+| </code>pcf<code> | Uses PCF Code Components |
+| </code>power-bi<code> | Uses Power BI |
+| </code>typescript<code> | Primary language is TypeScript |
+| </code>python<code> | Primary language is Python |
+
+<h2>Initial Examples</h2>
+
+| Name | Path | Difficulty | Description |
+|------|------|-----------|-------------|
+| </code>hello-agent<code> | A | Beginner | Minimal Copilot Studio agent |
+| </code>canvas-todo<code> | D | Beginner | Canvas App with Copilot AI control |
+| </code>pcf-rating<code> | F | Intermediate | PCF star rating component |
+| </code>trading-system<code> | J | Advanced | Algo trading with PostgreSQL + Telegram |
+| </code>powerbi-sales<code> | G | Intermediate | Power BI sales dashboard with DAX |
+
+<h2>How the CLI Uses This</h2>
+
+1. </code>copilotforge examples<code> fetches </code>registry.json<code> via </code>fetch()<code> from the GitHub raw URL
+2. The registry is cached locally at </code>~/.copilotforge/examples-cache.json<code>
+3. If GitHub is unreachable, the CLI falls back to the cache, then to built-in defaults
+4. </code>copilotforge examples <name><code> clones the example directory
+5. </code>copilotforge examples preview <name><code> fetches and displays the README
+
+<h2>Validation Rules</h2>
+
+<ul><li></code>name<code> must be unique across all entries</li></ul>
+<ul><li></code>name<code> must be kebab-case (lowercase letters, numbers, hyphens)</li></ul>
+<ul><li></code>path<code> must be a single letter A–Z</li></ul>
+<ul><li></code>tags<code> must be a non-empty array</li></ul>
+<ul><li></code>description<code> must be non-empty</li></ul>
+
+<h2>Versioning</h2>
+
+The </code>version` field allows future schema changes:
+
+<ul><li><strong>Version 1</strong> (current): Basic example listing with name, description, path, tags</li></ul>
+<ul><li>Future versions may add: dependencies, prerequisites, file manifest, screenshots</li></ul>
+</main>
+  </div>
+</body>
+</html>

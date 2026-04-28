@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HOW IT WORKS — CopilotForge</title>
+  <style>
+    :root { --bg: #0d1117; --fg: #c9d1d9; --accent: #58a6ff; --border: #30363d; --code-bg: #161b22; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+    .container { display: flex; max-width: 1200px; margin: 0 auto; }
+    nav { width: 250px; padding: 2rem 1rem; border-right: 1px solid var(--border); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav a { display: block; color: var(--fg); text-decoration: none; padding: 0.3rem 0.5rem; border-radius: 4px; font-size: 0.9rem; }
+    nav a:hover, nav a.active { background: var(--border); color: var(--accent); }
+    nav h3 { color: var(--accent); margin: 1rem 0 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    main { flex: 1; padding: 2rem 3rem; max-width: 800px; }
+    h1 { color: var(--accent); margin-bottom: 1rem; font-size: 2rem; }
+    h2 { color: var(--accent); margin: 2rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { color: var(--fg); margin: 1.5rem 0 0.5rem; }
+    a { color: var(--accent); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 6px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; border: 1px solid var(--border); text-align: left; }
+    th { background: var(--code-bg); }
+    blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: #8b949e; }
+    ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin: 0.25rem 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    .header { padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+    .header h1 { font-size: 1.2rem; margin: 0; }
+    .header .version { color: #8b949e; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔥 CopilotForge</h1>
+    <span class="version">v3.0.0</span>
+  </div>
+  <div class="container">
+    <nav><h3>Documentation</h3>
+<a href="index.html">Home</a>
+<a href="copilot-extension-setup.html">COPILOT EXTENSION SETUP</a>
+<a href="decisions-and-architecture.html">DECISIONS AND ARCHITECTURE</a>
+<a href="examples-registry-spec.html">EXAMPLES REGISTRY SPEC</a>
+<a href="faq.html">FAQ</a>
+<a href="getting-started.html">GETTING STARTED</a>
+<a href="how-it-works.html" class="active">HOW IT WORKS</a>
+<a href="mcp-setup.html">MCP SETUP</a>
+<a href="plugin-api.html">PLUGIN API</a>
+<a href="system-breakdown.html">SYSTEM BREAKDOWN</a>
+<a href="watch.html">WATCH</a>
+<a href="what-to-use.html">WHAT TO USE</a>
+<a href="phase4-architecture.html">Phase4 Architecture</a>
+</nav>
+    <main><h1>🔍 How CopilotForge Works</h1>
+
+<blockquote>A gentle look under the hood. This is for people who want to understand how the pieces fit together — not required to use CopilotForge.</blockquote>
+
+<hr>
+
+<h2>Table of Contents</h2>
+
+<ul><li><a href="#the-big-picture">The Big Picture</a></li></ul>
+<ul><li><a href="#the-planner-skill">The Planner Skill</a></li></ul>
+<ul><li><a href="#what-are-skills">What Are Skills?</a></li></ul>
+<ul><li><a href="#what-are-agents">What Are Agents?</a></li></ul>
+<ul><li><a href="#the-memory-system">The Memory System</a></li></ul>
+<ul><li><a href="#the-cookbook">The Cookbook</a></li></ul>
+<ul><li><a href="#the-ralph-loop">The Ralph Loop</a></li></ul>
+<ul><li><a href="#oracle-prime--adaptive-reasoning">Oracle Prime — Adaptive Reasoning</a></li></ul>
+<ul><li><a href="#how-re-runs-work">How Re-Runs Work</a></li></ul>
+<ul><li><a href="#architecture-diagram">Architecture Diagram</a></li></ul>
+
+<hr>
+
+<h2>The Big Picture</h2>
+
+<blockquote>Want to understand <strong>why</strong> these layers exist and what decisions shaped them? See <a href="DECISIONS-AND-ARCHITECTURE.md">Decisions & Architecture</a>.</blockquote>
+
+CopilotForge has four main layers:
+
+1. <strong>The Planner</strong> — The wizard. It asks questions, figures out what you need, and creates everything.
+2. <strong>Skills</strong> — Instruction files that teach AI assistants how to do specific tasks (review code, write tests, etc.).
+3. <strong>Agents</strong> — AI team members, each with a specific job and a set of skills.
+4. <strong>Memory</strong> — Files that track decisions, conventions, and preferences so the system gets smarter over time.
+
+When you run CopilotForge, the Planner coordinates everything. It collects your answers, detects your stack, generates the right files, and produces a summary. The other layers are the output.
+
+``<code>
+You describe your project
+        ↓
+   The Planner asks six questions
+        ↓
+   It scans your repo (package.json, requirements.txt, etc.)
+        ↓
+   It generates: Skills + Agents + Recipes + Memory + FORGE.md
+        ↓
+   You're ready to go
+</code>`<code>
+
+<hr>
+
+<h2>The Planner Skill</h2>
+
+The Planner lives at </code>.github/skills/planner/SKILL.md<code>. It's the entry point — everything starts here.
+
+<h3>What's in the file</h3>
+
+The SKILL.md file contains:
+
+<ul><li><strong>Metadata</strong> at the top (name, description, trigger phrases)</li></ul>
+<ul><li><strong>Instructions</strong> — a step-by-step protocol the AI assistant follows when triggered</li></ul>
+
+The metadata includes trigger phrases — words you can say to activate the wizard. Things like "set up my project," "forge," "plan my project," and "scaffold my repo."
+
+<h3>What it does step by step</h3>
+
+1. <strong>Checks for memory</strong> — Looks for existing </code>forge-memory/<code> files. If found, it's a returning user.
+2. <strong>Runs the wizard</strong> — Asks six questions (or fewer, if memory has the answers).
+3. <strong>Confirms with you</strong> — Shows a summary of what it will create and waits for your go-ahead. (In autonomous mode with --yes, this step is skipped.)
+4. <strong>Detects your stack</strong> — Scans manifest files (</code>package.json<code>, </code>requirements.txt<code>, </code>go.mod<code>, </code>.csproj<code>) to identify your frameworks.
+5. <strong>Generates files</strong> — Creates skills, agents, recipes, memory files, and the FORGE.md control panel.
+6. <strong>Reports results</strong> — Shows a summary of everything that was created.
+7. <strong>Outputs a build-transition prompt</strong> — After scaffolding, the wizard outputs a ready-to-use prompt you can copy into any AI assistant. This bridges the gap between describing your project and building it — no context re-entry needed.
+
+<h3>Why it's just a markdown file</h3>
+
+CopilotForge is intentionally dependency-free. The entire wizard is a markdown file with instructions that any language model can follow. There's no executable, no runtime, no package manager. This means:
+
+<ul><li>It works in GitHub Copilot Chat, Claude Code, ChatGPT, or any LLM</li></ul>
+<ul><li>You can read and edit the wizard's behavior by opening the file</li></ul>
+<ul><li>There's nothing to install, update, or break</li></ul>
+
+<hr>
+
+<h2>What Are Skills?</h2>
+
+A skill is a markdown file that teaches an AI assistant how to handle a specific type of request.
+
+<h3>The format</h3>
+
+Every skill follows the same structure:
+
+</code>`<code>markdown
+<hr>
+name: "skill-name"
+description: "What this skill does"
+domain: "category"
+<hr>
+
+<h2>Context</h2>
+Why this skill exists and when it should be used.
+
+<h2>Patterns</h2>
+Specific instructions, conventions, and rules to follow.
+
+<h2>Examples</h2>
+Concrete examples showing correct behavior.
+
+<h2>Anti-Patterns</h2>
+Things to avoid and why.
+</code>`<code>
+
+The metadata at the top (between the </code>---<code> marks) is used by AI assistants to know when the skill applies. The body is the actual instruction set.
+
+<h3>Skills CopilotForge generates</h3>
+
+| Skill | What It Teaches |
+|-------|----------------|
+| <strong>Project conventions</strong> | Your project's coding standards — naming, file structure, error handling |
+| <strong>Code review</strong> | How to review code for your specific stack, with common pitfalls to check |
+| <strong>Testing</strong> | How to write tests using your stack's test framework (Jest, pytest, etc.) |
+
+<h3>Where they live</h3>
+
+Skills live in </code>.github/skills/<code>. Each skill gets its own folder with a </code>SKILL.md<code> file inside:
+
+</code>`<code>
+.github/
+  skills/
+    my-app-conventions/
+      SKILL.md
+    code-review/
+      SKILL.md
+    testing/
+      SKILL.md
+</code>`<code>
+
+<h3>How they're used</h3>
+
+When you say something like "review this code" in your AI assistant, the assistant checks if any skill in your repo matches that request. The </code>code-review<code> skill has triggers for "review this," "check my code," and similar phrases. The assistant reads the skill's instructions and follows them.
+
+You don't need to activate skills manually. They work in the background, providing context to your AI assistant whenever a matching request comes in.
+
+<hr>
+
+<h2>What Are Agents?</h2>
+
+An agent is an AI team member with a specific job. Where skills are the "how," agents are the "who."
+
+<h3>The format</h3>
+
+Every agent is a markdown file with:
+
+</code>`<code>markdown
+<h1>Agent Name</h1>
+
+<h2>Role</h2>
+One sentence: what this agent does.
+
+<h2>Scope</h2>
+What this agent is responsible for.
+
+<h2>System Prompt</h2>
+Instructions the AI follows when acting as this agent.
+
+<h2>Boundaries</h2>
+What this agent handles vs. what it doesn't.
+
+<h2>Skills</h2>
+Which skills this agent uses.
+</code>`<code>
+
+<h3>Agents CopilotForge generates</h3>
+
+| Agent | Job |
+|-------|-----|
+| <strong>Planner</strong> | Runs the CopilotForge wizard |
+| <strong>Reviewer</strong> | Reviews code against your project's conventions |
+| <strong>Tester</strong> | Writes tests using your stack's test framework |
+
+<h3>How agents and skills work together</h3>
+
+Think of it this way:
+
+<ul><li>The <strong>reviewer agent</strong> is a team member whose job is code review</li></ul>
+<ul><li>The <strong>code-review skill</strong> is the checklist that reviewer follows</li></ul>
+<ul><li>When you say "review my code," the reviewer agent activates and uses the code-review skill to know what to check</li></ul>
+
+Agents reference skills by name. The reviewer's configuration says "use the code-review skill" — so any changes you make to the skill automatically change how the reviewer works.
+
+<h3>Where they live</h3>
+
+Agents live in </code>.copilot/agents/<code>:
+
+</code>`<code>
+.copilot/
+  agents/
+    planner.md
+    reviewer.md
+    tester.md
+</code>`<code>
+
+<hr>
+
+<h2>The Memory System</h2>
+
+Memory is what makes CopilotForge get smarter over time. It's a folder called </code>forge-memory/<code> with four plain-text files.
+
+<h3>The four memory files</h3>
+
+| File | What It Stores | Example Entry |
+|------|---------------|---------------|
+| </code>decisions.md<code> | Architectural decisions with context and reasoning | "2026-04-16 — Chose Prisma over raw SQL because we need type-safe queries and migrations" |
+| </code>patterns.md<code> | Coding conventions and project rules | "TypeScript: always use strict mode and path aliases" |
+| </code>preferences.md<code> | Your wizard settings and overrides | "Verbosity: intermediate, Primary: TypeScript" |
+| </code>history.md<code> | Session log — when CopilotForge ran | "2026-04-16 — Initial setup, created 17 files" |
+
+<h3>Memory Privacy & Security</h3>
+
+Your memory files live in your repo (</code>forge-memory/<code>), stored as plain markdown. <strong>Nothing is sent to external servers.</strong> You can read, edit, or delete them anytime.
+
+<strong>For public repos:</strong> If you don't want your decisions visible publicly, add </code>forge-memory/<code> to your </code>.gitignore<code>.
+
+<h3>How memory is used</h3>
+
+When you run the wizard again, the Planner reads all memory files before asking questions. This means:
+
+<ul><li><strong>It knows your project</strong> — no need to describe it again</li></ul>
+<ul><li><strong>It knows your stack</strong> — no need to list frameworks again</li></ul>
+<ul><li><strong>It knows your preferences</strong> — no need to re-select experience level</li></ul>
+<ul><li><strong>It respects your conventions</strong> — new files follow the patterns already established</li></ul>
+
+Instead of answering all questions again, returning users see a summary and can jump straight to what they want to change.
+
+<h3>How memory grows</h3>
+
+Memory uses an <strong>append-only</strong> approach:
+
+<ul><li>New decisions are added to the top of </code>decisions.md<code></li></ul>
+<ul><li>New patterns are added to </code>patterns.md<code></li></ul>
+<ul><li>Previous entries are never deleted</li></ul>
+
+This creates a history you can browse. If you want to understand why something was set up a certain way, check </code>decisions.md<code>.
+
+<h3>Memory is optional</h3>
+
+If you said "no" to memory (Question 3), none of these files are created. Everything else still works — you just start from scratch each time you run the wizard.
+
+<h3>Memory budget</h3>
+
+To keep things efficient, memory files have a soft limit of about 500 total lines. When files get long, older entries are summarized (compressed into shorter versions) to make room for new ones. The summarization is logged as its own decision, so you know it happened.
+
+<hr>
+
+<h2>The Cookbook</h2>
+
+The cookbook is a library of copy-paste code recipes in </code>cookbook/<code>. Unlike skills (which are instructions) and agents (which are team members), recipes are actual runnable code files.
+
+<h3>How recipes are selected</h3>
+
+When you run the wizard, CopilotForge picks recipes based on your stack:
+
+1. <strong>It scans your config files</strong> — </code>package.json<code>, </code>requirements.txt<code>, </code>go.mod<code>, </code>.csproj<code>
+2. <strong>It maps packages to recipes</strong> — If you have Express, you get an Express route handler. If you have Prisma, you get Prisma CRUD patterns.
+3. <strong>It avoids duplicates</strong> — If a more specific recipe exists (like </code>db-prisma.ts<code>), it won't also generate a generic </code>db-query.ts<code>.
+4. <strong>It always includes basics</strong> — Error handling and API client recipes are generated for every project.
+
+<h3>Recipe structure</h3>
+
+Every recipe follows the same pattern:
+
+</code>`<code>typescript
+/**
+ * Recipe Name — CopilotForge Cookbook Recipe
+ *
+ * WHAT THIS DOES: Description
+ * WHEN TO USE THIS: Use case
+ * HOW TO RUN: Instructions
+ * PREREQUISITES: What you need installed
+ */
+
+// All imports included — nothing to install separately
+
+// TODO markers show where you plug in your values
+</code>`<code>
+
+The </code>TODO<code> markers are intentional. Search for "TODO" in any recipe to find the spots you need to customize.
+
+<h3>Verbosity levels</h3>
+
+The same recipe has different amounts of comments depending on your experience level:
+
+<ul><li><strong>Beginner</strong> — Comments explain every section, with examples and why things are done a certain way</li></ul>
+<ul><li><strong>Intermediate</strong> — Comments on non-obvious parts only</li></ul>
+<ul><li><strong>Advanced</strong> — Minimal comments, just the code</li></ul>
+
+<h3>Available recipes</h3>
+
+CopilotForge includes recipes for:
+
+| Category | TypeScript | Python |
+|----------|-----------|--------|
+| Error handling | ✅ | ✅ |
+| API client | ✅ | ✅ |
+| Auth middleware | ✅ (Express/JWT) | ✅ (FastAPI/JWT) |
+| Database | ✅ (Prisma) | ✅ (SQLAlchemy) |
+| Route handlers | ✅ (Express) | ✅ (FastAPI) |
+| MCP server | ✅ | ✅ |
+| Session management | ✅ | ✅ |
+| Memory reader | ✅ | ✅ |
+
+Go and C# recipes are available for core categories as well.
+
+<hr>
+
+<h2>The Ralph Loop</h2>
+
+The Ralph Loop is CopilotForge's autonomous execution engine. When you say "run the plan," here's what happens:
+
+</code>`<code>
+IMPLEMENTATION_PLAN.md
+        ↓
+   Pick next [ ] task
+        ↓
+   Implement it (write real code)
+        ↓
+   Validate (build, tests, lint)
+        ↓
+   Mark [x] done + commit
+        ↓
+   Loop back ↑ until all tasks done
+</code>`<code>
+
+It's called "The Ralph Loop" because Ralph is the tireless worker who never stops until the plan is complete.
+
+<strong>Two ways to run it:</strong>
+1. <strong>Natural language:</strong> Say "run the plan" in your AI assistant (uses the plan-executor skill)
+2. <strong>Code:</strong> Run </code>npx ts-node cookbook/task-loop.ts<code>
+
+Both do the same thing — the skill version is conversational, the code version runs headless.
+
+<hr>
+
+<h2>Oracle Prime — Adaptive Reasoning</h2>
+
+Oracle Prime is a precision reasoning framework that scales analysis depth to match question complexity. It's not a separate tool — it's woven into every agent interaction.
+
+<h3>The three tiers</h3>
+
+| Tier | When It Activates | What Runs |
+|------|-------------------|-----------|
+| <strong>Simple</strong> | Clear instructions, single-file edits, familiar patterns | S1 (Problem Decomposition) only — fast, invisible |
+| <strong>Medium</strong> | Multiple files, some investigation needed, manageable risk | S1 + S2 (Hypothesis Mapping) + S5 (Scenario Envelope) |
+| <strong>Complex</strong> | Cross-cutting changes, competing approaches, high ambiguity | Full S1–S7 pipeline with structured output |
+
+The tier is classified automatically before every response. You don't need to specify it.
+
+<h3>The 7-stage pipeline</h3>
+
+When a complex question activates the full pipeline, these stages run internally before output:
+
+1. <strong>S1 — Problem Decomposition.</strong> Actual vs apparent question; knowns, unknowns, hidden assumptions.
+2. <strong>S2 — Hypothesis Space Mapping.</strong> 3–5 hypotheses including contrarian ones. Steel-man each. Pre-mortem: how would each fail?
+3. <strong>S3 — Bayesian Updating.</strong> Assign priors from base rates. State posteriors. Never conflate possibility with probability.
+4. <strong>S4 — Systems Dynamics.</strong> Reinforcing loops, balancing loops, leverage points. Second and third-order consequences.
+5. <strong>S5 — Scenario Envelope.</strong> Base Case (~55%), Bull (~20%), Bear (~15%), Black Swan (~10%). Two confirmation signals each.
+6. <strong>S6 — Counterfactual Stress Test.</strong> What assumption, if reversed, flips the base case?
+7. <strong>S7 — Critical Audit.</strong> Bias scan (confirmation, anchoring, availability, narrative fallacy).
+
+<h3>How it integrates</h3>
+
+Oracle Prime works through three files:
+
+| File | Role | When It's Active |
+|------|------|-----------------|
+| </code>.github/instructions/oracle-prime.instructions.md<code> | Global — applies to all agents automatically | Always (scales to complexity) |
+| </code>.github/skills/oracle-prime/SKILL.md<code> | Deep analysis — full structured output | Trigger phrases: "deep analysis", "oracle prime", etc. |
+| </code>.copilot/agents/oracle-prime.md<code> | Agent template — can be invoked directly | When you select Oracle Prime as an agent |
+
+The global instructions file is always active — it provides lightweight reasoning for simple tasks without overhead. The skill file activates for deep analysis when you explicitly request it.
+
+<h3>Algorithm modes</h3>
+
+Oracle Prime auto-selects up to 2 reasoning modes based on question type:
+
+<ul><li><strong>[ADVERSARIAL]</strong> — Competition, conflict, negotiation</li></ul>
+<ul><li><strong>[MONTE CARLO]</strong> — Stochastic variables, outcome distributions</li></ul>
+<ul><li><strong>[FERMI]</strong> — No precise data; build from reference points</li></ul>
+<ul><li><strong>[RED TEAM]</strong> — Strongest case against the prevailing assumption</li></ul>
+<ul><li><strong>[SIGNAL vs NOISE]</strong> — Separate predictive from correlated indicators</li></ul>
+<ul><li><strong>[COUNTERFACTUAL]</strong> — Decision forks and post-mortems</li></ul>
+
+<h3>Self-improvement</h3>
+
+Oracle Prime includes an Evolution Block that tracks calibration drift and reasoning gaps across sessions. When a patch is valuable enough to persist, it uses the "forge remember" mechanism to write it to </code>forge-memory/decisions.md<code>, creating a self-improving loop.
+
+<h3>Installing standalone</h3>
+
+If you want Oracle Prime without the full CopilotForge scaffold:
+
+</code>`<code>bash
+npx copilotforge init --oracle-prime
+</code>`<code>
+
+This creates only the 3 Oracle Prime files — no planner, no cookbook, no memory files.
+
+<hr>
+
+
+<h2>What is MCP?</h2>
+
+<strong>MCP stands for Model Context Protocol</strong> — it's a standard way for AI assistants to use external tools and capabilities.
+
+Think of it like <strong>USB for AI</strong>: just as USB lets you plug in a keyboard, mouse, or storage device into a computer, MCP lets you plug in capabilities (a database, file system, API, code analyzer) into an AI assistant. The assistant can then use those tools to do more powerful work.
+
+CopilotForge includes an MCP recipe showing how to build one. You can find examples in:
+<ul><li><strong>TypeScript:</strong> cookbook/mcp-server.ts</li></ul>
+<ul><li><strong>Python:</strong> cookbook/mcp-server.py</li></ul>
+
+If you're curious about how it works under the hood, these recipes show the structure and how to connect your tool to an AI assistant.
+
+<h2>How Re-Runs Work</h2>
+
+CopilotForge is designed to be run multiple times on the same project. Here's how it handles that:
+
+<h3>File preservation</h3>
+
+<strong>CopilotForge never overwrites files you might have edited.</strong> When it detects existing files:
+
+<ul><li><strong>Skills, agents, recipes:</strong> Skipped. If the file exists, it's left alone.</li></ul>
+<ul><li><strong>Memory files:</strong> Appended to. New decisions are added; old ones are never deleted.</li></ul>
+<ul><li><strong>FORGE.md:</strong> Regenerated (with your permission) to reflect the current state.</li></ul>
+
+<h3>The returning user flow</h3>
+
+1. The wizard checks for </code>forge-memory/<code> files
+2. If found, it reads your project description, stack, preferences, and decisions
+3. Instead of the normal greeting, you see: "Welcome back! Here's what I know..."
+4. Only questions with missing answers are asked — everything else is pre-filled from memory
+5. You can change any previous answer, or just add what's new
+
+<h3>What triggers a re-run?</h3>
+
+Common reasons to re-run:
+
+<ul><li>You added a new framework (e.g., WebSocket support)</li></ul>
+<ul><li>You want additional agents or skills</li></ul>
+<ul><li>You want to update cookbook recipes for a new stack component</li></ul>
+<ul><li>You accidentally deleted a generated file and want it back</li></ul>
+
+<h3>Safety rails</h3>
+
+<ul><li>Deleted files are re-created (with a note in the summary)</li></ul>
+<ul><li>Your </code>forge-memory/<code> folder is never deleted, even if you say "no" to memory on a re-run</li></ul>
+<ul><li>FORGE.md regeneration always asks for confirmation first</li></ul>
+<ul><li>The summary at the end tells you exactly what was created, skipped, and changed</li></ul>
+
+<hr>
+
+<h2>Architecture Diagram</h2>
+
+For a visual overview of how all the pieces connect, see the architecture diagram:
+
+!<a href="../copilot_forge_framework.svg">CopilotForge Architecture</a>
+
+This diagram shows the flow from user input through the wizard, stack detection, file generation, and the relationship between skills, agents, memory, and the cookbook.
+
+<hr>
+
+<h2>Summary</h2>
+
+| Layer | What It Is | Where It Lives |
+|-------|-----------|----------------|
+| <strong>Planner</strong> | The wizard that orchestrates everything | </code>.github/skills/planner/SKILL.md<code> |
+| <strong>Skills</strong> | Instruction files for specific tasks | </code>.github/skills/{name}/SKILL.md<code> |
+| <strong>Agents</strong> | AI team members with defined roles | </code>.copilot/agents/{name}.md<code> |
+| <strong>Memory</strong> | Decision log, conventions, preferences | </code>forge-memory/<code> |
+| <strong>Cookbook</strong> | Copy-paste code recipes | </code>cookbook/` |
+| <strong>FORGE.md</strong> | Dashboard showing everything | Repo root |
+
+Everything is plain markdown and code. No hidden config, no binaries, no magic. What you see is what you get.
+
+<hr>
+
+<h2>What Should I Do Now?</h2>
+
+<ul><li><strong>Ready to try it?</strong> Head to the <a href="GETTING-STARTED.md">Getting Started guide</a> for a 5-minute walkthrough</li></ul>
+<ul><li><strong>Already set up?</strong> Tell your AI assistant: <em>"Read FORGE.md and let's start building"</em></li></ul>
+<ul><li><strong>Just browsing?</strong> Check the <a href="../cookbook/README.md">Recipe Index</a> to see what code examples are available</li></ul>
+
+<hr>
+
+<strong>← Back to <a href="../README.md">README</a></strong> | <strong>→ Recipe index: <a href="../cookbook/README.md">cookbook/README.md</a></strong>
+
+</main>
+  </div>
+</body>
+</html>

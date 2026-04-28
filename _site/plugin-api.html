@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLUGIN API — CopilotForge</title>
+  <style>
+    :root { --bg: #0d1117; --fg: #c9d1d9; --accent: #58a6ff; --border: #30363d; --code-bg: #161b22; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+    .container { display: flex; max-width: 1200px; margin: 0 auto; }
+    nav { width: 250px; padding: 2rem 1rem; border-right: 1px solid var(--border); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav a { display: block; color: var(--fg); text-decoration: none; padding: 0.3rem 0.5rem; border-radius: 4px; font-size: 0.9rem; }
+    nav a:hover, nav a.active { background: var(--border); color: var(--accent); }
+    nav h3 { color: var(--accent); margin: 1rem 0 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    main { flex: 1; padding: 2rem 3rem; max-width: 800px; }
+    h1 { color: var(--accent); margin-bottom: 1rem; font-size: 2rem; }
+    h2 { color: var(--accent); margin: 2rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { color: var(--fg); margin: 1.5rem 0 0.5rem; }
+    a { color: var(--accent); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 6px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; border: 1px solid var(--border); text-align: left; }
+    th { background: var(--code-bg); }
+    blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: #8b949e; }
+    ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin: 0.25rem 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    .header { padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+    .header h1 { font-size: 1.2rem; margin: 0; }
+    .header .version { color: #8b949e; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔥 CopilotForge</h1>
+    <span class="version">v3.0.0</span>
+  </div>
+  <div class="container">
+    <nav><h3>Documentation</h3>
+<a href="index.html">Home</a>
+<a href="copilot-extension-setup.html">COPILOT EXTENSION SETUP</a>
+<a href="decisions-and-architecture.html">DECISIONS AND ARCHITECTURE</a>
+<a href="examples-registry-spec.html">EXAMPLES REGISTRY SPEC</a>
+<a href="faq.html">FAQ</a>
+<a href="getting-started.html">GETTING STARTED</a>
+<a href="how-it-works.html">HOW IT WORKS</a>
+<a href="mcp-setup.html">MCP SETUP</a>
+<a href="plugin-api.html" class="active">PLUGIN API</a>
+<a href="system-breakdown.html">SYSTEM BREAKDOWN</a>
+<a href="watch.html">WATCH</a>
+<a href="what-to-use.html">WHAT TO USE</a>
+<a href="phase4-architecture.html">Phase4 Architecture</a>
+</nav>
+    <main><hr>
+title: CopilotForge Plugin API
+description: Documentation for creating third-party Build Path plugins for CopilotForge
+<hr>
+
+<h1>Plugin API</h1>
+
+CopilotForge supports third-party Build Paths through npm plugins. Plugins add new paths (K–Z) without forking the core repository. Core paths A–J are reserved and cannot be overridden.
+
+<h2>Quick Start</h2>
+
+1. Create an npm package with <code>"copilotforge-plugin": true</code> in <code>package.json</code>
+2. Export a plugin object from the package's main entry point
+3. Install it in any CopilotForge project: <code>npm install your-plugin</code>
+4. CopilotForge auto-discovers it on the next run
+
+<h2>Package Requirements</h2>
+
+Your <code>package.json</code> must include:
+
+``<code>json
+{
+  "name": "copilotforge-plugin-my-path",
+  "version": "1.0.0",
+  "copilotforge-plugin": true,
+  "main": "index.js"
+}
+</code>`<code>
+
+The </code>"copilotforge-plugin": true<code> flag is required for discovery. Without it, CopilotForge ignores the package.
+
+<h2>Export Interface</h2>
+
+Your main entry point must export an object matching this contract:
+
+</code>`<code>typescript
+interface CopilotForgePlugin {
+  /<em>* Human-readable name </em>/
+  name: string;
+
+  /<em>* One-sentence description </em>/
+  description: string;
+
+  /<em>* Single letter K-Z — your plugin's build path </em>/
+  buildPath: string;
+
+  /<em>* Trigger words for path detection (matched against Q1 answers) </em>/
+  signals: string[];
+
+  /<em>* Diagnostic questions asked when this path is detected </em>/
+  questions: Array<{
+    id: string;
+    prompt: string;
+    choices?: string[];
+  }>;
+
+  /<em>* Templates for generated files </em>/
+  templates: {
+    /<em>* FORGE.md content for this path </em>/
+    forge?: string;
+  };
+}
+</code>`<code>
+
+<h2>Example Plugin</h2>
+
+</code>`<code>javascript
+// index.js
+module.exports = {
+  name: 'IoT Dashboard',
+  description: 'Azure IoT Hub dashboard with real-time telemetry',
+  buildPath: 'K',
+  signals: ['iot', 'telemetry', 'azure iot', 'device monitoring'],
+  questions: [
+    {
+      id: 'k1',
+      prompt: 'What IoT protocol does your device use?',
+      choices: ['MQTT', 'AMQP', 'HTTP'],
+    },
+    {
+      id: 'k2',
+      prompt: 'Do you need real-time streaming or batch analytics?',
+      choices: ['Real-time', 'Batch', 'Both'],
+    },
+  ],
+  templates: {
+    forge: </code># FORGE.md — IoT Dashboard
+
+<!-- copilotforge: path=K -->
+
+<h2>Project Summary</h2>
+<ul><li><strong>Build Path:</strong> K — IoT Dashboard</li></ul>
+<ul><li><strong>Stack:</strong> Azure IoT Hub, Node.js, React</li></ul>
+<code>,
+  },
+};
+</code>`<code>
+
+<h2>Validation Rules</h2>
+
+CopilotForge enforces these constraints:
+
+| Rule | What Happens |
+|------|-------------|
+| </code>buildPath<code> must be K–Z | Paths A–J are reserved. Plugin is rejected with error. |
+| </code>buildPath<code> conflicts with another plugin | First loaded plugin wins. Conflict is logged as a warning. |
+| </code>signals<code> must be non-empty | Plugin is rejected — no way to detect it in Q1 answers. |
+| </code>questions<code> must be an array | Can be empty (no diagnostic questions), but must exist. |
+| Missing </code>name<code> or </code>buildPath<code> | Plugin is rejected with validation error. |
+
+<h2>How Discovery Works</h2>
+
+1. CopilotForge scans </code>node_modules/<code> for packages with </code>"copilotforge-plugin": true<code>
+2. Each plugin is loaded and validated
+3. Valid plugins are registered for path detection
+4. Plugin signals are merged into the forge-compass signal table
+5. When a user's Q1 answer matches plugin signals, the plugin's path activates
+
+<h2>Integration Points</h2>
+
+Registered plugins appear in:
+
+<ul><li><strong>Path detection</strong> — plugin signals are checked alongside core PP and DEV signals</li></ul>
+<ul><li><strong>Doctor output</strong> — </code>copilotforge doctor<code> reports installed plugins with name, version, and path letter</li></ul>
+<ul><li><strong>FORGE.md generation</strong> — when a plugin path is active, the plugin's template is used</li></ul>
+
+<h2>Scoped Packages</h2>
+
+Scoped packages (</code>@org/copilotforge-plugin-name<code>) are supported. Discovery scans both top-level and scoped directories in </code>node_modules/<code>.
+
+<h2>Testing Your Plugin</h2>
+
+Use CopilotForge's built-in validation:
+
+</code>`<code>bash
+<h1>Install your plugin locally</h1>
+npm install ../path-to-your-plugin
+
+<h1>Check it appears in doctor output</h1>
+npx copilotforge doctor
+
+<h1>Test path detection with a matching Q1 answer</h1>
+npx copilotforge wizard
+<h1>Answer Q1 with words matching your signals</h1>
+</code>`<code>
+
+You can also validate programmatically:
+
+</code>`<code>javascript
+const { validatePlugin } = require('copilotforge/src/plugin-loader');
+
+const myPlugin = require('./index');
+const result = validatePlugin(myPlugin, {});
+
+console.log(result.valid ? 'Plugin is valid' : </code>Error: ${result.error}<code>);
+</code>`<code>
+
+<h2>Limitations</h2>
+
+<ul><li>Plugins cannot modify core paths A–J</li></ul>
+<ul><li>Plugins cannot add new CLI commands</li></ul>
+<ul><li>Plugin templates are limited to FORGE.md generation (skill/agent generation planned for future)</li></ul>
+<ul><li>Discovery requires the plugin to be installed in </code>node_modules/`</li></ul>
+</main>
+  </div>
+</body>
+</html>

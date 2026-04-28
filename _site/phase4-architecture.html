@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase4 Architecture — CopilotForge</title>
+  <style>
+    :root { --bg: #0d1117; --fg: #c9d1d9; --accent: #58a6ff; --border: #30363d; --code-bg: #161b22; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+    .container { display: flex; max-width: 1200px; margin: 0 auto; }
+    nav { width: 250px; padding: 2rem 1rem; border-right: 1px solid var(--border); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav a { display: block; color: var(--fg); text-decoration: none; padding: 0.3rem 0.5rem; border-radius: 4px; font-size: 0.9rem; }
+    nav a:hover, nav a.active { background: var(--border); color: var(--accent); }
+    nav h3 { color: var(--accent); margin: 1rem 0 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    main { flex: 1; padding: 2rem 3rem; max-width: 800px; }
+    h1 { color: var(--accent); margin-bottom: 1rem; font-size: 2rem; }
+    h2 { color: var(--accent); margin: 2rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { color: var(--fg); margin: 1.5rem 0 0.5rem; }
+    a { color: var(--accent); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 6px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; border: 1px solid var(--border); text-align: left; }
+    th { background: var(--code-bg); }
+    blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: #8b949e; }
+    ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin: 0.25rem 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    .header { padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+    .header h1 { font-size: 1.2rem; margin: 0; }
+    .header .version { color: #8b949e; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔥 CopilotForge</h1>
+    <span class="version">v3.0.0</span>
+  </div>
+  <div class="container">
+    <nav><h3>Documentation</h3>
+<a href="index.html">Home</a>
+<a href="copilot-extension-setup.html">COPILOT EXTENSION SETUP</a>
+<a href="decisions-and-architecture.html">DECISIONS AND ARCHITECTURE</a>
+<a href="examples-registry-spec.html">EXAMPLES REGISTRY SPEC</a>
+<a href="faq.html">FAQ</a>
+<a href="getting-started.html">GETTING STARTED</a>
+<a href="how-it-works.html">HOW IT WORKS</a>
+<a href="mcp-setup.html">MCP SETUP</a>
+<a href="plugin-api.html">PLUGIN API</a>
+<a href="system-breakdown.html">SYSTEM BREAKDOWN</a>
+<a href="watch.html">WATCH</a>
+<a href="what-to-use.html">WHAT TO USE</a>
+<a href="phase4-architecture.html" class="active">Phase4 Architecture</a>
+</nav>
+    <main><h1>Phase 4 Architecture Contract — Memory & Iteration</h1>
+
+<blockquote><strong>Author:</strong> Morpheus (Lead Architect)</blockquote>
+<blockquote><strong>Date:</strong> 2026-04-16</blockquote>
+<blockquote><strong>Status:</strong> Draft — Pending Team Consensus</blockquote>
+<blockquote><strong>Depends on:</strong> Phase 3 (Cookbook Layer) — Complete</blockquote>
+
+<hr>
+
+<h2>Overview</h2>
+
+Phase 4 delivers the <strong>Memory & Iteration</strong> system — the mechanism that makes CopilotForge learn from itself across sessions. From the original spec:
+
+<blockquote>"The Planner learns from decisions.md across sessions, so the second time you add something it already knows your conventions."</blockquote>
+
+Today, memory is <strong>write-only</strong>. The Planner scaffolds <code>forge-memory/decisions.md</code> and <code>forge-memory/patterns.md</code>, the memory generator appends on re-runs, but nothing reads memory back to inform behavior. Phase 4 closes that loop.
+
+<h3>What Changes</h3>
+
+| Component | Phase 3 (Today) | Phase 4 (Target) |
+|---|---|---|
+| Memory read-back | None — memory is write-only | Planner reads memory before wizard starts |
+| Wizard behavior | Same questions every run | Adaptive — skips known answers, shows summary |
+| Convention learning | Static patterns from wizard answers | Dynamic extraction from generated output |
+| Cross-session context | Decisions append, nothing compounds | History log + preferences file + summarization |
+| Per-agent memory | delegates have no learned context | Each delegate reads relevant memory sections |
+| Memory lifecycle | Create and append forever | Create → accumulate → summarize → archive |
+| FORGE.md memory surface | Static memory table | Live memory status with counts and last-run date |
+
+<h3>Design Principles</h3>
+
+1. <strong>Memory is advisory, never blocking.</strong> If memory is corrupted, missing, or contradictory, the system degrades to the Phase 3 flow (full wizard, no context). The user never gets stuck because of memory.
+2. <strong>Users own their memory.</strong> Every memory file is hand-editable markdown. The system handles edits gracefully — even messy ones.
+3. <strong>Context budget is fixed.</strong> Memory loading has a hard token ceiling. When memory grows past that, older entries get summarized. Recent decisions always appear verbatim.
+4. <strong>No external dependencies.</strong> Memory is markdown files in <code>forge-memory/</code>. No databases, no APIs, no binary formats. Works anywhere the Planner works.
+5. <strong>Progressive disclosure.</strong> Beginners see "I remember your project." Advanced users can inspect and edit every memory file.
+
+<hr>
+
+<h2>1. Memory Read-Back Protocol</h2>
+
+<h3>1.1 Trigger</h3>
+
+On every Planner invocation, <strong>before</strong> Step 1 (Greet and Explain), execute the memory probe:
+
+``<code>
+Planner triggered
+  │
+  ▼
+Check: does forge-memory/ exist?
+  │
+  ├── NO  → First-time user. Run full wizard (Phase 3 flow).
+  │
+  └── YES → Returning user. Execute read-back protocol.
+        │
+        ├── Read forge-memory/decisions.md
+        ├── Read forge-memory/patterns.md
+        ├── Read forge-memory/history.md (if exists)
+        └── Read forge-memory/preferences.md (if exists)
+        │
+        ▼
+      Parse into Project Knowledge Block
+        │
+        ▼
+      Run adaptive wizard (Section 2)
+</code>`<code>
+
+<h3>1.2 Parsing: Decisions</h3>
+
+Extract from </code>decisions.md<code>:
+
+| Field | Source | Use |
+|---|---|---|
+| Project description | Most recent </code><strong>Context:</strong><code> line | Pre-fill wizard Q1 |
+| Stack | Most recent </code><strong>Stack:</strong><code> or </code><strong>Decision:</strong><code> mentioning stack | Pre-fill wizard Q2 |
+| Memory preference | Existence of the file itself | Skip wizard Q3 (already yes) |
+| Testing preference | </code><strong>Options enabled:</strong><code> line | Pre-fill wizard Q4 |
+| Skill level | </code><strong>Skill level:</strong><code> line | Pre-fill wizard Q5 |
+| Decision count | Count of </code>### <code> headings under </code>## Entries<code> | Memory status metric |
+| Last run date | Date from the most recent entry heading | Memory status metric |
+| Stack changes | Multiple </code><strong>Stack:</strong><code> lines with different values | Flag for user confirmation |
+
+<strong>Parse strategy:</strong> Line-by-line heading scan. Look for </code>### <code> entries, extract </code><strong>bold-key:</strong><code> values. No regex engine required — an LLM can do this as structured text extraction.
+
+<h3>1.3 Parsing: Patterns</h3>
+
+Extract from </code>patterns.md<code>:
+
+| Field | Source | Use |
+|---|---|---|
+| Naming conventions | </code>## Naming Conventions<code> or </code>### File Naming<code> section | Constrain generated file names |
+| File structure | </code>## File Structure<code> section | Constrain directory layout |
+| Stack conventions | </code>## Stack Conventions<code> section | Inform recipe selection and code style |
+| Project-specific patterns | </code>## Project-Specific Patterns<code> section | Pass to delegates as constraints |
+| Pattern count | Count of </code>### <code> headings | Memory status metric |
+
+<strong>Parse strategy:</strong> Section-level extraction. Each </code>## <code> heading maps to a pattern category. Content under each heading is passed as-is to the relevant delegate.
+
+<h3>1.4 Parsing: History (New File)</h3>
+
+Extract from </code>forge-memory/history.md<code> (if it exists):
+
+| Field | Source | Use |
+|---|---|---|
+| Session count | Count of </code>### Session<code> entries | Memory status metric |
+| Recent actions | Last 3 session entries | Show user what happened recently |
+| Generated file inventory | Union of all </code><strong>Files created:</strong><code> lists | Know what exists without filesystem scan |
+
+<h3>1.5 Parsing: Preferences (New File)</h3>
+
+Extract from </code>forge-memory/preferences.md<code> (if it exists):
+
+| Field | Source | Use |
+|---|---|---|
+| Style preferences | </code>## Style<code> section | Pass to all delegates |
+| Framework preferences | </code>## Frameworks<code> section | Weight recipe selection |
+| Verbosity override | </code>## Verbosity<code> section | Override wizard Q5 default |
+| Convention priorities | </code>## Priorities<code> section | Weight pattern enforcement |
+
+<h3>1.6 Project Knowledge Block</h3>
+
+All parsed data is assembled into a <strong>FORGE-MEMORY</strong> context block — an extension of the existing FORGE-CONTEXT inter-delegate contract:
+
+</code>`<code>yaml
+<h1><!-- FORGE-MEMORY --></h1>
+returning_user: true
+last_run: "2026-04-16"
+session_count: 3
+project_description: "A REST API for a pet adoption platform"
+stack: "TypeScript, Express, Prisma, PostgreSQL"
+memory_enabled: true
+testing_enabled: true
+skill_level: "intermediate"
+decision_count: 7
+pattern_count: 12
+known_answers:
+  q1: "A REST API for a pet adoption platform"
+  q2: "TypeScript, Express, Prisma, PostgreSQL"
+  q3: "yes"
+  q4: "yes"
+  q5: "intermediate"
+active_patterns:
+  naming: "kebab-case files, PascalCase components, camelCase functions"
+  file_structure: "src/ with routes/, services/, models/ subdirs"
+  error_handling: "Custom AppError class, never bare try/catch"
+  testing: "Jest with .test.ts suffix, colocated with source"
+preferences:
+  style: "functional over OOP where possible"
+  verbosity: "intermediate"
+recent_history:
+  - "2026-04-16: Added auth-example.ts and error-handling.ts recipes"
+  - "2026-04-15: Initial scaffolding — 3 skills, 3 agents, 5 recipes"
+<h1><!-- /FORGE-MEMORY --></h1>
+</code>`<code>
+
+This block is appended to the FORGE-CONTEXT block before delegate dispatch.
+
+<h3>1.7 Memory Budget</h3>
+
+The context window is shared between memory, wizard interaction, and generation instructions. Memory must not crowd out working space.
+
+| Memory source | Budget | Rationale |
+|---|---|---|
+| decisions.md | Last 10 entries verbatim, older entries summarized to 1-line each | Recent decisions are most relevant; old ones provide background |
+| patterns.md | Full file up to 200 lines; truncate with "[N more patterns — see forge-memory/patterns.md]" | Patterns are dense and directly actionable |
+| history.md | Last 5 sessions verbatim, older sessions as 1-line summaries | Recent sessions matter most |
+| preferences.md | Full file (expected to be small — under 50 lines) | Preferences are always relevant |
+| <strong>Total ceiling</strong> | ~500 lines of memory context | Leaves ample room for wizard + generation in a 4K–8K instruction window |
+
+<strong>If total memory exceeds 500 lines:</strong> Trigger summarization (see Section 4.4).
+
+<hr>
+
+<h2>2. Adaptive Wizard</h2>
+
+<h3>2.1 Decision Tree</h3>
+
+</code>`<code>
+Memory read-back complete
+  │
+  ├── All 5 answers known from memory
+  │     → Returning User Flow (Section 2.2)
+  │
+  ├── Some answers known, some missing
+  │     → Partial Memory Flow (Section 2.3)
+  │
+  └── Memory exists but unparseable
+        → Degraded Flow (Section 2.4)
+</code>`<code>
+
+<h3>2.2 Returning User Flow (All Answers Known)</h3>
+
+Replace the full 5-question wizard with a <strong>confirmation prompt</strong>:
+
+<blockquote><strong>Welcome back to CopilotForge!</strong> I found your project context:</blockquote>
+>
+<blockquote>- <strong>Project:</strong> {project description from memory}</blockquote>
+<blockquote>- <strong>Stack:</strong> {stack from memory}</blockquote>
+<blockquote>- <strong>Memory:</strong> enabled</blockquote>
+<blockquote>- <strong>Test automation:</strong> {yes/no from memory}</blockquote>
+<blockquote>- <strong>Verbosity:</strong> {skill level from memory}</blockquote>
+>
+<blockquote>Last run: {date}. {decision_count} decisions logged, {pattern_count} patterns established.</blockquote>
+>
+<blockquote><strong>What would you like to do?</strong></blockquote>
+<blockquote>1. <strong>Add something new</strong> — describe what you want to add</blockquote>
+<blockquote>2. <strong>Change settings</strong> — update stack, verbosity, or options</blockquote>
+<blockquote>3. <strong>Re-scaffold</strong> — regenerate with current settings</blockquote>
+<blockquote>4. <strong>Start fresh</strong> — clear memory and start over</blockquote>
+
+Wait for the user's response. Route based on choice:
+
+| Choice | Action |
+|---|---|
+| 1 (Add) | Ask: "What do you want to add?" Then run only relevant delegates. |
+| 2 (Change) | Ask only the questions whose answers are changing. Update memory. |
+| 3 (Re-scaffold) | Skip wizard entirely. Run all delegates with existing answers. |
+| 4 (Start fresh) | Clear </code>forge-memory/<code> contents (see Section 6.3). Run full wizard. |
+
+<h3>2.3 Partial Memory Flow (Some Answers Missing)</h3>
+
+Show what's known and ask only what's missing:
+
+<blockquote><strong>Welcome back to CopilotForge!</strong> I remember some things about your project:</blockquote>
+>
+<blockquote>- <strong>Project:</strong> {known or "not found — I'll ask"}</blockquote>
+<blockquote>- <strong>Stack:</strong> {known or "not found — I'll ask"}</blockquote>
+<blockquote>- <strong>Memory:</strong> enabled (you're using it right now)</blockquote>
+<blockquote>- <strong>Test automation:</strong> {known or "I'll ask"}</blockquote>
+<blockquote>- <strong>Verbosity:</strong> {known or "I'll ask"}</blockquote>
+>
+<blockquote>Let me fill in the gaps.</blockquote>
+
+Then ask only the missing questions, in the same order as the original wizard (Q1 → Q5). Skip questions that have known answers.
+
+<h3>2.4 Degraded Flow (Memory Exists but Unparseable)</h3>
+
+If memory files exist but parsing fails (corrupted format, hand-edited beyond recognition):
+
+<blockquote><strong>Welcome back to CopilotForge!</strong> I found your memory files but couldn't fully parse them. I'll ask the full set of questions to make sure I have everything right. Your existing memory files will be preserved — I'll only append new entries.</blockquote>
+
+Run the full 5-question wizard (Phase 3 behavior). Do not modify or delete the unparseable memory files.
+
+<h3>2.5 Conflict Resolution</h3>
+
+If the user provides an answer that contradicts existing memory:
+
+</code>`<code>
+User says: "My stack is Python, FastAPI"
+Memory says: stack = "TypeScript, Express, Prisma"
+  │
+  ▼
+Ask: "I see your project was previously using TypeScript/Express/Prisma.
+      Are you switching stacks, or is this a different component?"
+  │
+  ├── "Switching" → Update memory, log decision: "Stack changed from X to Y"
+  └── "Different component" → Add new stack entry, keep old one
+</code>`<code>
+
+Log every conflict resolution as a decision in </code>decisions.md<code>.
+
+<hr>
+
+<h2>3. Convention Learning Algorithm</h2>
+
+<h3>3.1 Extraction Pipeline</h3>
+
+After each scaffolding run, before the validation summary (Step 5), the memory generator runs a <strong>pattern extraction pass</strong>:
+
+</code>`<code>
+All delegates complete
+  │
+  ▼
+memory generator receives:
+  - generated_files: list of all files created this run
+  - wizard_answers: current answers
+  - existing_patterns: current patterns.md content
+  │
+  ▼
+Extract new patterns from generated output
+  │
+  ▼
+Compare against existing patterns
+  │
+  ├── New pattern (no match) → Add with confidence: "observed"
+  ├── Matching pattern (same convention) → Bump confidence: "confirmed" or "established"
+  └── Contradicting pattern → Add as variant, flag for user review
+  │
+  ▼
+Write updated patterns.md
+</code>`<code>
+
+<h3>3.2 Pattern Categories</h3>
+
+| Category | What's Extracted | Example |
+|---|---|---|
+| Naming | File names, variable naming style, test naming | "kebab-case for files, camelCase for functions" |
+| File structure | Directory layout, file locations | "routes in src/routes/, tests colocated" |
+| Error handling | Error patterns used in generated recipes | "Custom AppError class with status codes" |
+| API design | Route patterns, response shapes | "RESTful routes, { data, error } response shape" |
+| Testing | Test framework, assertion style, mock patterns | "Jest, describe/it blocks, jest.mock for deps" |
+| Dependencies | Package choices, version preferences | "Prisma for ORM, Zod for validation" |
+
+<h3>3.3 Confidence Levels</h3>
+
+| Level | Threshold | Behavior |
+|---|---|---|
+| <strong>observed</strong> | 1 instance (first seen) | Recorded but not enforced. delegates see it as a suggestion. |
+| <strong>confirmed</strong> | 2+ instances, no contradictions | delegates treat it as a default. Can be overridden by explicit user input. |
+| <strong>established</strong> | 3+ instances, no contradictions | delegates follow it unless the user explicitly asks for something different. Shown to user as an active convention. |
+
+Confidence is tracked inline in </code>patterns.md<code>:
+
+</code>`<code>markdown
+<h3>File Naming</h3>
+<!-- confidence: established (seen 4 times, no contradictions) -->
+<ul><li>kebab-case for all source files</li></ul>
+<ul><li>PascalCase for React components</li></ul>
+<ul><li>.test.ts suffix for test files</li></ul>
+</code>`<code>
+
+The confidence comment is a machine-readable annotation. The memory generator reads it; users can ignore it or edit it.
+
+<h3>3.4 Contradiction Handling</h3>
+
+When a new pattern contradicts an existing one:
+
+1. Do <strong>not</strong> delete the old pattern.
+2. Add the new pattern with a </code><!-- supersedes: {old pattern heading} --><code> annotation.
+3. Log the contradiction as a decision in </code>decisions.md<code>.
+4. On the next read-back, the parser uses the most recent (superseding) pattern.
+
+Example:
+
+</code>`<code>markdown
+<h3>File Naming</h3>
+<!-- confidence: established (seen 4 times, no contradictions) -->
+<ul><li>kebab-case for all source files</li></ul>
+
+<h3>File Naming (Updated 2026-04-20)</h3>
+<!-- confidence: observed (seen 1 time) -->
+<!-- supersedes: File Naming -->
+<ul><li>snake_case for all source files (project switched to Python-first conventions)</li></ul>
+</code>`<code>
+
+<hr>
+
+<h2>4. Cross-Session Context Compounding</h2>
+
+<h3>4.1 Existing Files (Unchanged)</h3>
+
+<ul><li><strong></code>forge-memory/decisions.md<code></strong> — Append-only chronological log. Already designed in Phase 2. No changes to write behavior.</li></ul>
+<ul><li><strong></code>forge-memory/patterns.md<code></strong> — Additive merge. Already designed in Phase 2. Enhanced with confidence tracking (Section 3.3).</li></ul>
+
+<h3>4.2 New File: </code>forge-memory/history.md<code></h3>
+
+A per-session activity log that records what was done and what changed.
+
+</code>`<code>markdown
+<h1>Session History</h1>
+
+<blockquote>Automatic log of CopilotForge sessions. Each entry records what happened during a run.</blockquote>
+
+<hr>
+
+<h2>Sessions</h2>
+
+<h3>Session 3 — 2026-04-16</h3>
+
+<strong>Trigger:</strong> User requested "add auth patterns"
+<strong>Mode:</strong> Returning user (adaptive wizard — skipped most questions)
+<strong>delegates invoked:</strong> cookbook generator, memory generator
+<strong>Files created:</strong>
+<ul><li>cookbook/auth-middleware.ts</li></ul>
+<ul><li>cookbook/auth-jwt.ts</li></ul>
+<strong>Files updated:</strong>
+<ul><li>forge-memory/decisions.md (appended 1 entry)</li></ul>
+<ul><li>forge-memory/patterns.md (added 2 patterns)</li></ul>
+<ul><li>FORGE.md (regenerated cookbook section)</li></ul>
+<strong>Duration context:</strong> Wizard: 1 question, Generation: 2 delegates
+
+<hr>
+
+<h3>Session 2 — 2026-04-15</h3>
+
+<strong>Trigger:</strong> User requested "add testing"
+...
+</code>`<code>
+
+<strong>Write rules:</strong>
+<ul><li>New sessions prepend (most recent first), matching </code>decisions.md<code> convention.</li></ul>
+<ul><li>Each session entry is written by the Planner after all delegates complete, before the validation summary.</li></ul>
+<ul><li>Never delete or edit past session entries.</li></ul>
+
+<h3>4.3 New File: </code>forge-memory/preferences.md<code></h3>
+
+Extracted user preferences that span across sessions. Unlike patterns (which describe code conventions), preferences describe how the user likes to work.
+
+</code>`<code>markdown
+<h1>User Preferences</h1>
+
+<blockquote>Extracted from your interactions with CopilotForge. Edit freely — these guide how the system behaves.</blockquote>
+
+<hr>
+
+<h2>Style</h2>
+
+<ul><li>Prefer functional patterns over OOP</li></ul>
+<ul><li>Explicit over implicit (no magic)</li></ul>
+<ul><li>Readable over clever</li></ul>
+
+<h2>Frameworks</h2>
+
+<ul><li>Prefer Prisma over raw SQL</li></ul>
+<ul><li>Prefer Zod for validation</li></ul>
+<ul><li>Prefer pnpm over npm</li></ul>
+
+<h2>Verbosity</h2>
+
+<ul><li>Current level: intermediate</li></ul>
+<ul><li>Changed from beginner on 2026-04-15 (Session 2)</li></ul>
+
+<h2>Priorities</h2>
+
+<ul><li>Testing coverage is important — always generate test recipes</li></ul>
+<ul><li>Performance matters — include optimization notes in recipes</li></ul>
+</code>`<code>
+
+<strong>Write rules:</strong>
+<ul><li>Created on first run if memory is enabled. Starts mostly empty — populated with wizard answers.</li></ul>
+<ul><li>Updated by the memory generator after each run. New preferences are <strong>additive</strong> (append, don't replace).</li></ul>
+<ul><li>The user is expected to hand-edit this file. The memory generator respects existing content.</li></ul>
+<ul><li>If a preference contradicts a previous one, add the new one with a date annotation. Do not delete the old one.</li></ul>
+
+<h3>4.4 Memory Lifecycle</h3>
+
+</code>`<code>
+Session 1: CREATE
+  forge-memory/decisions.md  → Initial entry
+  forge-memory/patterns.md   → Stack conventions
+  forge-memory/history.md    → Session 1 log
+  forge-memory/preferences.md → Initial preferences
+
+Sessions 2–N: ACCUMULATE
+  decisions.md  → Append new entries
+  patterns.md   → Add new patterns, bump confidence
+  history.md    → Prepend session log
+  preferences.md → Add new preferences
+
+When total memory > 500 lines: SUMMARIZE
+  decisions.md  → Keep last 10 verbatim, summarize older to 1-line each
+  history.md    → Keep last 5 sessions verbatim, summarize older to 1-line each
+  patterns.md   → No summarization (patterns are already dense)
+  preferences.md → No summarization (expected to stay small)
+
+After 50+ sessions: ARCHIVE (deferred — Phase 5)
+  Move summarized content to forge-memory/archive/
+  Keep only active context in main files
+</code>`<code>
+
+<h3>4.5 Summarization Strategy</h3>
+
+When memory exceeds the 500-line budget, the memory generator performs in-place summarization:
+
+<strong>For </code>decisions.md<code>:</strong>
+<ul><li>Count entries. If >10, summarize entries 11+ into a </code>## Summary (Older Decisions)<code> section.</li></ul>
+<ul><li>Each summarized entry becomes one line: </code>- {date}: {decision title} — {one-sentence impact}<code></li></ul>
+<ul><li>The original verbose entries are replaced by summaries. This is the one exception to the append-only rule.</li></ul>
+<ul><li>Before summarizing, add a decision entry: "Memory summarized — {N} older decisions condensed."</li></ul>
+
+<strong>For </code>history.md<code>:</strong>
+<ul><li>Count sessions. If >5, summarize sessions 6+ into a </code>## Earlier Sessions<code> section.</li></ul>
+<ul><li>Each summarized session becomes one line: </code>- Session {N} ({date}): {trigger} — {files created count} files<code></li></ul>
+
+<strong>Summarization is idempotent.</strong> Running it twice on already-summarized content produces the same output.
+
+<hr>
+
+<h2>5. Per-Agent Memory (delegate Context)</h2>
+
+<h3>5.1 Memory Routing</h3>
+
+Each delegate receives the full FORGE-MEMORY block, but only <strong>reads</strong> the sections relevant to its work. This is instruction-level filtering — the Planner tells each delegate which memory sections to prioritize.
+
+| delegate | Reads | Uses for |
+|---|---|---|
+| <strong>skill generator</strong> | </code>active_patterns.naming<code>, </code>active_patterns.file_structure<code>, </code>preferences.style<code> | Naming generated skills, structuring SKILL.md content, matching style preferences |
+| <strong>agent generator</strong> | </code>active_patterns.naming<code>, </code>decision_count<code>, </code>preferences.style<code> | Agent file naming, system prompt tone, knowing how mature the project is |
+| <strong>memory generator</strong> | Full memory (all files) | Pattern extraction, confidence updates, conflict detection, summarization |
+| <strong>cookbook generator</strong> | </code>active_patterns.*<code>, </code>preferences.frameworks<code>, </code>recent_history<code> | Recipe selection, code style, avoiding re-generating recently created recipes |
+
+<h3>5.2 delegate Memory Instructions</h3>
+
+Each delegate's agent definition (</code>.copilot/agents/{delegate}.md<code>) gets a new section:
+
+</code>`<code>markdown
+<h2>Memory Context</h2>
+
+Before generating, check the FORGE-MEMORY block for:
+<ul><li>{delegate-specific items from table above}</li></ul>
+
+If FORGE-MEMORY is present:
+<ul><li>Apply active patterns as constraints on your output.</li></ul>
+<ul><li>Check recent_history to avoid duplicating recently created files.</li></ul>
+<ul><li>Respect preferences as soft defaults (user can override).</li></ul>
+
+If FORGE-MEMORY is absent or empty:
+<ul><li>Proceed with Phase 3 behavior (no memory context). Do not warn about missing memory.</li></ul>
+</code>`<code>
+
+<h3>5.3 cookbook generator Enhancement</h3>
+
+The cookbook generator gets the most significant memory upgrade because recipe selection is the most context-sensitive operation:
+
+<strong>Before generating recipes, the cookbook generator:</strong>
+1. Reads </code>recent_history<code> to find recipes already generated in previous sessions.
+2. Reads </code>active_patterns<code> to match code style (error handling pattern, naming convention).
+3. Reads </code>preferences.frameworks<code> to weight framework-specific recipes higher.
+4. Checks the FORGE.md cookbook manifest comment to know what recipes exist.
+
+<strong>New behavior:</strong> If the user says "add recipes," the cookbook generator generates only recipes that don't already exist — informed by both filesystem detection (skip-on-exist) and memory (know what was generated even if files were moved or renamed).
+
+<h3>5.4 skill generator Enhancement</h3>
+
+<strong>Before generating skills, the skill generator:</strong>
+1. Reads </code>active_patterns.naming<code> to name skills consistently with existing ones.
+2. Reads </code>active_patterns.testing<code> to populate testing skill with established test conventions.
+3. Reads </code>decision_count<code> — if the project has >5 decisions, add a "project maturity" note to the conventions skill.
+
+<h3>5.5 agent generator Enhancement</h3>
+
+<strong>Before generating agents, the agent generator:</strong>
+1. Reads </code>active_patterns.naming<code> for agent file naming.
+2. Reads </code>preferences.style<code> to set the tone of agent system prompts (formal vs. casual, verbose vs. terse).
+3. If this is a re-run and agents exist, reads the names of existing agents from </code>recent_history<code> to avoid naming collisions.
+
+<hr>
+
+<h2>6. Memory Integrity & Safety</h2>
+
+<h3>6.1 Graceful Degradation</h3>
+
+Memory is parsed by an LLM, not a strict parser. But LLMs can still fail on sufficiently mangled input. The degradation ladder:
+
+| Condition | Behavior |
+|---|---|
+| Memory files exist and parse cleanly | Full adaptive wizard + memory context |
+| Memory files exist but one file fails to parse | Use parsed files, ignore the failed one, log warning |
+| All memory files fail to parse | Degraded flow (Section 2.4) — full wizard, preserve files |
+| </code>forge-memory/<code> directory exists but is empty | Treat as first run with memory enabled |
+| </code>forge-memory/<code> directory doesn't exist | Treat as first run (Phase 3 flow) |
+
+<strong>Implementation:</strong> The Planner wraps all memory parsing in a try-parse block. If parsing throws (malformed markdown, unexpected structure), catch and degrade. Never crash, never lose user data.
+
+<h3>6.2 Hand-Edited Memory</h3>
+
+Users are encouraged to edit memory files. The system handles common edits:
+
+| User action | System response |
+|---|---|
+| Added a custom decision entry | Parsed and included in context. Format doesn't need to match exactly — extract what's recognizable. |
+| Deleted a decision entry | No error. Decision count decreases. |
+| Changed a pattern | New pattern is treated as authoritative. Confidence resets to "observed" on next extraction pass. |
+| Added free-form notes between sections | Ignored during parsing (not under a recognized heading). Preserved on write. |
+| Renamed section headings | Parser falls back to content-based extraction. If it can't find expected headings, that section is treated as missing. |
+
+<strong>Key principle:</strong> The parser is forgiving. It extracts what it can and ignores what it can't. It never rewrites user content that it doesn't understand.
+
+<h3>6.3 Memory Clearing ("Start Fresh")</h3>
+
+When the user chooses "Start fresh" (wizard option 4) or explicitly says "clear memory":
+
+1. <strong>Do not delete files.</strong> Instead, archive current content.
+2. Rename each file: </code>decisions.md<code> → </code>decisions.md.bak.{date}<code>, etc.
+3. Create fresh files from templates (same as first-run behavior).
+4. Log a decision in the new </code>decisions.md<code>: "Memory cleared. Previous memory archived as .bak.{date} files."
+
+<strong>Rationale:</strong> Deletion is irreversible. Archival lets users recover if they change their mind. </code>.bak<code> files are easily deleted manually.
+
+<h3>6.4 Privacy & Security</h3>
+
+Memory files must <strong>never</strong> contain:
+<ul><li>API keys, tokens, or secrets</li></ul>
+<ul><li>Passwords or credentials</li></ul>
+<ul><li>PII (names, emails, addresses) beyond what the user explicitly provides in wizard answers</li></ul>
+<ul><li>File contents (only file paths and descriptions)</li></ul>
+
+<strong>Implementation:</strong> The memory generator's system prompt includes an explicit prohibition:
+
+<blockquote>Never write API keys, tokens, passwords, secrets, or personally identifiable information into memory files. If the user's project description contains such data, redact it before writing. Memory files track decisions and patterns — never credentials.</blockquote>
+
+<h3>6.5 Memory Versioning</h3>
+
+Memory files include a version comment on line 1:
+
+</code>`<code>markdown
+<!-- forge-memory/decisions.md — Generated by CopilotForge v1 -->
+</code>`<code>
+
+If CopilotForge's memory format changes in a future version:
+
+1. Read the version comment.
+2. If version is current: parse normally.
+3. If version is older: attempt parse with best-effort compatibility. Log a decision: "Memory format upgraded from v{old} to v{new}."
+4. If version is missing: treat as v1 (current Phase 4 format).
+
+<strong>Rationale:</strong> Version comments are cheap insurance. They don't affect the user but give us a migration path.
+
+<hr>
+
+<h2>7. FORGE.md as Memory Surface</h2>
+
+<h3>7.1 Memory Status Section</h3>
+
+Add a new section to FORGE.md between </code>## Memory<code> and </code>## What's Next<code>:
+
+</code>`<code>markdown
+<h2>🧠 Memory Status</h2>
+
+<!-- forge:memory-status-start -->
+| Metric | Value |
+|---|---|
+| Last run | 2026-04-16 |
+| Sessions | 3 |
+| Decisions logged | 7 |
+| Patterns established | 12 |
+| Preferences tracked | 5 |
+| Memory health | ✅ All files readable |
+<!-- forge:memory-status-end -->
+
+<blockquote><strong>Tip:</strong> Edit </code>forge-memory/preferences.md<code> to tell CopilotForge about your coding style. Edit </code>forge-memory/patterns.md<code> to establish conventions agents should follow.</blockquote>
+</code>`<code>
+
+<h3>7.2 Merge Behavior</h3>
+
+The Memory Status section is bounded by </code><!-- forge:memory-status-start --><code> and </code><!-- forge:memory-status-end --><code> merge markers, consistent with the Phase 3 FORGE.md merge pattern.
+
+On re-runs:
+<ul><li><strong>Regenerate</strong> the content between the markers with current metrics.</li></ul>
+<ul><li><strong>Preserve</strong> any user content outside the markers.</li></ul>
+
+<h3>7.3 Memory Health Indicator</h3>
+
+The </code>Memory health<code> row reflects the parse result from Section 1:
+
+| Parse result | Health display |
+|---|---|
+| All files parsed cleanly | ✅ All files readable |
+| One file failed to parse | ⚠️ {filename} has parse issues — still usable |
+| All files failed to parse | ❌ Memory unreadable — running in no-memory mode |
+| Memory files don't exist | 📭 No memory yet — will be created on next run |
+
+<hr>
+
+<h2>8. Phase Boundary</h2>
+
+<h3>8.1 In Scope (Phase 4 Delivers)</h3>
+
+| Deliverable | Description |
+|---|---|
+| Memory read-back protocol | Planner reads </code>forge-memory/<code> before wizard |
+| FORGE-MEMORY context block | Structured memory passed to delegates |
+| Adaptive wizard | Returning users see summary + options, not the same questions again |
+| Partial memory handling | Missing answers are asked; known answers are pre-filled |
+| Conflict resolution | Contradictions between memory and user input are resolved explicitly |
+| Convention learning | Pattern extraction after each run with confidence levels |
+| </code>forge-memory/history.md<code> | Per-session activity log |
+| </code>forge-memory/preferences.md<code> | Extracted user preferences |
+| Memory summarization | In-place summarization when memory exceeds budget |
+| Per-agent memory routing | Each delegate reads relevant memory sections |
+| Memory integrity & safety | Graceful degradation, hand-edit support, privacy rules |
+| Memory clearing | Archive-based "start fresh" mechanism |
+| Memory versioning | Version comments for future migration |
+| FORGE.md memory surface | Live memory status section with merge markers |
+
+<h3>8.2 Deferred (Not Phase 4)</h3>
+
+| Item | Deferred To | Rationale |
+|---|---|---|
+| Custom delegate agents (user-defined) | Phase 5 | Requires agent plugin architecture — separate design pass |
+| Plugin system for cookbook recipes | Phase 5 | Recipe system needs to stabilize before allowing plugins |
+| CI/CD integration | Phase 5 | Memory in CI requires non-interactive mode first |
+| Memory sharing across repos | Phase 5 | Cross-repo memory raises privacy and scope questions |
+| Memory archival to </code>forge-memory/archive/<code> | Phase 5 | Summarization in Phase 4 is sufficient; archival adds file management complexity |
+| Angular component recipes | Phase 5 | Deferred from Phase 3 — complex component model |
+| Go/C# MCP recipes | Phase 5 | Deferred from Phase 3 — SDK stability |
+| User-defined skill types in wizard | Phase 5 | Needs memory system to be stable first |
+| Multi-repo scaffolding | Phase 6 | Requires cross-repo memory (Phase 5 prerequisite) |
+
+<hr>
+
+<h2>9. Decisions</h2>
+
+All architectural decisions made in this contract, with rationale.
+
+<h3>D4-01: Memory is advisory, never blocking</h3>
+
+<strong>Decision:</strong> If memory parsing fails, the system degrades to the full wizard. Memory never prevents the Planner from running.
+
+<strong>Rationale:</strong> A beginner who hand-edits </code>decisions.md<code> and breaks the format should not get a cryptic error. The whole point of CopilotForge is zero friction. Failing open (no memory) is always better than failing closed (can't run).
+
+<h3>D4-02: FORGE-MEMORY block extends FORGE-CONTEXT</h3>
+
+<strong>Decision:</strong> Memory data is passed to delegates as a FORGE-MEMORY block appended to the existing FORGE-CONTEXT, not as a separate mechanism.
+
+<strong>Rationale:</strong> FORGE-CONTEXT is the established inter-delegate contract from Phase 2. Adding a parallel system creates confusion. One context block, two sections.
+
+<h3>D4-03: Confidence levels tracked as inline HTML comments</h3>
+
+<strong>Decision:</strong> Pattern confidence (</code>observed<code>, </code>confirmed<code>, </code>established<code>) is stored as HTML comments in </code>patterns.md<code>, not as visible metadata.
+
+<strong>Rationale:</strong> Users read </code>patterns.md<code> for conventions. Machine metadata should be invisible to casual readers but accessible to the memory generator. HTML comments are invisible in rendered markdown but present in raw text.
+
+<h3>D4-04: Memory clearing archives rather than deletes</h3>
+
+<strong>Decision:</strong> "Start fresh" renames memory files to </code>.bak.{date}<code> instead of deleting them.
+
+<strong>Rationale:</strong> Deletion is irreversible. A user who clears memory and regrets it has no recourse. </code>.bak<code> files are trivially deletable but provide a safety net. This follows the same philosophy as "never overwrite existing files" from Phase 1.
+
+<h3>D4-05: Two new memory files — history.md and preferences.md</h3>
+
+<strong>Decision:</strong> Add </code>forge-memory/history.md<code> (session log) and </code>forge-memory/preferences.md<code> (user preferences) as new memory surfaces.
+
+<strong>Rationale:</strong> </code>decisions.md<code> tracks <em>what was decided</em>. </code>patterns.md<code> tracks <em>what conventions exist</em>. Neither tracks <em>what happened across sessions</em> (history) or <em>how the user likes to work</em> (preferences). These are distinct concerns that deserve distinct files. Keeping them separate means each can have its own read/write/summarize rules.
+
+<h3>D4-06: 500-line memory budget with in-place summarization</h3>
+
+<strong>Decision:</strong> Total memory loaded into context is capped at ~500 lines. When exceeded, older entries are summarized in-place.
+
+<strong>Rationale:</strong> LLM context windows are finite. Memory that exceeds the working window is worse than no memory — it crowds out the actual generation instructions. 500 lines accommodates ~10 detailed decisions + full patterns + 5 session logs + preferences, with headroom for growth. In-place summarization (rather than external archives) keeps the system single-file-per-concern.
+
+<h3>D4-07: Adaptive wizard shows four options for returning users</h3>
+
+<strong>Decision:</strong> Returning users see a summary of known context and four action choices (add, change, re-scaffold, start fresh) instead of asking all questions again.
+
+<strong>Rationale:</strong> Asking the same questions on every run is the antithesis of "learning." If the system already knows the answers, proving it by showing them builds trust. Four options cover the major returning-user intents: extending, tweaking, regenerating, and resetting.
+
+<h3>D4-08: Per-agent memory is instruction-filtered, not file-filtered</h3>
+
+<strong>Decision:</strong> All delegates receive the full FORGE-MEMORY block. The Planner's dispatch instructions tell each delegate which sections to prioritize.
+
+<strong>Rationale:</strong> Splitting memory into per-delegate files would create a synchronization problem (who updates what?) and add file management overhead. A single memory block with delegate-specific reading instructions is simpler and more maintainable. The LLM is good at following "focus on these sections" instructions.
+
+<h3>D4-09: Summarization is the sole exception to append-only decisions</h3>
+
+<strong>Decision:</strong> When </code>decisions.md<code> is summarized, older verbose entries are replaced with one-line summaries. This is the only case where existing decision content is modified.
+
+<strong>Rationale:</strong> Append-only is sacred — it prevents data loss. But unbounded append creates unusable files. Summarization is a controlled compression that preserves meaning while reducing volume. It's logged as a decision itself ("Memory summarized"), creating an audit trail.
+
+<h3>D4-10: Memory versioning via line-1 HTML comment</h3>
+
+<strong>Decision:</strong> Memory files include a version comment on line 1 (</code><!-- forge-memory/decisions.md — Generated by CopilotForge v1 --><code>).
+
+<strong>Rationale:</strong> If we change the memory format in Phase 5+, we need to know what version a user's memory is in. A line-1 comment is unobtrusive, doesn't affect rendering, and gives us a migration hook. Cost: one line per file. Benefit: future-proofing.
+
+<hr>
+
+<h2>File Manifest</h2>
+
+Files created or modified by Phase 4 implementation:
+
+| File | Action | Owner |
+|---|---|---|
+| </code>docs/phase4-architecture.md<code> | Created | Morpheus |
+| </code>.copilot/agents/memory generator.md<code> | Updated — add read-back, extraction, summarization protocols | Neo |
+| </code>.copilot/agents/skill generator.md<code> | Updated — add Memory Context section | Neo |
+| </code>.copilot/agents/agent generator.md<code> | Updated — add Memory Context section | Neo |
+| </code>.copilot/agents/cookbook generator.md<code> | Updated — add Memory Context section + recipe dedup logic | Neo |
+| </code>.copilot/agents/planner.md<code> | Updated — add memory probe + adaptive wizard flow | Neo |
+| </code>.github/skills/planner/SKILL.md<code> | Updated — Step 0 (memory probe) before Step 1 | Trinity |
+| </code>templates/forge-memory/history.md<code> | Created — session history template | Neo |
+| </code>templates/forge-memory/preferences.md<code> | Created — user preferences template | Neo |
+| </code>templates/forge-memory/decisions.md<code> | Updated — add version comment | Neo |
+| </code>templates/forge-memory/patterns.md<code> | Updated — add confidence comment syntax | Neo |
+| </code>templates/utils/rerun-detection.md<code> | Updated — add memory read-back step | Neo |
+| </code>tests/phase4/<code> | Created — validation scenarios for memory flows | Tank |
+| </code>.squad/decisions.md` | Appended — Phase 4 decisions | Morpheus |
+</main>
+  </div>
+</body>
+</html>

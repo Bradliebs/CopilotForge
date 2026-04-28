@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GETTING STARTED — CopilotForge</title>
+  <style>
+    :root { --bg: #0d1117; --fg: #c9d1d9; --accent: #58a6ff; --border: #30363d; --code-bg: #161b22; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; }
+    .container { display: flex; max-width: 1200px; margin: 0 auto; }
+    nav { width: 250px; padding: 2rem 1rem; border-right: 1px solid var(--border); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    nav a { display: block; color: var(--fg); text-decoration: none; padding: 0.3rem 0.5rem; border-radius: 4px; font-size: 0.9rem; }
+    nav a:hover, nav a.active { background: var(--border); color: var(--accent); }
+    nav h3 { color: var(--accent); margin: 1rem 0 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    main { flex: 1; padding: 2rem 3rem; max-width: 800px; }
+    h1 { color: var(--accent); margin-bottom: 1rem; font-size: 2rem; }
+    h2 { color: var(--accent); margin: 2rem 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    h3 { color: var(--fg); margin: 1.5rem 0 0.5rem; }
+    a { color: var(--accent); }
+    code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 6px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; border: 1px solid var(--border); text-align: left; }
+    th { background: var(--code-bg); }
+    blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; margin: 1rem 0; color: #8b949e; }
+    ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin: 0.25rem 0; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    .header { padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+    .header h1 { font-size: 1.2rem; margin: 0; }
+    .header .version { color: #8b949e; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔥 CopilotForge</h1>
+    <span class="version">v3.0.0</span>
+  </div>
+  <div class="container">
+    <nav><h3>Documentation</h3>
+<a href="index.html">Home</a>
+<a href="copilot-extension-setup.html">COPILOT EXTENSION SETUP</a>
+<a href="decisions-and-architecture.html">DECISIONS AND ARCHITECTURE</a>
+<a href="examples-registry-spec.html">EXAMPLES REGISTRY SPEC</a>
+<a href="faq.html">FAQ</a>
+<a href="getting-started.html" class="active">GETTING STARTED</a>
+<a href="how-it-works.html">HOW IT WORKS</a>
+<a href="mcp-setup.html">MCP SETUP</a>
+<a href="plugin-api.html">PLUGIN API</a>
+<a href="system-breakdown.html">SYSTEM BREAKDOWN</a>
+<a href="watch.html">WATCH</a>
+<a href="what-to-use.html">WHAT TO USE</a>
+<a href="phase4-architecture.html">Phase4 Architecture</a>
+</nav>
+    <main><h1>🚀 Getting Started with CopilotForge</h1>
+
+<blockquote>A complete walkthrough from zero to a fully scaffolded (auto-generated) project. We'll set up a task management app with Next.js and Prisma as our running example.</blockquote>
+
+<strong>Time needed:</strong> About 5 minutes.
+
+<strong>What you need:</strong>
+<ul><li>✅ A code editor with an AI assistant (GitHub Copilot Chat, Claude Code, Cursor, or similar)</li></ul>
+<ul><li>✅ A project folder — can be an existing project or a brand-new empty folder</li></ul>
+<ul><li>✅ That's it — no packages, no installs, no command line required</li></ul>
+
+<hr>
+
+<blockquote>### 📍 Is This the Right Guide for You?</blockquote>
+>
+<blockquote>- <strong>Want a quick overview first?</strong> → <a href="../README.md">README</a></blockquote>
+<blockquote>- <strong>Just want to browse code recipes?</strong> → <a href="../cookbook/CHEATSHEET.md">Cookbook Cheatsheet</a></blockquote>
+<blockquote>- <strong>Not sure what you need?</strong> → <a href="WHAT-TO-USE.md">What Should I Use?</a></blockquote>
+<blockquote>- <strong>Ready for a full walkthrough? Keep reading!</strong> This guide walks you through setting up CopilotForge on a real project, step by step.</blockquote>
+
+<h2>Table of Contents</h2>
+
+<ul><li><a href="#the-example-project">The Example Project</a></li></ul>
+<ul><li><a href="#step-1--add-the-planner-skill">Step 1 — Add the Planner Skill</a></li></ul>
+<ul><li><a href="#step-2--start-the-wizard">Step 2 — Start the Wizard</a></li></ul>
+<ul><li><a href="#step-3--answer-the-questions">Step 3 — Answer the Questions</a></li></ul>
+<ul><li><a href="#step-4--confirm-and-generate">Step 4 — Confirm and Generate</a></li></ul>
+<ul><li><a href="#step-5--explore-what-was-created">Step 5 — Explore What Was Created</a></li></ul>
+<ul><li><a href="#from-planning-to-building">From Planning to Building</a></li></ul>
+<ul><li><a href="#why-this-works">Why This Works</a></li></ul>
+<ul><li><a href="#testing-that-it-worked">Testing That It Worked</a></li></ul>
+<ul><li><a href="#customizing-the-output">Customizing the Output</a></li></ul>
+<ul><li><a href="#running-it-again-memory-in-action">Running It Again (Memory in Action)</a></li></ul>
+<ul><li><a href="#oracle-prime--precision-reasoning">Oracle Prime — Precision Reasoning</a></li></ul>
+<ul><li><a href="#cross-platform-notes">Cross-Platform Notes</a></li></ul>
+<ul><li><a href="#troubleshooting">Troubleshooting</a></li></ul>
+<ul><li><a href="#edge-cases--what-ifs">Edge Cases & What-Ifs</a></li></ul>
+
+<hr>
+
+<h2>🚀 Autonomous Mode (No Prompts)</h2>
+
+Want to skip all confirmation prompts? Use the <code>--yes</code> flag:
+
+``<code>bash
+npx copilotforge init --yes
+</code>`<code>
+
+This will:
+<ul><li>✅ Auto-overwrite existing files (no "Overwrite?" prompt)</li></ul>
+<ul><li>✅ Auto-commit to git (no "Want to commit?" prompt)</li></ul>
+<ul><li>✅ Perfect for scripting, CI, or when using AI assistants with </code>/yolo<code> mode</li></ul>
+
+<strong>Short form:</strong> </code>npx copilotforge init -y<code>
+
+The same flag works for upgrades: </code>npx copilotforge upgrade --yes<code>
+
+<hr>
+
+<blockquote>🆕 <strong>Starting from an empty repo?</strong> That works too! Skip ahead to <a href="#step-1--add-the-planner-skill">Step 1</a> — the wizard handles empty repos automatically. When it asks about your stack, just tell it what language you plan to use (e.g., "Python" or "JavaScript"). No config files needed.</blockquote>
+
+<h2>The Example Project</h2>
+
+Let's say you're building <strong>TaskFlow</strong> — a task management app with:
+
+<ul><li><strong>Frontend:</strong> React (via Next.js)</li></ul>
+<ul><li><strong>API:</strong> Next.js API routes</li></ul>
+<ul><li><strong>Database:</strong> PostgreSQL via Prisma</li></ul>
+<ul><li><strong>Language:</strong> TypeScript</li></ul>
+<ul><li><strong>Testing:</strong> Jest</li></ul>
+
+Your repo currently looks like this:
+
+</code>`<code>
+taskflow/
+├── package.json
+├── prisma/
+│   └── schema.prisma
+├── src/
+│   ├── app/
+│   ├── components/
+│   └── lib/
+└── tsconfig.json
+</code>`<code>
+
+Let's add CopilotForge to it.
+
+<hr>
+
+<h2>Step 1 — Add the Planner Skill</h2>
+
+<h3>Option A — Quick Install (Recommended)</h3>
+
+</code>`<code>bash
+npx copilotforge init
+</code>`<code>
+
+Done! This copies everything you need into your project automatically.
+
+<h3>Option B — Manual Setup</h3>
+
+If you prefer not to use npm, create the following folder structure in your project:
+
+</code>`<code>
+taskflow/
+  .github/
+    skills/
+      planner/
+        SKILL.md
+</code>`<code>
+
+Copy the </code>SKILL.md<code> file from CopilotForge's </code>.github/skills/planner/SKILL.md<code> into that location.
+
+<blockquote>💡 <strong>Already have a </code>.github/<code> folder?</strong> That's fine — just add the </code>skills/planner/<code> subfolder inside it. CopilotForge won't touch your existing workflows or settings.</blockquote>
+
+<hr>
+
+<h2>Step 2 — Start the Wizard</h2>
+
+Open your AI assistant and type:
+
+</code>`<code>
+set up my project
+</code>`<code>
+
+The Planner skill activates and greets you:
+
+<blockquote><strong>Welcome to CopilotForge!</strong> I'll ask you five quick questions about your project, then scaffold a complete set of Copilot skills, agent definitions, memory files, and code recipes into this repo. Takes about two minutes. Let's go.</blockquote>
+
+<hr>
+
+<h2>Step 3 — Answer the Questions</h2>
+
+The wizard asks questions one at a time. Here's exactly how the conversation goes for our TaskFlow example:
+
+<h3>Question 1 — Project Description</h3>
+
+<blockquote><strong>Wizard:</strong> What are you building? Describe your project in a sentence or two.</blockquote>
+
+<strong>You:</strong> A task management app where teams can create, assign, and track tasks with due dates and priority levels.
+
+<h3>Question 2 — Tech Stack</h3>
+
+<blockquote><strong>Wizard:</strong> What's your stack? List languages, frameworks, and key tools.</blockquote>
+
+<strong>You:</strong> TypeScript, Next.js, Prisma, PostgreSQL, React, Jest
+
+<blockquote>💡 The wizard also scans your repo automatically. Since you have a </code>package.json<code> and </code>prisma/schema.prisma<code>, it already knows you're using TypeScript and Prisma. Your answer confirms and adds detail.</blockquote>
+
+<blockquote>ℹ️ <strong>Not sure about your stack?</strong> Look in your project folder for these files:</blockquote>
+<blockquote>- </code>package.json<code> → JavaScript/TypeScript (check </code>dependencies<code> for React, Next.js, Express, etc.)</blockquote>
+<blockquote>- </code>requirements.txt<code> or </code>pyproject.toml<code> → Python (check for Django, FastAPI, Flask, etc.)</blockquote>
+<blockquote>- </code>go.mod<code> → Go</blockquote>
+<blockquote>- </code>.csproj<code> → C# / .NET</blockquote>
+<blockquote>- </code>Cargo.toml<code> → Rust</blockquote>
+<blockquote>- </code>composer.json<code> → PHP</blockquote>
+<blockquote>- </code>Gemfile<code> → Ruby</blockquote>
+>
+<blockquote>If you don't have any of these, just tell the wizard your language and it will figure out the rest.</blockquote>
+
+<h3>Question 3 — Memory</h3>
+
+<blockquote><strong>Wizard:</strong> Do you want memory across sessions? This creates </code>forge-memory/<code> files so agents remember decisions and patterns between conversations.</blockquote>
+
+<strong>You:</strong> yes
+
+<h3>Question 4 — Test Automation</h3>
+
+<blockquote><strong>Wizard:</strong> I see you already have test files in this repo. I'll keep test automation enabled. Say "no" if you want to skip the tester agent and testing skill.</blockquote>
+
+<strong>You:</strong> yes
+
+<blockquote>💡 The wizard noticed your Jest config and auto-detected test automation. Smart!</blockquote>
+
+<h3>Question 5 — Experience Level</h3>
+
+<blockquote><strong>Wizard:</strong> What's your experience level? This controls how verbose the generated files are.</blockquote>
+<blockquote>- <strong>beginner</strong> — extra comments, explanations in every file</blockquote>
+<blockquote>- <strong>intermediate</strong> — standard detail, assumes you know your stack</blockquote>
+<blockquote>- <strong>advanced</strong> — minimal comments, just the essentials</blockquote>
+
+<strong>You:</strong> intermediate
+
+<h3>Question 6 — Extras (Optional)</h3>
+
+<blockquote><strong>Wizard:</strong> Want to add any advanced features? Select the ones you'd like (or none for now).</blockquote>
+
+The wizard shows you a menu of optional advanced features:
+
+| Extra | What it does |
+|-------|-------------|
+| 🔄 <strong>Task automation</strong> — The Ralph Loop | AI works through your TODO list — picks a task, does it, moves on (powered by </code>task-loop.{ext}<code>) |
+| 🧪 <strong>Auto-experiments</strong> (auto-research) | AI tries code changes, keeps what improves your metrics |
+| 📚 <strong>Knowledge wiki</strong> (knowledge-wiki) | Build a searchable wiki from your notes and articles |
+| 🔗 <strong>CLI hooks</strong> (copilot-hooks) | Auto-actions during AI sessions (logging, safety) |
+| ✍️ <strong>Blog writer</strong> (blog-writer) | Turns your PRs into blog posts |
+| 📋 <strong>Template factory</strong> (template-creator) | Generates README, issue templates, docs |
+| 📊 <strong>PR dashboard</strong> (pr-visualization) | Charts of your pull request activity |
+
+<strong>You:</strong> none
+
+<blockquote>💡 You can always add extras later from </code>cookbook/CHEATSHEET.md<code> without re-running the wizard. If you're more experienced, try "task automation" — it pairs well with any project. For advanced users, combine "task automation" with "auto-experiments" for autonomous AI development.</blockquote>
+
+<h3>The Ralph Loop</h3>
+
+If you picked <strong>Task automation</strong> in Q6, you'll also get:
+<ul><li></code>IMPLEMENTATION_PLAN.md<code> — your project's build plan (edit this anytime!)</li></ul>
+<ul><li></code>cookbook/task-loop.ts<code> — The Ralph Loop engine (the code that drives it)</li></ul>
+
+To run The Ralph Loop: tell your AI assistant "run the plan" or execute the </code>task-loop<code> recipe directly. It reads the plan, picks the next task, implements it, validates, commits, and repeats.
+
+<hr>
+
+<h2>Step 4 — Confirm and Generate</h2>
+
+The wizard shows you a summary:
+
+<blockquote><strong>Here's what I'll create:</strong></blockquote>
+>
+<blockquote>- <strong>Project:</strong> A task management app where teams can create, assign, and track tasks</blockquote>
+<blockquote>- <strong>Stack:</strong> TypeScript, Next.js, Prisma, PostgreSQL, React, Jest</blockquote>
+<blockquote>- <strong>Memory:</strong> yes</blockquote>
+<blockquote>- <strong>Test automation:</strong> yes</blockquote>
+<blockquote>- <strong>Verbosity:</strong> intermediate</blockquote>
+<blockquote>- <strong>Extras:</strong> none</blockquote>
+>
+<blockquote>I'll generate skills, agents, memory files, cookbook recipes, and a FORGE.md control panel. Ready to go?</blockquote>
+
+<strong>You:</strong> yes
+
+The wizard creates all the files. When it's done, you see a summary:
+
+<blockquote><strong>✅ CopilotForge scaffolding complete!</strong></blockquote>
+>
+<blockquote>I created:</blockquote>
+<blockquote>- <strong>3 skills</strong> — taskflow-conventions, code-review, testing</blockquote>
+<blockquote>- <strong>3 agents</strong> — planner, reviewer, tester</blockquote>
+<blockquote>- <strong>6 cookbook recipes</strong> — error-handling.ts, api-client.ts, auth-middleware.ts, db-query.ts, route-handler.ts, mcp-server.ts</blockquote>
+<blockquote>- <strong>4 memory files</strong> — decisions.md, patterns.md, preferences.md, history.md</blockquote>
+<blockquote>- <strong>1 control panel</strong> — FORGE.md</blockquote>
+>
+<blockquote><strong>Start here:</strong> Open FORGE.md to see your full setup.</blockquote>
+
+<hr>
+
+<h2>Step 5 — Explore What Was Created</h2>
+
+<blockquote>Want to understand why these files exist and how they connect? See <a href="DECISIONS-AND-ARCHITECTURE.md">Decisions & Architecture</a>.</blockquote>
+
+Your repo now looks like this:
+
+</code>`<code>
+taskflow/
+├── .copilot/
+│   └── agents/
+│       ├── planner.md            # The wizard
+│       ├── reviewer.md           # Code reviewer — knows TypeScript + Prisma conventions
+│       └── tester.md             # Test writer — uses Jest patterns
+│
+├── .github/
+│   └── skills/
+│       ├── planner/
+│       │   └── SKILL.md          # The wizard skill
+│       ├── taskflow-conventions/
+│       │   └── SKILL.md          # Your project's coding standards
+│       ├── code-review/
+│       │   └── SKILL.md          # Code review checklist for your stack
+│       └── testing/
+│           └── SKILL.md          # Testing patterns for Jest + TypeScript
+│
+├── cookbook/
+│   ├── README.md                 # Recipe index
+│   ├── error-handling.ts         # TypeScript error patterns
+│   ├── api-client.ts             # HTTP client with retry and auth
+│   ├── auth-middleware.ts        # Next.js/Express JWT middleware
+│   ├── db-query.ts               # Prisma CRUD, transactions, error handling
+│   ├── route-handler.ts          # Next.js API routes with Zod validation
+│   └── mcp-server.ts             # MCP tool server for Copilot
+│
+├── forge-memory/
+│   ├── decisions.md              # "Scaffolded TaskFlow with Next.js + Prisma"
+│   ├── patterns.md               # TypeScript strict mode, path aliases, Prisma conventions
+│   ├── preferences.md            # Intermediate verbosity, TypeScript primary
+│   └── history.md                # "2026-04-16 — Initial setup, 17 files"
+│
+├── FORGE.md                      # Your control panel — open this first
+│
+├── package.json                  # (your existing file, untouched)
+├── prisma/                       # (your existing folder, untouched)
+├── src/                          # (your existing folder, untouched)
+└── tsconfig.json                 # (your existing file, untouched)
+</code>`<code>
+
+<h3>What each file does</h3>
+
+<strong>Skills</strong> (</code>.github/skills/<code>):
+
+| File | Purpose |
+|------|---------|
+| </code>taskflow-conventions/SKILL.md<code> | Defines coding standards for your project — naming conventions, TypeScript strict mode, Prisma patterns, error handling approach |
+| </code>code-review/SKILL.md<code> | Instructions for reviewing code — what to check for in TypeScript, common Next.js pitfalls, Prisma anti-patterns |
+| </code>testing/SKILL.md<code> | Instructions for writing tests — Jest conventions, mocking Prisma, testing API routes |
+
+<strong>Agents</strong> (</code>.copilot/agents/<code>):
+
+| File | Purpose |
+|------|---------|
+| </code>reviewer.md<code> | An AI code reviewer that knows your project's conventions and stack-specific rules |
+| </code>tester.md<code> | An AI test writer that creates Jest tests following your project's patterns |
+| </code>planner.md<code> | The wizard itself — this is how CopilotForge runs the setup flow |
+
+<strong>Cookbook</strong> (</code>cookbook/<code>):
+
+| File | Purpose |
+|------|---------|
+| </code>error-handling.ts<code> | Custom error types, retry with exponential backoff, graceful degradation |
+| </code>api-client.ts<code> | Typed HTTP client with auth headers, retry logic, and timeout handling |
+| </code>auth-middleware.ts<code> | JWT authentication middleware for Express/Next.js with role-based access |
+| </code>db-query.ts<code> | Prisma CRUD operations, transactions, connection management, error handling |
+| </code>route-handler.ts<code> | Next.js/Express route with Zod input validation and typed responses |
+| </code>mcp-server.ts<code> | An MCP server with tool definitions — useful if you build Copilot integrations |
+
+<strong>Memory</strong> (</code>forge-memory/<code>):
+
+| File | Purpose |
+|------|---------|
+| </code>decisions.md<code> | Records what CopilotForge decided and why — your project's decision log |
+| </code>patterns.md<code> | Coding conventions — TypeScript strict mode, Prisma naming, file structure |
+| </code>preferences.md<code> | Your wizard settings — verbosity, stack, testing preference |
+| </code>history.md<code> | When CopilotForge ran and what it did |
+
+<hr>
+
+<h2>From Planning to Building</h2>
+
+After the wizard finishes, you'll see a ready-to-use prompt. This is the bridge between
+describing your project and actually building it.
+
+<strong>Option 1: Copy the prompt</strong>
+The wizard generates a custom prompt based on your answers. Copy it, paste it into your
+AI assistant, and you're building.
+
+<strong>Option 2: The one-liner</strong>
+If you prefer to keep it simple:
+<blockquote>Read FORGE.md and let's start building.</blockquote>
+
+Your AI assistant reads FORGE.md and forge-memory/ to understand your project — no need
+to re-explain your stack, conventions, or goals.
+
+<strong>Option 3: Just start talking</strong>
+You can also just describe what you want to build next. The AI will check FORGE.md
+automatically if the Planner skill is active.
+
+<hr>
+
+<h2>Why This Works</h2>
+
+The wizard created three things your AI assistant uses:
+<ul><li><strong>FORGE.md</strong> — your project's "control panel" (team, skills, preferences)</li></ul>
+<ul><li><strong>forge-memory/</strong> — decisions, patterns, and conventions from this session</li></ul>
+<ul><li><strong>cookbook/</strong> — ready-to-use code recipes for your stack</li></ul>
+
+When you say "Read FORGE.md and let's start building," your AI loads all of this
+context in one go. It's like handing a new team member a complete onboarding document.
+
+<hr>
+
+<h2>Testing That It Worked</h2>
+
+Try these commands in your AI assistant to test the generated setup:
+
+<h3>Test the code reviewer</h3>
+
+</code>`<code>
+Review this code:
+
+export async function getTask(id: string) {
+  const task = await prisma.task.findUnique({ where: { id } });
+  return task;
+}
+</code>`<code>
+
+Your reviewer agent should flag things like: missing error handling, no null check, should validate the </code>id<code> parameter.
+
+<h3>Test the test writer</h3>
+
+</code>`<code>
+Write tests for the getTask function above
+</code>`<code>
+
+Your tester agent should generate Jest tests with Prisma mocking, covering the happy path, missing task, and invalid ID scenarios.
+
+<h3>Test the project conventions</h3>
+
+</code>`<code>
+What are the coding conventions for this project?
+</code>`<code>
+
+Your AI assistant should reference the </code>taskflow-conventions<code> skill and describe your TypeScript/Prisma conventions.
+
+<hr>
+
+<h2>Customizing the Output</h2>
+
+Everything CopilotForge generates is plain text. Edit any file anytime.
+
+<h3>Change your coding conventions</h3>
+
+Open </code>.github/skills/taskflow-conventions/SKILL.md<code> and edit the Patterns section. Add your team's specific rules — import ordering, component structure, API response format, whatever matters to you.
+
+<h3>Adjust the code reviewer</h3>
+
+Open </code>.copilot/agents/reviewer.md<code> and edit the System Prompt. Add checklist items specific to your project, or remove ones that don't apply.
+
+<h3>Modify a cookbook recipe</h3>
+
+Open any recipe in </code>cookbook/<code>, change the code to match your project's actual patterns, and save. Recipes are starting points — they're meant to be customized.
+
+<h3>Add a new agent</h3>
+
+Create a new </code>.md<code> file in </code>.copilot/agents/<code>. Use </code>reviewer.md<code> as a template. Define the role, scope, and instructions. Update </code>FORGE.md<code> to add it to the agents table.
+
+<h3>Add a new skill</h3>
+
+Create a new folder in </code>.github/skills/<code> with a </code>SKILL.md<code> file inside. Follow the format in the existing skills — describe when it activates and what it does.
+
+<hr>
+
+<h2>Running It Again (Memory in Action)</h2>
+
+Let's say a month later, you've added a WebSocket layer to TaskFlow. Run the wizard again:
+
+</code>`<code>
+set up my project
+</code>`<code>
+
+This time, the greeting is different:
+
+<blockquote>👋 <strong>Welcome back!</strong> I found your project context:</blockquote>
+<blockquote>- <strong>Project:</strong> A task management app where teams can create, assign, and track tasks</blockquote>
+<blockquote>- <strong>Stack:</strong> TypeScript, Next.js, Prisma, PostgreSQL, React, Jest</blockquote>
+<blockquote>- <strong>Last run:</strong> 2026-04-16</blockquote>
+<blockquote>- <strong>Decisions:</strong> 1 recorded</blockquote>
+<blockquote>- <strong>Patterns:</strong> 5 active conventions</blockquote>
+<blockquote>- <strong>Agents:</strong> planner, reviewer, tester</blockquote>
+>
+<blockquote>What would you like to do?</blockquote>
+
+<strong>You:</strong> I added WebSocket support with socket.io. Can you update my setup?
+
+The wizard now:
+<ul><li><strong>Skips questions it already knows</strong> — your project description, stack preferences, and verbosity are all in memory</li></ul>
+<ul><li><strong>Asks only about what's new</strong> — confirms the WebSocket addition, checks if you want new recipes</li></ul>
+<ul><li><strong>Preserves your existing files</strong> — it won't overwrite your customized reviewer or conventions</li></ul>
+<ul><li><strong>Appends to memory</strong> — adds a new decision entry: "Added WebSocket support"</li></ul>
+<ul><li><strong>Generates new recipes</strong> — might add a </code>websocket-handler.ts<code> to the cookbook</li></ul>
+
+Your customizations survive every re-run. Memory only grows — it never deletes.
+
+<hr>
+
+<h2>Oracle Prime — Precision Reasoning</h2>
+
+Oracle Prime is an adaptive reasoning framework that scales analysis depth to match question complexity. It's available as a Q6 extra or can be installed standalone.
+
+<h3>What It Does</h3>
+
+When you ask complex questions — architecture decisions, risk assessments, trade-off analysis — Oracle Prime activates a structured reasoning pipeline:
+
+<ul><li><strong>Simple tasks</strong> → lightweight decomposition (you won't even notice it)</li></ul>
+<ul><li><strong>Medium tasks</strong> → hypothesis mapping + scenario envelope</li></ul>
+<ul><li><strong>Complex tasks</strong> → full 7-stage Bayesian pipeline with scenario modeling, counterfactual stress testing, and confidence-rated conclusions</li></ul>
+
+<h3>How to Use It</h3>
+
+1. <strong>Install:</strong> Select "Oracle Prime" in Q6 extras during the wizard, or run </code>npx copilotforge init --oracle-prime<code>
+2. <strong>Invoke:</strong> Say "deep analysis", "oracle prime", "scenario analysis", or "what are the risks" in Copilot Chat
+3. <strong>Read the output:</strong> Scenario Map (probability-weighted outcomes), Counterfactual Pivot (what flips the base case), and a Confidence rating
+
+<h3>What Gets Created</h3>
+
+| File | Purpose |
+|------|---------|
+| </code>.github/instructions/oracle-prime.instructions.md<code> | Always-on adaptive reasoning (scales to complexity) |
+| </code>.github/skills/oracle-prime/SKILL.md<code> | Full deep-analysis skill with 7-stage pipeline |
+| </code>.copilot/agents/oracle-prime.md<code> | Agent template with structured output format |
+
+<h3>Quick Reference</h3>
+
+Run </code>npx copilotforge oracle<code> to see all trigger phrases and installation details from the terminal.
+
+<hr>
+
+<h2>Cross-Platform Notes</h2>
+
+CopilotForge works on Windows, Mac, and Linux. A few things to keep in mind:
+
+<h3>Path Separators</h3>
+<ul><li><strong>In these docs:</strong> We use </code>/<code> (forward slashes) in file path examples</li></ul>
+<ul><li><strong>On Windows:</strong> Use </code>\<code> (backslashes) — or just use PowerShell, which accepts both</li></ul>
+<ul><li>Example: </code>.github/skills/planner/SKILL.md<code> on Mac/Linux = </code>.github\skills\planner\SKILL.md<code> on Windows</li></ul>
+
+<h3>Test Scripts</h3>
+<ul><li></code>.sh<code> files (shell scripts) → Mac and Linux</li></ul>
+<ul><li></code>.ps1<code> files (PowerShell scripts) → Windows</li></ul>
+<ul><li>The cookbook includes both when relevant</li></ul>
+
+<h3>Environment Variables</h3>
+<ul><li><strong>Unix/Mac:</strong> </code>$VAR<code></li></ul>
+<ul><li><strong>PowerShell:</strong> </code>$env:VAR<code></li></ul>
+<ul><li><strong>Windows cmd:</strong> </code>%VAR%<code></li></ul>
+
+Cookbook recipes use the convention for the target platform, but you can adapt them as needed.
+
+<hr>
+
+<h2>Troubleshooting</h2>
+
+<h3>"The wizard didn't start when I said 'set up my project'"</h3>
+
+<strong>Check that the SKILL.md file is in the right location:</strong>
+</code>`<code>
+your-project/.github/skills/planner/SKILL.md
+</code>`<code>
+
+The path must be exact. The file needs to be inside a </code>planner/<code> folder, which is inside </code>skills/<code>, which is inside </code>.github/<code>.
+
+<strong>Check that your AI assistant can read repo files.</strong> Some setups require you to open the project folder first or enable file access.
+
+<h3>"I got an error during scaffolding"</h3>
+
+CopilotForge is designed to handle partial failures gracefully. If one part fails, the rest still generates. Check the validation summary at the end — it lists what was created and what was skipped.
+
+Try running the wizard again. It'll detect existing files and only generate what's missing.
+
+<h3>"I have no config files in my repo"</h3>
+
+That's fine! CopilotForge works with empty repositories. When the wizard asks about your stack (Question 2), just describe what you're planning to use. Examples:
+<ul><li>"Python with Flask"</li></ul>
+<ul><li>"JavaScript with React"</li></ul>
+<ul><li>"Go"</li></ul>
+
+The wizard will generate conventions and recipes for that stack, even though you haven't created config files yet.
+
+<h3>"The generated files don't match my stack"</h3>
+
+Be specific in Question 2 (tech stack). Instead of "JavaScript," say "TypeScript, Express, Prisma." The more specific you are, the more targeted the output.
+
+CopilotForge also reads your config files (</code>package.json<code>, </code>requirements.txt<code>, etc.) to auto-detect frameworks. Make sure these files are up to date.
+
+<h3>"I want to remove something that was generated"</h3>
+
+Just delete the file. CopilotForge won't re-create deleted files unless you run the wizard again — and even then, it asks before regenerating. Your choices are always respected.
+
+<h3>"FORGE.md has placeholder values like </code>{{project-name}}<code>"</h3>
+
+This means you're looking at the template, not a generated file. The template lives in </code>templates/FORGE.md<code> and uses </code>{{placeholder}}<code> syntax. After running the wizard, the real </code>FORGE.md<code> at your repo root has your actual values filled in.
+
+<h3>"Can I use CopilotForge without GitHub Copilot?"</h3>
+
+Yes. The SKILL.md file is just a set of instructions that any language model can follow. Paste the Instructions section into Claude Code, ChatGPT, or any AI assistant that can create files in your project.
+
+<h3>"I want to use Python, not TypeScript"</h3>
+
+Just answer "Python" (and your frameworks) in Question 2. The wizard generates skills and agents tailored to your Python stack. Cookbook recipes are TypeScript-only reference implementations, but the generated skills know your language.
+
+<hr>
+
+<h2>Edge Cases & What-Ifs</h2>
+
+Real-world scenarios and how CopilotForge handles them:
+
+<h3>Partial Failures</h3>
+<strong>What if only some files are created?</strong>
+<ul><li>CopilotForge handles partial failures gracefully. If one section fails (e.g., cookbook recipes), the rest still generates.</li></ul>
+<ul><li>Check the validation summary — it tells you exactly what succeeded and what didn't.</li></ul>
+<ul><li>Re-run the wizard to fill in missing pieces. It skips files that already exist.</li></ul>
+
+<h3>Outdated SKILL.md</h3>
+<strong>What if the Planner skill is out of date?</strong>
+<ul><li>Delete </code>.github/skills/planner/<code> and copy the latest version from the CopilotForge repo.</li></ul>
+<ul><li>Your existing project files (agents, recipes, memory) are unaffected.</li></ul>
+<ul><li>Re-run the wizard to regenerate with the updated skill.</li></ul>
+
+<h3>Large Repositories</h3>
+<strong>What if my repo has thousands of files?</strong>
+<ul><li>File scanning is fast (usually under 5 seconds). If it takes longer, the wizard still works — it just takes a moment.</li></ul>
+<ul><li>Memory files are kept small (soft limit of ~500 lines), so large repos don't slow down re-runs.</li></ul>
+
+<h3>Public Repos and Memory</h3>
+<strong>Should I commit </code>forge-memory/<code> to a public repo?</strong>
+<ul><li>Memory files contain your decisions and conventions, not secrets or code.</li></ul>
+<ul><li>If you don't want them visible publicly, add </code>forge-memory/<code> to your </code>.gitignore<code>.</li></ul>
+<ul><li>Private repos: commit memory files — they're useful context for your team.</li></ul>
+
+<h3>Contradictory Stack Signals</h3>
+<strong>What if my answer conflicts with detected files?</strong>
+<ul><li>Your answer always wins. If you say "Django" but </code>package.json<code> exists, CopilotForge uses Django.</li></ul>
+<ul><li>The conflict is noted in </code>decisions.md<code> so you know what happened.</li></ul>
+<ul><li>This is useful when migrating stacks or when the repo has legacy files.</li></ul>
+
+<hr>
+
+<h2>Running Your Plan</h2>
+
+If you selected <strong>Task Automation</strong> during setup, you'll have an </code>IMPLEMENTATION_PLAN.md<code> with tasks ready to go.
+
+Tell your AI assistant:
+
+<blockquote>"Run the plan"</blockquote>
+
+It will:
+1. Read your plan
+2. Pick the first pending task
+3. Write real code for it
+4. Run tests to make sure it works
+5. Mark it done and commit
+6. Move to the next task — automatically
+
+To resume later: <strong>"continue the plan"</strong>  
+To check progress: <strong>"what's next in the plan"</strong>
+
+<hr>
+
+<h2>Next Steps</h2>
+
+<ul><li><strong>Read the recipes:</strong> Browse </code>cookbook/README.md` for the full recipe index</li></ul>
+<ul><li><strong>Understand the internals:</strong> Read <a href="HOW-IT-WORKS.md">HOW-IT-WORKS.md</a> for a look under the hood</li></ul>
+<ul><li><strong>Go back to the README:</strong> <a href="../README.md">README.md</a></li></ul>
+</main>
+  </div>
+</body>
+</html>
