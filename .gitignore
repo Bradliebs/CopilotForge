@@ -9,3 +9,9 @@ node_modules/
 # CopilotForge: runtime state files
 .forge-watch-state.json
 .copilotforge-stop
+# Temp test output files
+*_results.txt
+*_output.txt
+*.vsix
+_site/
+copilotforge-plugin-*/
