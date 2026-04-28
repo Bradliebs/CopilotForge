@@ -132,6 +132,9 @@ The CLI is the human-facing entry point. It installs, upgrades, diagnoses, and m
 | `src/trust-cli.js` | CLI wrapper for trust trajectory display and reset (Phase 16) |
 | `src/extension-server.js` | GitHub Copilot Extension HTTP/SSE agent server with LLM passthrough (Phase 17) |
 | `src/team.js` | Team workspaces — shared forge-memory via git hooks, playbook merge (Phase 17) |
+| `src/marketplace.js` | Agent marketplace — browse, search, install community skills/agents (Phase 17) |
+| `src/multi-repo.js` | Multi-repo support — shared playbook and trust across linked repos (Phase 17) |
+| `src/telemetry.js` | Telemetry dashboard — local opt-in usage analytics and reporting (Phase 17) |
 
 ### Templates Modular Split (Phase 13)
 

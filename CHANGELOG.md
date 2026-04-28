@@ -5,6 +5,22 @@ All notable changes to CopilotForge are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - Phase 17: Ecosystem & Collaboration
+
+### Added
+- **Agent marketplace** (`cli/src/marketplace.js`) — browse, search, install, and manage community skills/agents/recipes
+- **`copilotforge marketplace`** subcommand — browse/search/install/uninstall/info/list
+- **Multi-repo support** (`cli/src/multi-repo.js`) — share playbook and trust across linked repositories
+- **`copilotforge multi-repo`** subcommand — link/unlink/sync/status for cross-repo collaboration
+- **Telemetry dashboard** (`cli/src/telemetry.js`) — opt-in local usage analytics (command usage, path popularity, trust trends)
+- **`copilotforge telemetry`** subcommand — enable/disable/show/export/reset local analytics
+- **VS Code extension build pipeline** — `.gitignore`, `.vscodeignore` for clean builds
+
+### Changed
+- Version bump from 1.9.0 to 2.0.0 (Phase 17 complete — ecosystem features)
+- All template version stamps updated to v2.0.0
+- Phase 17 IMPLEMENTATION_PLAN tasks marked complete
+
 ## [1.9.0] - Phase 16: Intelligence & Ecosystem
 
 ### Added

@@ -147,15 +147,15 @@ describe('getPlatformForge - path routing', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. Version stamp — all paths carry v1.9.0
+// 3. Version stamp — all paths carry v2.0.0
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('getPlatformForge - version stamp', () => {
   for (const letter of PLATFORM_PATHS) {
-    it(`Path ${letter} contains <!-- copilotforge: v1.9.0 -->`, () => {
+    it(`Path ${letter} contains <!-- copilotforge: v2.0.0 -->`, () => {
       assert.ok(
-        getPlatformForge(letter).includes('copilotforge: v1.9.0'),
-        `Path ${letter} template should carry version stamp v1.9.0`
+        getPlatformForge(letter).includes('copilotforge: v2.0.0'),
+        `Path ${letter} template should carry version stamp v2.0.0`
       );
     });
   }

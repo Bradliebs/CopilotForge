@@ -1,6 +1,6 @@
 # FORGE.md — [Your Project Name]
 
-<!-- copilotforge: v1.9.0 -->
+<!-- copilotforge: v2.0.0 -->
 <!-- copilotforge: path=E -->
 
 ## Project Summary

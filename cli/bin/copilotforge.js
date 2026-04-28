@@ -185,6 +185,27 @@ switch (command) {
     break;
   }
 
+  case 'marketplace': {
+    const marketplace = require('../src/marketplace');
+    marketplace.run(args.slice(1)).catch((err) => {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    });
+    break;
+  }
+
+  case 'multi-repo': {
+    const multiRepo = require('../src/multi-repo');
+    multiRepo.run(args.slice(1));
+    break;
+  }
+
+  case 'telemetry': {
+    const telemetry = require('../src/telemetry');
+    telemetry.run(args.slice(1));
+    break;
+  }
+
   case 'rollback': {
     const rollback = require('../src/rollback');
     rollback.run(args.slice(1)).catch((err) => {
@@ -278,6 +299,14 @@ function printHelp() {
     npx copilotforge team sync        Pull and merge remote memory changes
     npx copilotforge team status      Show team workspace sync status
     npx copilotforge team uninstall   Remove team workspace git hooks
+    npx copilotforge marketplace      Browse community skills, agents, and recipes
+    npx copilotforge marketplace search <query>  Search marketplace by keyword
+    npx copilotforge marketplace install <name>  Install a marketplace item
+    npx copilotforge multi-repo status  Show linked repos and trust summary
+    npx copilotforge multi-repo link    Link current repo to shared workspace
+    npx copilotforge multi-repo sync    Sync playbook across linked repos
+    npx copilotforge telemetry          Show local usage analytics dashboard
+    npx copilotforge telemetry enable   Start collecting local usage data
     npx copilotforge --version        Show version
 
   ${colors.bold('Flags:')}

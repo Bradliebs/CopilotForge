@@ -6,7 +6,7 @@
 function getPlatformForgeA() {
   return `# FORGE.md — [Your Project Name]
 
-<!-- copilotforge: v1.9.0 -->
+<!-- copilotforge: v2.0.0 -->
 <!-- copilotforge: path=A -->
 
 ## Project Summary
@@ -57,7 +57,7 @@ Recipes live in \`cookbook/\` and provide copy-paste patterns.
 function getPlatformForgeB() {
   return `# FORGE.md — [Your Project Name]
 
-<!-- copilotforge: v1.9.0 -->
+<!-- copilotforge: v2.0.0 -->
 <!-- copilotforge: path=B -->
 
 ## Project Summary
@@ -110,7 +110,7 @@ Recipes live in \`cookbook/\` and provide copy-paste patterns.
 function getPlatformForgeC() {
   return `# FORGE.md — [Your Project Name]
 
-<!-- copilotforge: v1.9.0 -->
+<!-- copilotforge: v2.0.0 -->
 <!-- copilotforge: path=C -->
 
 ## Project Summary
@@ -161,7 +161,7 @@ Recipes live in \`cookbook/\` and provide copy-paste patterns.
 function getPlatformForgeD() {
   return `# FORGE.md — [Your Project Name]
 
-<!-- copilotforge: v1.9.0 -->
+<!-- copilotforge: v2.0.0 -->
 <!-- copilotforge: path=D -->
 
 ## Project Summary
@@ -213,7 +213,7 @@ Recipes live in \`cookbook/\` and provide copy-paste patterns.
 function getPlatformForgeE() {
   return `# FORGE.md — [Your Project Name]
 
-<!-- copilotforge: v1.9.0 -->
+<!-- copilotforge: v2.0.0 -->
 <!-- copilotforge: path=E -->
 
 ## Project Summary
@@ -265,7 +265,7 @@ Recipes live in \`cookbook/\` and provide copy-paste patterns.
 function getPlatformForgeF() {
   return `# FORGE.md — [Your Project Name]
 
-<!-- copilotforge: v1.9.0 -->
+<!-- copilotforge: v2.0.0 -->
 <!-- copilotforge: path=F -->
 
 ## Project Summary
@@ -316,7 +316,7 @@ Recipes live in \`cookbook/\` and provide copy-paste patterns.
 function getPlatformForgeG() {
   return `# FORGE.md — [Your Project Name]
 
-<!-- copilotforge: v1.9.0 -->
+<!-- copilotforge: v2.0.0 -->
 <!-- copilotforge: path=G -->
 
 ## Project Summary
@@ -367,7 +367,7 @@ Recipes live in \`cookbook/\` and provide copy-paste patterns.
 function getPlatformForgeH() {
   return `# FORGE.md — [Your Project Name]
 
-<!-- copilotforge: v1.9.0 -->
+<!-- copilotforge: v2.0.0 -->
 <!-- copilotforge: path=H -->
 
 ## Project Summary
@@ -418,7 +418,7 @@ Recipes live in \`cookbook/\` and provide copy-paste patterns.
 function getPlatformForgeI() {
   return `# FORGE.md — [Your Project Name]
 
-<!-- copilotforge: v1.9.0 -->
+<!-- copilotforge: v2.0.0 -->
 <!-- copilotforge: path=I -->
 
 ## Project Summary

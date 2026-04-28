@@ -459,3 +459,325 @@ describe('team - hook management', () => {
     fs.rmSync(dir, { recursive: true, force: true });
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Marketplace tests
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('marketplace - module structure', () => {
+  const mp = require('../src/marketplace');
+
+  it('exports run function', () => {
+    assert.strictEqual(typeof mp.run, 'function');
+  });
+
+  it('exports searchItems function', () => {
+    assert.strictEqual(typeof mp.searchItems, 'function');
+  });
+
+  it('exports installItem and uninstallItem functions', () => {
+    assert.strictEqual(typeof mp.installItem, 'function');
+    assert.strictEqual(typeof mp.uninstallItem, 'function');
+  });
+
+  it('exports BUILTIN_REGISTRY with items', () => {
+    assert.ok(mp.BUILTIN_REGISTRY);
+    assert.ok(Array.isArray(mp.BUILTIN_REGISTRY.items));
+    assert.ok(mp.BUILTIN_REGISTRY.items.length >= 4);
+  });
+});
+
+describe('marketplace - search', () => {
+  const { searchItems, BUILTIN_REGISTRY } = require('../src/marketplace');
+
+  it('finds items by name', () => {
+    const results = searchItems(BUILTIN_REGISTRY.items, 'oracle');
+    assert.ok(results.length >= 1);
+    assert.ok(results.some((r) => r.name.includes('oracle')));
+  });
+
+  it('finds items by tag', () => {
+    const results = searchItems(BUILTIN_REGISTRY.items, 'reasoning');
+    assert.ok(results.length >= 1);
+  });
+
+  it('finds items by description keyword', () => {
+    const results = searchItems(BUILTIN_REGISTRY.items, 'scaffold');
+    assert.ok(results.length >= 1);
+  });
+
+  it('returns empty for no match', () => {
+    const results = searchItems(BUILTIN_REGISTRY.items, 'zzz-nonexistent-zzz');
+    assert.strictEqual(results.length, 0);
+  });
+});
+
+describe('marketplace - install/uninstall', () => {
+  const { installItem, uninstallItem, getInstalled } = require('../src/marketplace');
+  const os = require('os');
+
+  function createTempDir() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'mp-test-'));
+    fs.mkdirSync(path.join(dir, '.copilotforge'), { recursive: true });
+    return dir;
+  }
+
+  it('installs a builtin item', () => {
+    const dir = createTempDir();
+    const item = { name: 'test-skill', type: 'skill', version: '1.0.0', author: 'test', install: 'builtin' };
+    const result = installItem(item, dir);
+    assert.strictEqual(result.status, 'registered');
+    const installed = getInstalled(dir);
+    assert.ok(installed.some((i) => i.name === 'test-skill'));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('detects already-installed items', () => {
+    const dir = createTempDir();
+    const item = { name: 'test-skill', type: 'skill', version: '1.0.0', author: 'test', install: 'builtin' };
+    installItem(item, dir);
+    const result = installItem(item, dir);
+    assert.strictEqual(result.status, 'already-installed');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('uninstalls an item', () => {
+    const dir = createTempDir();
+    const item = { name: 'removable', type: 'skill', version: '1.0.0', author: 'test', install: 'builtin' };
+    installItem(item, dir);
+    const result = uninstallItem('removable', dir);
+    assert.strictEqual(result.status, 'removed');
+    assert.strictEqual(getInstalled(dir).length, 0);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('returns not-found for unknown item', () => {
+    const dir = createTempDir();
+    const result = uninstallItem('nonexistent', dir);
+    assert.strictEqual(result.status, 'not-found');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Multi-repo tests
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('multi-repo - module structure', () => {
+  const mr = require('../src/multi-repo');
+
+  it('exports run function', () => {
+    assert.strictEqual(typeof mr.run, 'function');
+  });
+
+  it('exports linkRepo and unlinkRepo', () => {
+    assert.strictEqual(typeof mr.linkRepo, 'function');
+    assert.strictEqual(typeof mr.unlinkRepo, 'function');
+  });
+
+  it('exports collectPlaybookEntries', () => {
+    assert.strictEqual(typeof mr.collectPlaybookEntries, 'function');
+  });
+
+  it('exports deduplicateEntries', () => {
+    assert.strictEqual(typeof mr.deduplicateEntries, 'function');
+  });
+
+  it('exports aggregateTrust', () => {
+    assert.strictEqual(typeof mr.aggregateTrust, 'function');
+  });
+});
+
+describe('multi-repo - deduplication', () => {
+  const { deduplicateEntries } = require('../src/multi-repo');
+
+  it('deduplicates by title keeping highest score', () => {
+    const entries = [
+      { type: 'STRATEGY', title: 'Cache API', score: 2, date: '2026-01-01', content: 'v1' },
+      { type: 'STRATEGY', title: 'Cache API', score: 5, date: '2026-02-01', content: 'v2' },
+      { type: 'PATTERN', title: 'Error retry', score: 1, date: '2026-01-15', content: 'retry' },
+    ];
+    const result = deduplicateEntries(entries);
+    assert.strictEqual(result.length, 2);
+    const cache = result.find((e) => e.title === 'Cache API');
+    assert.strictEqual(cache.score, 5);
+    assert.strictEqual(cache.content, 'v2');
+  });
+
+  it('handles empty input', () => {
+    assert.strictEqual(deduplicateEntries([]).length, 0);
+  });
+
+  it('sorts by score descending', () => {
+    const entries = [
+      { type: 'STRATEGY', title: 'A', score: 1, date: '', content: '' },
+      { type: 'STRATEGY', title: 'B', score: 5, date: '', content: '' },
+      { type: 'STRATEGY', title: 'C', score: 3, date: '', content: '' },
+    ];
+    const result = deduplicateEntries(entries);
+    assert.strictEqual(result[0].title, 'B');
+    assert.strictEqual(result[1].title, 'C');
+    assert.strictEqual(result[2].title, 'A');
+  });
+});
+
+describe('multi-repo - trust aggregation', () => {
+  const { aggregateTrust } = require('../src/multi-repo');
+  const os = require('os');
+
+  it('aggregates trust from multiple repos', () => {
+    const dir1 = fs.mkdtempSync(path.join(os.tmpdir(), 'mr-t1-'));
+    const dir2 = fs.mkdtempSync(path.join(os.tmpdir(), 'mr-t2-'));
+
+    fs.mkdirSync(path.join(dir1, 'forge-memory'), { recursive: true });
+    fs.mkdirSync(path.join(dir2, 'forge-memory'), { recursive: true });
+
+    fs.writeFileSync(path.join(dir1, 'forge-memory', 'trust.json'), JSON.stringify({
+      level: 'familiar', score: 40, sessionCount: 10, signals: { tasksCompleted: 5, tasksFailed: 1, rollbacks: 0 },
+    }));
+    fs.writeFileSync(path.join(dir2, 'forge-memory', 'trust.json'), JSON.stringify({
+      level: 'trusted', score: 70, sessionCount: 20, signals: { tasksCompleted: 15, tasksFailed: 2, rollbacks: 1 },
+    }));
+
+    const repos = [
+      { name: 'repo1', path: dir1 },
+      { name: 'repo2', path: dir2 },
+    ];
+    const result = aggregateTrust(repos);
+    assert.strictEqual(result.totalSessions, 30);
+    assert.strictEqual(result.totalTasksCompleted, 20);
+    assert.strictEqual(result.totalTasksFailed, 3);
+    assert.strictEqual(result.totalRollbacks, 1);
+    assert.strictEqual(result.repos.length, 2);
+
+    fs.rmSync(dir1, { recursive: true, force: true });
+    fs.rmSync(dir2, { recursive: true, force: true });
+  });
+
+  it('handles repos without trust data', () => {
+    const result = aggregateTrust([{ name: 'empty', path: '/nonexistent' }]);
+    assert.strictEqual(result.totalSessions, 0);
+    assert.strictEqual(result.repos.length, 0);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Telemetry tests
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('telemetry - module structure', () => {
+  const tel = require('../src/telemetry');
+
+  it('exports run function', () => {
+    assert.strictEqual(typeof tel.run, 'function');
+  });
+
+  it('exports recordEvent function', () => {
+    assert.strictEqual(typeof tel.recordEvent, 'function');
+  });
+
+  it('exports isEnabled and setEnabled', () => {
+    assert.strictEqual(typeof tel.isEnabled, 'function');
+    assert.strictEqual(typeof tel.setEnabled, 'function');
+  });
+
+  it('exports analyzeEvents function', () => {
+    assert.strictEqual(typeof tel.analyzeEvents, 'function');
+  });
+
+  it('exports BUILTIN_EVENT_TYPES', () => {
+    assert.ok(Array.isArray(tel.BUILTIN_EVENT_TYPES));
+    assert.ok(tel.BUILTIN_EVENT_TYPES.includes('command'));
+    assert.ok(tel.BUILTIN_EVENT_TYPES.includes('path-selected'));
+  });
+});
+
+describe('telemetry - event analysis', () => {
+  const { analyzeEvents } = require('../src/telemetry');
+
+  it('handles empty events', () => {
+    const result = analyzeEvents([]);
+    assert.strictEqual(result.totalEvents, 0);
+    assert.strictEqual(Object.keys(result.commandUsage).length, 0);
+  });
+
+  it('counts command usage', () => {
+    const events = [
+      { type: 'command', data: { command: 'init' }, timestamp: '2026-01-01T00:00:00Z' },
+      { type: 'command', data: { command: 'init' }, timestamp: '2026-01-01T01:00:00Z' },
+      { type: 'command', data: { command: 'doctor' }, timestamp: '2026-01-02T00:00:00Z' },
+    ];
+    const result = analyzeEvents(events);
+    assert.strictEqual(result.totalEvents, 3);
+    assert.strictEqual(result.commandUsage.init, 2);
+    assert.strictEqual(result.commandUsage.doctor, 1);
+  });
+
+  it('tracks path selections', () => {
+    const events = [
+      { type: 'path-selected', data: { path: 'A' }, timestamp: '2026-01-01T00:00:00Z' },
+      { type: 'path-selected', data: { path: 'J' }, timestamp: '2026-01-02T00:00:00Z' },
+      { type: 'path-selected', data: { path: 'A' }, timestamp: '2026-01-03T00:00:00Z' },
+    ];
+    const result = analyzeEvents(events);
+    assert.strictEqual(result.pathSelections.A, 2);
+    assert.strictEqual(result.pathSelections.J, 1);
+  });
+
+  it('tracks daily activity', () => {
+    const events = [
+      { type: 'command', data: { command: 'init' }, timestamp: '2026-01-01T10:00:00Z' },
+      { type: 'command', data: { command: 'doctor' }, timestamp: '2026-01-01T14:00:00Z' },
+      { type: 'command', data: { command: 'status' }, timestamp: '2026-01-02T09:00:00Z' },
+    ];
+    const result = analyzeEvents(events);
+    assert.strictEqual(result.dailyActivity['2026-01-01'], 2);
+    assert.strictEqual(result.dailyActivity['2026-01-02'], 1);
+  });
+
+  it('tracks trust changes', () => {
+    const events = [
+      { type: 'trust-change', data: { level: 'familiar' }, timestamp: '2026-01-01T00:00:00Z' },
+      { type: 'trust-change', data: { level: 'trusted' }, timestamp: '2026-02-01T00:00:00Z' },
+    ];
+    const result = analyzeEvents(events);
+    assert.strictEqual(result.trustLevels.familiar, 1);
+    assert.strictEqual(result.trustLevels.trusted, 1);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CLI routing for new commands
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('CLI routing - new Phase 17 commands', () => {
+  const { execSync } = require('child_process');
+  const binPath = path.resolve(__dirname, '..', 'bin', 'copilotforge.js');
+
+  it('help text includes marketplace command', () => {
+    try {
+      const output = execSync(`node "${binPath}" --help`, { encoding: 'utf8', timeout: 5000 });
+      assert.ok(output.includes('marketplace'), 'help should mention marketplace');
+    } catch (err) {
+      if (err.stdout) assert.ok(err.stdout.includes('marketplace'));
+    }
+  });
+
+  it('help text includes multi-repo command', () => {
+    try {
+      const output = execSync(`node "${binPath}" --help`, { encoding: 'utf8', timeout: 5000 });
+      assert.ok(output.includes('multi-repo'), 'help should mention multi-repo');
+    } catch (err) {
+      if (err.stdout) assert.ok(err.stdout.includes('multi-repo'));
+    }
+  });
+
+  it('help text includes telemetry command', () => {
+    try {
+      const output = execSync(`node "${binPath}" --help`, { encoding: 'utf8', timeout: 5000 });
+      assert.ok(output.includes('telemetry'), 'help should mention telemetry');
+    } catch (err) {
+      if (err.stdout) assert.ok(err.stdout.includes('telemetry'));
+    }
+  });
+});

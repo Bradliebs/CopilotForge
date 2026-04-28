@@ -217,7 +217,7 @@
 #   6 = VS Code extension — native VS Code integration with sidebar,
 #       status bar trust indicator, and inline playbook suggestions
 #
-# STATUS: In Progress
+# STATUS: Complete
 # =============================================================================
 
 - [x] copilot-extension — Create GitHub Copilot Extension HTTP/SSE agent server. New file: `cli/src/extension-server.js` implementing POST handler with SSE response streaming. Features: intent parsing (init/doctor/status/rollback/trust/playbook/plan/wizard/help), GitHub signature verification via `api.github.com/meta/public_keys/copilot_api`, SSE helpers (ack/text/done/error), health check endpoint (GET /), CORS preflight. New CLI command: `copilotforge extension [--port PORT]`. Zero new dependencies. Test file: `cli/tests/phase17.test.js` with 21 tests covering module structure, intent parsing, HTTP handler, and CLI routing.
@@ -225,6 +225,6 @@
 - [x] team-workspaces — Shared forge-memory across team members via git hooks. New file: `cli/src/team.js` with post-merge hook (auto-notify on forge-memory changes), pre-commit hook (validate playbook format, detect duplicates), hook install/uninstall/status commands, three-way playbook merge with score-based conflict resolution, playbook rendering. New CLI command: `copilotforge team [init|sync|status|uninstall]`.
 - [x] copilot-extension-guide — Step-by-step GitHub App registration and deployment guide. New file: `docs/COPILOT-EXTENSION-SETUP.md` covering server setup, GitHub App creation, Copilot tab configuration, app installation, testing, signature verification, deployment options (Azure/Docker/Render), and Marketplace listing.
 - [x] vscode-extension — VS Code extension scaffold. New directory: `vscode-extension/` with TypeScript source, package.json manifest (6 commands, 3 sidebar views, activity bar entry, file watchers), trust indicator status bar, playbook sidebar, skills/agents browser. Activates on FORGE.md or forge-memory/ detection.
-- [ ] agent-marketplace — Discover and install community agents/skills from a public registry
-- [ ] multi-repo — Shared playbook and trust across multiple repositories in a workspace
-- [ ] telemetry-dashboard — Opt-in usage analytics for project leads
+- [x] agent-marketplace — Agent marketplace for community skills/agents/recipes. New file: `cli/src/marketplace.js` with GitHub registry fetch, search, install/uninstall, builtin registry fallback, cache management. New CLI command: `copilotforge marketplace [browse|search|install|uninstall|info|list]`.
+- [x] multi-repo — Shared playbook and trust across multiple repositories. New file: `cli/src/multi-repo.js` with repo linking, playbook collection/deduplication, trust aggregation, shared playbook generation. New CLI command: `copilotforge multi-repo [status|link|unlink|sync]`.
+- [x] telemetry-dashboard — Opt-in local usage analytics. New file: `cli/src/telemetry.js` with event recording, analysis (command usage, path popularity, trust trends, daily activity), enable/disable/reset/export. New CLI command: `copilotforge telemetry [show|enable|disable|reset|export]`.

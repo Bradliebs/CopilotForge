@@ -20,7 +20,7 @@ const { getPlatformForge } = require('../src/templates/platform-forge');
 const { FORGE_MD } = require('../src/templates/forge');
 
 const SNAPSHOT_DIR = path.join(__dirname, '__snapshots__');
-const VERSION = 'v1.9.0';
+const VERSION = 'v2.0.0';
 
 // Build Paths mapping
 const BUILD_PATHS = {
@@ -304,8 +304,8 @@ test('Version Stamp Consistency', async (t) => {
 
     assert.strictEqual(versions.size, 1,
       'All paths should use the same version number');
-    assert.ok(versions.has('1.9.0'),
-      'All paths should use version 1.9.0');
+    assert.ok(versions.has('2.0.0'),
+      'All paths should use version 2.0.0');
   });
 });
 
