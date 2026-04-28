@@ -133,7 +133,7 @@ function extractFeatures(description) {
   }
 
   // Payment
-  if (/\bpay\b|\bstripe\b|\bbilling\b|\bsubscription\b|\bcheckout\b/i.test(lower)) {
+  if (/\bpay\b|\bpayment|\bstripe\b|\bbilling\b|\bsubscription\b|\bcheckout\b/i.test(lower)) {
     features.push({ id: 'add-payments', title: 'Integrate payment processing (Stripe or equivalent)' });
   }
 

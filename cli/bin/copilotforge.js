@@ -109,6 +109,17 @@ switch (command) {
     break;
   }
 
+  case 'plan': {
+    const planCli = require('../src/plan-cli');
+    try {
+      planCli.run(args.slice(1));
+    } catch (err) {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    }
+    break;
+  }
+
   case 'trust': {
     const trustCli = require('../src/trust-cli');
     try {
@@ -232,6 +243,8 @@ function printHelp() {
     npx copilotforge run --dry-run    Preview what run would do without executing
     npx copilotforge run --task <id>  Run a single task by ID and exit
     npx copilotforge oracle           Show Oracle Prime usage guide and trigger phrases
+    npx copilotforge plan "desc"      Generate implementation plan from a project description
+    npx copilotforge plan "desc" --dry-run  Preview plan without writing
     npx copilotforge trust            View trust trajectory (level, score, history)
     npx copilotforge trust --reset    Reset trust state to defaults
     npx copilotforge playbook         View experiential memory playbook entries

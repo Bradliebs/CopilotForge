@@ -70,6 +70,14 @@ function runTaskLoop(projectPath, taskLoopScript, args) {
       console.log();
       console.log(`  ${colors.bold(colors.green('✅ Plan executor finished — all tasks complete.'))}`);
 
+      // Record trust signal: tasks completed successfully
+      try {
+        const { recordSignal } = require('./trust');
+        const { getDoneFailed } = module.exports;
+        const { done } = getDoneFailed(projectPath);
+        if (done > 0) recordSignal('tasksCompleted', done, projectPath);
+      } catch { /* trust is optional */ }
+
       // Run post-execution evaluation
       try {
         const { evaluate } = require('./evaluator');
@@ -94,6 +102,12 @@ function runTaskLoop(projectPath, taskLoopScript, args) {
         const { fireHooks } = require('./hooks');
         fireHooks('TaskFailed', { exitCode: code, cwd: projectPath }).catch(() => {});
       } catch { /* hooks are optional */ }
+
+      // Record trust signal: task failure
+      try {
+        const { recordSignal } = require('./trust');
+        recordSignal('tasksFailed', 1, projectPath);
+      } catch { /* trust is optional */ }
     }
     process.exit(code || 0);
   });

@@ -196,3 +196,26 @@
 #
 # STATUS: Planning — no tasks defined yet.
 # =============================================================================
+
+# =============================================================================
+# PHASE 17 — ECOSYSTEM & COLLABORATION (v1.9.0 → v2.0.0)
+# =============================================================================
+#
+# Expands CopilotForge from a single-developer tool to an ecosystem platform.
+#
+# Feature Candidates:
+#   1 = Copilot Extension — publish CopilotForge as a GitHub Copilot Extension
+#       with OAuth flow, agent surface, and skill surface
+#   2 = Team workspaces — shared forge-memory across team members via git
+#       hooks with conflict resolution for concurrent edits
+#   3 = Agent marketplace — discover and install community agents/skills
+#       from a public registry (copilotforge.dev)
+#   4 = Multi-repo support — shared playbook and trust across multiple
+#       repositories in a workspace
+#   5 = Telemetry dashboard — opt-in usage analytics (wizard paths,
+#       recipe popularity, trust trajectories) for project leads
+#   6 = VS Code extension — native VS Code integration with sidebar,
+#       status bar trust indicator, and inline playbook suggestions
+#
+# STATUS: Planning — no tasks defined yet.
+# =============================================================================

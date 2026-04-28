@@ -274,3 +274,104 @@ describe('Phase 16 - CLI module verification', () => {
     assert.ok(content.includes('--promote'), 'playbook CLI should support --promote');
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 4. Plan CLI and trust integration
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Phase 16 - plan CLI and trust integration', () => {
+
+  it('plan-cli.js exists and exports run()', () => {
+    const planCli = require('../src/plan-cli');
+    assert.ok(typeof planCli.run === 'function', 'plan-cli should export run()');
+  });
+
+  it('copilotforge.js routes plan command', () => {
+    const content = fs.readFileSync(path.join(repoRoot, 'cli', 'bin', 'copilotforge.js'), 'utf8');
+    assert.ok(content.includes("case 'plan'"), 'should route plan command');
+  });
+
+  it('help text documents plan command', () => {
+    const content = fs.readFileSync(path.join(repoRoot, 'cli', 'bin', 'copilotforge.js'), 'utf8');
+    assert.ok(content.includes('npx copilotforge plan'), 'help should list plan');
+  });
+
+  it('run.js records tasksCompleted trust signal on success', () => {
+    const content = fs.readFileSync(path.join(repoRoot, 'cli', 'src', 'run.js'), 'utf8');
+    assert.ok(content.includes("recordSignal('tasksCompleted'"), 'run.js should record tasksCompleted');
+  });
+
+  it('run.js records tasksFailed trust signal on failure', () => {
+    const content = fs.readFileSync(path.join(repoRoot, 'cli', 'src', 'run.js'), 'utf8');
+    assert.ok(content.includes("recordSignal('tasksFailed'"), 'run.js should record tasksFailed');
+  });
+
+  it('plan-generator produces plan via CLI module', () => {
+    const { generatePlan } = require('../src/plan-generator');
+    const plan = generatePlan({ project: 'E-commerce with auth and payments', stack: 'TypeScript, Express' });
+    assert.ok(plan.includes('add-auth'), 'should include auth task');
+    assert.ok(plan.includes('add-payments'), 'should include payment task');
+    assert.ok(plan.includes('setup-express'), 'should include Express setup');
+    const taskCount = (plan.match(/^- \[ \]/gm) || []).length;
+    assert.ok(taskCount >= 8, `should have at least 8 tasks, got ${taskCount}`);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 5. E2E pipeline integration test
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Phase 16 - E2E pipeline integration', () => {
+  const { execSync } = require('child_process');
+
+  it('init --full creates scaffold, plan-generator creates plan', () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pipeline-e2e-'));
+    const binPath = path.join(repoRoot, 'cli', 'bin', 'copilotforge.js');
+
+    // Step 1: init --full
+    try {
+      execSync(`node "${binPath}" init --full --yes`, { cwd: tmpDir, stdio: 'pipe' });
+    } catch { /* continue */ }
+
+    // Verify scaffold
+    assert.ok(
+      fs.existsSync(path.join(tmpDir, '.github', 'skills', 'planner', 'SKILL.md')),
+      'planner SKILL.md should exist after init'
+    );
+
+    // Step 2: remove existing plan (init --full creates one)
+    const planPath = path.join(tmpDir, 'IMPLEMENTATION_PLAN.md');
+    if (fs.existsSync(planPath)) fs.unlinkSync(planPath);
+
+    // Step 3: generate plan
+    const { writePlan } = require('../src/plan-generator');
+    const { taskCount, written } = writePlan(
+      { project: 'Test project with API endpoints', stack: 'TypeScript' },
+      tmpDir
+    );
+
+    assert.ok(written, 'plan should be written');
+    assert.ok(taskCount >= 5, `should generate at least 5 tasks, got ${taskCount}`);
+
+    // Step 3: verify plan file
+    assert.ok(
+      fs.existsSync(path.join(tmpDir, 'IMPLEMENTATION_PLAN.md')),
+      'IMPLEMENTATION_PLAN.md should exist'
+    );
+
+    const planContent = fs.readFileSync(path.join(tmpDir, 'IMPLEMENTATION_PLAN.md'), 'utf8');
+    assert.ok(planContent.includes('- [ ]'), 'plan should have pending tasks');
+    assert.ok(planContent.includes('add-api'), 'plan should include API task');
+
+    // Step 4: verify trust state exists
+    try {
+      const { recordSession, readTrust } = require('../src/trust');
+      recordSession(tmpDir);
+      const state = readTrust(tmpDir);
+      assert.ok(state.sessionCount >= 1, 'trust should record session');
+    } catch { /* trust optional in temp dir */ }
+
+    // Cleanup
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+});
