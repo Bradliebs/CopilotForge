@@ -1,0 +1,25 @@
+{
+  "hooks": [
+    {
+      "event": "PreScaffold",
+      "command": "echo 'Scaffolding starting...'",
+      "name": "log-scaffold-start"
+    },
+    {
+      "event": "PostScaffold",
+      "command": "echo 'Scaffolding complete!'",
+      "name": "log-scaffold-end"
+    },
+    {
+      "event": "PostTaskExecute",
+      "command": "npm test --if-present",
+      "name": "run-tests-after-task",
+      "timeout": 30000
+    },
+    {
+      "event": "WizardComplete",
+      "command": "echo 'Wizard finished — project scaffolded'",
+      "name": "wizard-notification"
+    }
+  ]
+}

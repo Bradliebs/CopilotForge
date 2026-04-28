@@ -5,11 +5,31 @@ All notable changes to CopilotForge are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - Phase 15: Agent Harness Runtime
+
+### Added
+- **Hook lifecycle system** (`cli/src/hooks.js`) — 16-event pipeline with callback + command hooks, priority ordering, context chaining, blocking
+- **Experiential memory** (`cli/src/experiential-memory.js`) — playbook with 4 entry types, scoring, reinforcement, consolidation
+- **Generator-evaluator separation** (`cli/src/evaluator.js`) — Sprint Contract pattern with verdict system
+- **Five-layer compaction pipeline** (`cli/src/compaction.js`) — graduated context compression
+- **Trust trajectory tracking** (`cli/src/trust.js`) — 7 signals, 4 levels (cautious→autonomous)
+- Trust level displayed in `copilotforge status` dashboard
+- `.copilotforge/hooks.example.json` reference configuration
+- Usage tracking writes to `~/.copilotforge/usage.json`
+- Hooks wired into init.js, upgrade.js, wizard.js, run.js
+
+### Changed
+- Default `init` creates simple scaffold (planner + START-HERE.md); `--full` for complete setup
+- Empty CLI command routes to interactive menu (not wizard) to avoid duplicate questions with Chat
+
+### Fixed
+- Removed Python template references (intentionally removed upstream)
+- Fixed duplicate question flows when terminal wizard and Chat planner were both active
+
 ## [1.7.0] - Phase 14: Conversational Wizard & Distribution
 
-### Added — Phase 15: Agent Harness Runtime
-- **Hook lifecycle system** (`cli/src/hooks.js`) — 16-event pipeline with callback + command hooks, priority ordering, context chaining, blocking, graceful failure, project-level `hooks.json` loading
-- **Experiential memory** (`cli/src/experiential-memory.js`) — playbook with 4 entry types (STRATEGY/PATTERN/ANTIPATTERN/INSIGHT), scoring, reinforcement, search, consolidation (dreaming), Oracle Prime Evolution Block integration
+### Added
+- **Zero-arg wizard** — `npx copilotforge wizard` launches Q1–Q6 conversational wizard
 - **Generator-evaluator separation** (`cli/src/evaluator.js`) — Sprint Contract pattern with file/sanity/convention/test checks, verdict system (confirmed/needs-review/failed)
 - **Five-layer compaction pipeline** (`cli/src/compaction.js`) — budget reduction → snip → microcompact → context collapse → auto-compact, graduated context compression
 - **Trust trajectory tracking** (`cli/src/trust.js`) — 7 signal types, 4 trust levels (cautious/standard/trusted/autonomous), score calculation, behavior recommendations

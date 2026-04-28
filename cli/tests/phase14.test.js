@@ -287,8 +287,8 @@ describe('copilotforge.js - Phase 14 routing', () => {
     assert.ok(content.includes("case 'examples'"), 'should route examples command');
   });
 
-  it('empty command routes to wizard for TTY', () => {
-    assert.ok(content.includes('wizard.run()'), 'empty command should call wizard.run() for TTY');
+  it('empty command routes to interactive menu', () => {
+    assert.ok(content.includes('interactive.run()'), 'empty command should call interactive.run()');
   });
 
   it('help text documents wizard, rollback, and examples', () => {
@@ -376,7 +376,7 @@ describe('mcp-server - module structure', () => {
 
   it('SERVER_INFO has correct version', () => {
     const { SERVER_INFO } = require('../src/mcp-server');
-    assert.strictEqual(SERVER_INFO.version, '1.7.0', 'server version should be 1.7.0');
+    assert.strictEqual(SERVER_INFO.version, '1.8.0', 'server version should be 1.8.0');
   });
 });
 

@@ -31,6 +31,7 @@ function run() {
   showAgents(cwd);
   showCookbook(cwd);
   showGit(cwd);
+  showTrust(cwd);
 
   separator();
   showNextStep(cwd);
@@ -372,6 +373,33 @@ function showGit(cwd) {
   info(
     `\uD83D\uDCCA ${pad('Git')}${parts.join(colors.dim(' \u00B7 '))}`
   );
+}
+
+// ── Trust ───────────────────────────────────────────────────────────────
+
+function showTrust(cwd) {
+  try {
+    const { readTrust } = require('./trust');
+    const state = readTrust(cwd);
+
+    if (state.sessionCount === 0) return; // No sessions yet — don't show
+
+    const levelEmoji = {
+      cautious: '🔒',
+      standard: '🔑',
+      trusted: '🤝',
+      autonomous: '🚀',
+    };
+
+    const emoji = levelEmoji[state.level] || '🔒';
+    info(
+      `${emoji} ${pad('Trust')}${colors.cyan(state.level)} ${colors.dim(`(score: ${state.trustScore}, sessions: ${state.sessionCount})`)}`
+    );
+  } catch {
+    // trust module is optional
+  }
+
+  console.log();
 }
 
 // ── Next Step ───────────────────────────────────────────────────────────
