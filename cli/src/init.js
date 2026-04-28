@@ -50,16 +50,8 @@ const FULL_FILES = [
     content: templates.HELLO_WORLD_TS,
   },
   {
-    dest: path.join('cookbook', 'hello-world.py'),
-    content: templates.HELLO_WORLD_PY,
-  },
-  {
     dest: path.join('cookbook', 'task-loop.ts'),
     content: templates.TASK_LOOP_TS,
-  },
-  {
-    dest: path.join('cookbook', 'task-loop.py'),
-    content: templates.TASK_LOOP_PY,
   },
   {
     dest: path.join('cookbook', 'ralph-loop.ts'),
@@ -200,6 +192,7 @@ All of these files are just text. If something goes wrong:
 
 async function run(args) {
   const minimal = args.includes('--minimal');
+  const full = args.includes('--full');
   const yes = args.includes('--yes') || args.includes('-y');
   const dryRun = args.includes('--dry-run') || args.includes('--dryRun');
   const beginner = args.includes('--beginner');
@@ -287,7 +280,10 @@ async function run(args) {
     for (const rel of CORE_FILES) {
       console.log(`[DRY RUN] Would create: ${rel}`);
     }
-    if (!minimal) {
+    if (!full && !minimal) {
+      console.log('[DRY RUN] Would create: START-HERE.md');
+    }
+    if (full) {
       for (const entry of FULL_FILES) {
         console.log(`[DRY RUN] Would create: ${entry.dest}`);
       }
@@ -349,14 +345,28 @@ async function run(args) {
 
   for (const rel of CORE_FILES) {
     const dest = path.join(cwd, rel);
-    // Source path inside the package: .github/skills/planner/SKILL.md
+    // In simple mode (default), only install planner skill files
+    if (!full && !minimal) {
+      // Simple mode: only planner SKILL.md and reference.md
+      if (!rel.includes('planner')) continue;
+    }
     copyFile(rel, dest);
     success(`Created ${rel}`);
     createdFiles.push(rel);
   }
 
-  // Default: write all template files (skip with --minimal)
-  if (!minimal) {
+  // Simple mode (default): create START-HERE.md only
+  if (!full && !minimal) {
+    const startHereDest = path.join(cwd, 'START-HERE.md');
+    if (!exists(startHereDest)) {
+      writeFile(startHereDest, templates.START_HERE_MD);
+      success('Created START-HERE.md');
+      createdFiles.push('START-HERE.md');
+    }
+  }
+
+  // Full mode: write all template files
+  if (full) {
     console.log();
     for (const entry of FULL_FILES) {
       const dest = path.join(cwd, entry.dest);
@@ -409,6 +419,24 @@ async function run(args) {
     const { fireHooks } = require('./hooks');
     await fireHooks('PostScaffold', { cwd, createdFiles, minimal, beginner });
   } catch { /* hooks are optional */ }
+
+  // Usage tracking — append to ~/.copilotforge/usage.json (local only, never transmitted)
+  try {
+    const os = require('os');
+    const usageDir = path.join(os.homedir(), '.copilotforge');
+    const usageFile = path.join(usageDir, 'usage.json');
+    const fs = require('fs');
+    if (!fs.existsSync(usageDir)) fs.mkdirSync(usageDir, { recursive: true });
+    const usage = fs.existsSync(usageFile)
+      ? JSON.parse(fs.readFileSync(usageFile, 'utf8'))
+      : [];
+    usage.push({
+      path: cwd,
+      mode: full ? 'full' : minimal ? 'minimal' : oraclePrimeOnly ? 'oracle-prime' : 'simple',
+      timestamp: new Date().toISOString(),
+    });
+    fs.writeFileSync(usageFile, JSON.stringify(usage, null, 2), 'utf8');
+  } catch { /* usage tracking is optional */ }
 
   // Offer to commit if git is available — default YES so Enter just works
   if (hasGit() && createdFiles.length > 0) {

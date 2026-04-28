@@ -73,7 +73,7 @@ describe('CopilotForge E2E Validation', () => {
       fullScaffoldDir = createTempDir();
       assert.ok(fs.existsSync(fullScaffoldDir), 'Temp directory should exist');
 
-      const result = runCLI('init', fullScaffoldDir, true);
+      const result = runCLI('init --full', fullScaffoldDir, true);
       assert.ok(result.success || result.exitCode === 0, `Init should succeed: ${result.error || result.output}`);
     });
 
@@ -296,7 +296,7 @@ describe('CopilotForge E2E Validation', () => {
     it('should handle non-TTY mode gracefully', () => {
       nonTtyDir = createTempDir();
       // Running with piped input (non-TTY) — should use defaults
-      const result = runCLI('init', nonTtyDir, true);
+      const result = runCLI('init --full', nonTtyDir, true);
       assert.ok(result.success || result.exitCode === 0, `Non-TTY init should succeed: ${result.error || result.output}`);
       assert.ok(fileExists(nonTtyDir, '.github/skills/planner/SKILL.md'), 'Should create planner SKILL.md in non-TTY');
     });
@@ -312,7 +312,7 @@ describe('CopilotForge E2E Validation', () => {
     it('should setup and run doctor on full scaffold', () => {
       doctorDir = createTempDir();
       // First init
-      const initResult = runCLI('init --yes', doctorDir);
+      const initResult = runCLI('init --full --yes', doctorDir);
       assert.ok(initResult.success || initResult.exitCode === 0, 'Init should succeed before doctor');
 
       // Then doctor
@@ -353,7 +353,7 @@ describe('CopilotForge E2E Validation', () => {
 
     it('should include version stamp in generated FORGE.md', () => {
       stampDir = createTempDir();
-      runCLI('init --yes', stampDir);
+      runCLI('init --full --yes', stampDir);
 
       if (fileExists(stampDir, 'FORGE.md')) {
         const content = readFile(stampDir, 'FORGE.md');
