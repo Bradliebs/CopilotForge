@@ -260,6 +260,12 @@ switch (command) {
     break;
   }
 
+  case 'docs': {
+    const docsSite = require('../src/docs-site');
+    docsSite.run(args.slice(1));
+    break;
+  }
+
   case 'migrate': {
     const migrate = require('../src/migrate');
     migrate.run(args.slice(1));
@@ -386,6 +392,8 @@ function printHelp() {
     npx copilotforge plugin create <n>  Scaffold a new CopilotForge plugin
     npx copilotforge plugin list        List installed plugins
     npx copilotforge plugin validate    Validate plugin in current directory
+    npx copilotforge docs build         Generate documentation site from docs/
+    npx copilotforge docs serve         Preview docs at localhost:4000
     npx copilotforge migrate            Check for needed version migrations
     npx copilotforge migrate --apply    Apply all migrations
     npx copilotforge perf               Run performance benchmarks

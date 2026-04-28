@@ -199,6 +199,13 @@ async function run(args) {
   const oraclePrimeOnly = args.includes('--oracle-prime');
   const cwd = process.cwd();
 
+  // Load project config (Phase 19) — honor .copilotforgerc defaults
+  let projectConfig = {};
+  try {
+    const { loadConfig } = require('./config');
+    projectConfig = loadConfig(cwd);
+  } catch { /* config is optional */ }
+
   // --answers <json>: parse pre-filled wizard answers for non-interactive mode
   let prefilledAnswers = null;
   const answersIdx = args.indexOf('--answers');

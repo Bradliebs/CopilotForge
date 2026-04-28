@@ -291,6 +291,30 @@
 - [x] plugin-scaffold — Plugin scaffold generator. New file: `cli/src/plugin-scaffold.js` with `copilotforge plugin create <name>` generating package.json (copilotforge-plugin marker), index.js (plugin contract), README.md. Also: `plugin list` (discover installed), `plugin validate` (check contract).
 - [x] upgrade-migration — Version migration system. New file: `cli/src/migrate.js` with version detection from FORGE.md stamps, migration checks (version stamp, playbook, trust, oracle-prime), apply/dry-run modes. New CLI command: `copilotforge migrate [--apply] [--dry-run]`.
 - [x] perf-profiling — Performance profiling. New file: `cli/src/perf.js` with hrtime.bigint benchmarking, 7 benchmark targets (require, config, detect, playbook, trust, discover, review), formatted output with status icons. New CLI command: `copilotforge perf`.
-- [ ] interactive-improvements — Arrow-key navigation and tab completion
-- [ ] documentation-site — Static site generator from docs/
+- [x] interactive-improvements — Terminal UI helpers. New file: `cli/src/ui.js` with progress bar, spinner, boxed messages, table formatting, numbered menu. Zero dependencies.
+- [x] documentation-site — Static docs site generator. New file: `cli/src/docs-site.js` with markdown-to-HTML conversion, dark theme, navigation sidebar, local preview server. New CLI command: `copilotforge docs [build|serve]`.
+- [x] config-integration — Wire `loadConfig()` into init.js and wizard.js to honor project defaults automatically.
 - [ ] i18n — Internationalization for CLI messages
+
+# =============================================================================
+# PHASE 20 — NEXT GENERATION (v2.2.0 → v3.0.0)
+# =============================================================================
+#
+# Major version targeting full LLM integration and agent composition.
+#
+# Feature Candidates:
+#   1 = Agent composition pipelines — chain agents for multi-step workflows
+#       with input/output routing and conditional branching
+#   2 = LLM-powered code generation — use Copilot API to generate code
+#       from natural language with playbook-informed prompts
+#   3 = Copilot Workspace integration — native support for GitHub Copilot
+#       Workspace with task-to-PR automation
+#   4 = Agent testing framework — unit/integration tests for agent behaviors
+#       with mock conversation contexts and assertion helpers
+#   5 = Memory graph — graph-based relationship tracking between decisions,
+#       patterns, and code with visualization and querying
+#   6 = Federation — cross-organization sharing of skills, agents, and
+#       playbook entries via a decentralized registry
+#
+# STATUS: Planning — no tasks defined yet.
+# =============================================================================

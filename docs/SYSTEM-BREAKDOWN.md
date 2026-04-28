@@ -144,6 +144,8 @@ The CLI is the human-facing entry point. It installs, upgrades, diagnoses, and m
 | `src/plugin-scaffold.js` | Plugin scaffold generator — create/list/validate plugins (Phase 19) |
 | `src/migrate.js` | Version migration — detect and migrate older installations (Phase 19) |
 | `src/perf.js` | Performance profiling — benchmark key CLI operations (Phase 19) |
+| `src/ui.js` | Terminal UI helpers — progress bar, spinner, box, table (Phase 19) |
+| `src/docs-site.js` | Documentation site generator — markdown to HTML with dark theme (Phase 19) |
 
 ### Templates Modular Split (Phase 13)
 

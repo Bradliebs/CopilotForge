@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`copilotforge migrate`** subcommand — check/apply migrations with `--dry-run` preview
 - **Performance profiling** (`cli/src/perf.js`) — benchmark key CLI operations with formatted output
 - **`copilotforge perf`** subcommand — run benchmarks for detect, config, discover, review, etc.
+- **Terminal UI helpers** (`cli/src/ui.js`) — progress bar, spinner, boxed messages, table formatting
+- **Documentation site generator** (`cli/src/docs-site.js`) — generate static HTML from docs/ with dark theme
+- **`copilotforge docs`** subcommand — build HTML docs and preview at localhost:4000
+- **Config integration** — `loadConfig()` wired into init.js and wizard.js for project defaults
+- Phase 20 planning header in IMPLEMENTATION_PLAN.md
 - 35+ Phase 19 tests covering config, plugin scaffold, migration, and perf
 
 ### Changed

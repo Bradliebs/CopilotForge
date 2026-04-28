@@ -94,6 +94,15 @@ async function run() {
     }
   } catch { /* trust is optional */ }
 
+  // Load project config (Phase 19) — override verbosity if configured
+  try {
+    const { loadConfig } = require('./config');
+    const projectConfig = loadConfig(process.cwd());
+    if (projectConfig.verbosity === 'quiet') {
+      trustBehavior.verbosity = 'quiet';
+    }
+  } catch { /* config is optional */ }
+
   separator();
 
   const rl = createRL();

@@ -299,4 +299,139 @@ describe('CLI routing - Phase 19 commands', () => {
       if (err.stdout) assert.ok(err.stdout.includes('perf'));
     }
   });
+
+  it('help includes docs command', () => {
+    try {
+      const output = execSync(`node "${binPath}" --help`, { encoding: 'utf8', timeout: 5000 });
+      assert.ok(output.includes('docs'), 'help should mention docs');
+    } catch (err) {
+      if (err.stdout) assert.ok(err.stdout.includes('docs'));
+    }
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 19: UI helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('ui - module structure', () => {
+  const ui = require('../src/ui');
+
+  it('exports progressBar', () => { assert.strictEqual(typeof ui.progressBar, 'function'); });
+  it('exports createSpinner', () => { assert.strictEqual(typeof ui.createSpinner, 'function'); });
+  it('exports box', () => { assert.strictEqual(typeof ui.box, 'function'); });
+  it('exports table', () => { assert.strictEqual(typeof ui.table, 'function'); });
+  it('exports numberedMenu', () => { assert.strictEqual(typeof ui.numberedMenu, 'function'); });
+  it('exports stripAnsi', () => { assert.strictEqual(typeof ui.stripAnsi, 'function'); });
+});
+
+describe('ui - progress bar', () => {
+  const { progressBar, stripAnsi } = require('../src/ui');
+
+  it('shows 0% for empty', () => {
+    const bar = stripAnsi(progressBar(0, 10));
+    assert.ok(bar.includes('0%'));
+    assert.ok(bar.includes('0/10'));
+  });
+
+  it('shows 50% for halfway', () => {
+    const bar = stripAnsi(progressBar(5, 10));
+    assert.ok(bar.includes('50%'));
+  });
+
+  it('shows 100% for complete', () => {
+    const bar = stripAnsi(progressBar(10, 10));
+    assert.ok(bar.includes('100%'));
+  });
+
+  it('handles zero total', () => {
+    const bar = stripAnsi(progressBar(0, 0));
+    assert.ok(bar.includes('0%'));
+  });
+});
+
+describe('ui - table', () => {
+  const { table, stripAnsi } = require('../src/ui');
+
+  it('renders headers and rows', () => {
+    const output = stripAnsi(table(['Name', 'Value'], [['foo', '1'], ['bar', '2']]));
+    assert.ok(output.includes('Name'));
+    assert.ok(output.includes('foo'));
+    assert.ok(output.includes('bar'));
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 19: Documentation site
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('docs-site - module structure', () => {
+  const ds = require('../src/docs-site');
+
+  it('exports run', () => { assert.strictEqual(typeof ds.run, 'function'); });
+  it('exports buildSite', () => { assert.strictEqual(typeof ds.buildSite, 'function'); });
+  it('exports collectDocs', () => { assert.strictEqual(typeof ds.collectDocs, 'function'); });
+  it('exports markdownToHtml', () => { assert.strictEqual(typeof ds.markdownToHtml, 'function'); });
+});
+
+describe('docs-site - markdown conversion', () => {
+  const { markdownToHtml } = require('../src/docs-site');
+
+  it('converts headings', () => {
+    assert.ok(markdownToHtml('# Title').includes('<h1>Title</h1>'));
+    assert.ok(markdownToHtml('## Section').includes('<h2>Section</h2>'));
+  });
+
+  it('converts bold and italic', () => {
+    assert.ok(markdownToHtml('**bold**').includes('<strong>bold</strong>'));
+    assert.ok(markdownToHtml('*italic*').includes('<em>italic</em>'));
+  });
+
+  it('converts inline code', () => {
+    assert.ok(markdownToHtml('use `npm init`').includes('<code>npm init</code>'));
+  });
+
+  it('converts links', () => {
+    const html = markdownToHtml('[click](https://example.com)');
+    assert.ok(html.includes('<a href="https://example.com">click</a>'));
+  });
+
+  it('converts code blocks', () => {
+    const html = markdownToHtml('```js\nconst x = 1;\n```');
+    assert.ok(html.includes('<pre>'));
+    assert.ok(html.includes('const x = 1;'));
+  });
+});
+
+describe('docs-site - build', () => {
+  const { collectDocs, buildSite } = require('../src/docs-site');
+
+  it('collects docs from a directory', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'docs-col-'));
+    fs.writeFileSync(path.join(dir, 'README.md'), '# Home');
+    fs.mkdirSync(path.join(dir, 'docs'));
+    fs.writeFileSync(path.join(dir, 'docs', 'GUIDE.md'), '# Guide');
+    const docs = collectDocs(dir);
+    assert.ok(docs.length >= 2);
+    assert.ok(docs.some((d) => d.slug === 'index'));
+    assert.ok(docs.some((d) => d.slug === 'guide'));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('builds HTML files', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'docs-build-'));
+    const outDir = path.join(dir, '_site');
+    fs.writeFileSync(path.join(dir, 'README.md'), '# Test Project');
+    fs.mkdirSync(path.join(dir, 'docs'));
+    fs.writeFileSync(path.join(dir, 'docs', 'FAQ.md'), '# FAQ\n\nQ: What is this?\nA: A test.');
+    const result = buildSite(dir, outDir);
+    assert.ok(result.pages.length >= 2);
+    assert.ok(fs.existsSync(path.join(outDir, 'index.html')));
+    assert.ok(fs.existsSync(path.join(outDir, 'faq.html')));
+    // Verify HTML content
+    const indexHtml = fs.readFileSync(path.join(outDir, 'index.html'), 'utf8');
+    assert.ok(indexHtml.includes('Test Project'));
+    assert.ok(indexHtml.includes('CopilotForge'));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
 });
