@@ -3,7 +3,7 @@
 const { banner, colors, separator, info, success, warn } = require('./utils');
 const {
   readPlaybook, searchPlaybook, getTopEntries, consolidatePlaybook,
-  ENTRY_TYPES, getPlaybookPath,
+  ENTRY_TYPES, getPlaybookPath, promoteToGlobal,
 } = require('./experiential-memory');
 const { exists } = require('./utils');
 
@@ -11,6 +11,7 @@ function run(args = []) {
   const cwd = process.cwd();
   const search = args.find((a) => !a.startsWith('--'));
   const consolidate = args.includes('--consolidate');
+  const promote = args.includes('--promote');
   const top = args.includes('--top');
 
   banner();
@@ -31,6 +32,18 @@ function run(args = []) {
   if (consolidate) {
     const result = consolidatePlaybook({ cwd });
     success(`Consolidated: kept ${result.kept} entries, pruned ${result.pruned}`);
+    console.log();
+    return;
+  }
+
+  // --promote: copy high-score entries to global playbook
+  if (promote) {
+    const result = promoteToGlobal({ cwd });
+    if (result.promoted > 0) {
+      success(`Promoted ${result.promoted} entries to global playbook (~/.copilotforge/playbook.md)`);
+    } else {
+      info('No entries qualify for promotion (need score >= 3)');
+    }
     console.log();
     return;
   }
@@ -107,7 +120,7 @@ function run(args = []) {
     console.log();
   }
 
-  info(colors.dim('Commands: playbook <search> | playbook --top | playbook --consolidate'));
+  info(colors.dim('Commands: playbook <search> | playbook --top | playbook --consolidate | playbook --promote'));
   console.log();
 }
 

@@ -33,26 +33,40 @@ function getPlaybookPath(cwd = process.cwd()) {
   return path.join(cwd, 'forge-memory', 'playbook.md');
 }
 
+function getGlobalPlaybookPath() {
+  const os = require('os');
+  return path.join(os.homedir(), '.copilotforge', 'playbook.md');
+}
+
 // ── Read playbook ───────────────────────────────────────────────────────
 
 /**
  * Parse the playbook into structured entries.
+ * Merges project-level and global playbook entries.
+ * Project entries take precedence (listed first).
  * @param {string} cwd
- * @returns {{ entries: Array<{ type: string, title: string, content: string, date: string, score: number }> }}
+ * @returns {{ entries: Array<{ type: string, title: string, content: string, date: string, score: number, source: string }> }}
  */
 function readPlaybook(cwd = process.cwd()) {
-  const playbookPath = getPlaybookPath(cwd);
+  const projectPath = getPlaybookPath(cwd);
+  const globalPath = getGlobalPlaybookPath();
 
-  if (!exists(playbookPath)) {
-    return { entries: [] };
-  }
+  const projectEntries = exists(projectPath)
+    ? parsePlaybook(fs.readFileSync(projectPath, 'utf8')).entries.map((e) => ({ ...e, source: 'project' }))
+    : [];
 
-  try {
-    const content = fs.readFileSync(playbookPath, 'utf8');
-    return parsePlaybook(content);
-  } catch {
-    return { entries: [] };
-  }
+  const globalEntries = exists(globalPath)
+    ? parsePlaybook(fs.readFileSync(globalPath, 'utf8')).entries.map((e) => ({ ...e, source: 'global' }))
+    : [];
+
+  // Merge: project entries first, then global entries not already present by title
+  const seen = new Set(projectEntries.map((e) => e.title));
+  const merged = [
+    ...projectEntries,
+    ...globalEntries.filter((e) => !seen.has(e.title)),
+  ];
+
+  return { entries: merged };
 }
 
 function parsePlaybook(content) {
@@ -270,9 +284,63 @@ function processEvolutionBlock(evolution, cwd = process.cwd()) {
   addPlaybookEntry(type, title, content, cwd);
 }
 
+// ── Global playbook promotion ───────────────────────────────────────────
+
+/**
+ * Promote high-scoring entries from project playbook to global playbook.
+ * Entries with score >= threshold are copied to ~/.copilotforge/playbook.md.
+ * @param {object} [options]
+ * @param {number} [options.minScore=3] - Minimum score to promote
+ * @param {string} [options.cwd]
+ * @returns {{ promoted: number }}
+ */
+function promoteToGlobal(options = {}) {
+  const { minScore = 3, cwd = process.cwd() } = options;
+  const projectPath = getPlaybookPath(cwd);
+  const globalPath = getGlobalPlaybookPath();
+
+  if (!exists(projectPath)) return { promoted: 0 };
+
+  const projectEntries = parsePlaybook(fs.readFileSync(projectPath, 'utf8')).entries;
+  const candidates = projectEntries.filter((e) => e.score >= minScore);
+
+  if (candidates.length === 0) return { promoted: 0 };
+
+  // Read existing global entries
+  const globalDir = path.dirname(globalPath);
+  if (!fs.existsSync(globalDir)) fs.mkdirSync(globalDir, { recursive: true });
+
+  let globalEntries = [];
+  if (exists(globalPath)) {
+    globalEntries = parsePlaybook(fs.readFileSync(globalPath, 'utf8')).entries;
+  }
+
+  const globalTitles = new Set(globalEntries.map((e) => e.title));
+  let promoted = 0;
+
+  for (const entry of candidates) {
+    if (globalTitles.has(entry.title)) continue; // Already in global
+
+    const scoreStr = entry.score > 1 ? ` (score: ${entry.score})` : '';
+    const line = `\n## [${entry.type}] ${entry.title}${scoreStr}\n\nDate: ${entry.date}\nPromoted from: ${cwd}\n\n${entry.content}\n`;
+
+    if (!exists(globalPath)) {
+      const header = `# Global Playbook\n\nShared strategies across all CopilotForge projects.\nHigh-scoring entries are automatically promoted here.\n`;
+      fs.writeFileSync(globalPath, header + line, 'utf8');
+    } else {
+      fs.appendFileSync(globalPath, line, 'utf8');
+    }
+
+    promoted++;
+  }
+
+  return { promoted };
+}
+
 module.exports = {
   ENTRY_TYPES,
   getPlaybookPath,
+  getGlobalPlaybookPath,
   readPlaybook,
   parsePlaybook,
   addPlaybookEntry,
@@ -281,4 +349,5 @@ module.exports = {
   searchPlaybook,
   consolidatePlaybook,
   processEvolutionBlock,
+  promoteToGlobal,
 };

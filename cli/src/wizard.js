@@ -144,8 +144,12 @@ async function run() {
   console.log();
 
   // Q6 — Extras
-  console.log(`  ${colors.cyan('Q6.')} Want to add any extras? ${colors.dim('(enter numbers separated by commas, or press Enter to skip)')}`);
-  console.log();
+  if (trustBehavior.suggestExtras) {
+    console.log(`  ${colors.cyan('Q6.')} Suggested extras for your trust level (${trustBehavior.level}):`);
+    console.log(`  ${colors.dim('Task automation + Oracle Prime are popular picks at your level.')}`);
+  } else {
+    console.log(`  ${colors.cyan('Q6.')} Want to add any extras? ${colors.dim('(enter numbers separated by commas, or press Enter to skip)')}`);
+  }  console.log();
   for (let i = 0; i < EXTRAS.length; i++) {
     console.log(`  ${colors.cyan(`[${i + 1}]`)} ${EXTRAS[i].label} — ${colors.dim(EXTRAS[i].desc)}`);
   }
@@ -182,7 +186,15 @@ async function run() {
 
   // Confirm
   const rl2 = createRL();
-  const proceed = await promptYN(rl2, 'Proceed with scaffolding?', true);
+  let proceed;
+
+  if (trustBehavior.skipConfirmation) {
+    // Trust level 'autonomous' — skip confirmation
+    console.log(`  ${colors.green('✅')} Auto-confirmed (trust level: ${trustBehavior.level})`);
+    proceed = true;
+  } else {
+    proceed = await promptYN(rl2, 'Proceed with scaffolding?', true);
+  }
   rl2.close();
 
   if (!proceed) {
@@ -209,9 +221,19 @@ async function run() {
 
   // Run init with answers
   const answersJson = JSON.stringify(answers);
-  const initArgs = ['--yes', '--answers', answersJson];
+  const initArgs = ['--full', '--yes', '--answers', answersJson];
   console.log();
   await require('./init').run(initArgs);
+
+  // Auto-generate implementation plan from wizard answers
+  try {
+    const { writePlan } = require('./plan-generator');
+    const { taskCount, written } = writePlan(answers);
+    if (written) {
+      success(`Generated IMPLEMENTATION_PLAN.md with ${taskCount} tasks`);
+      info(colors.dim('  Say "run the plan" in Copilot Chat to start building automatically.'));
+    }
+  } catch { /* plan generation is optional */ }
 }
 
 module.exports = { run, EXTRAS, PP_SIGNALS, detectPPSignals };
