@@ -323,6 +323,6 @@
 - [x] agent-test — Agent testing framework. New file: `cli/src/agent-test.js` with agent file parsing, 7 test rules, cross-agent conflict detection. New CLI command: `copilotforge test-agents`.
 - [x] memory-graph — Memory graph. New file: `cli/src/memory-graph.js` with graph data structure, keyword edge inference, query, JSON/Mermaid export. New CLI command: `copilotforge graph`.
 - [x] i18n — Internationalization. New file: `cli/src/i18n.js` with 5 languages (en/es/de/pt/ja), parameter interpolation, language detection.
-- [ ] llm-generation — LLM-powered code generation with playbook prompts
-- [ ] copilot-workspace — Native Copilot Workspace integration
-- [ ] federation — Cross-org skill/agent sharing
+- [x] llm-generation — LLM-powered code generation. New file: `cli/src/llm-generate.js` with playbook-informed system prompts, project context injection, code extraction, template fallback, GitHub Copilot API integration. New CLI command: `copilotforge generate-code`.
+- [x] copilot-workspace — Copilot Workspace integration. New file: `cli/src/workspace.js` with task extraction from IMPLEMENTATION_PLAN.md, workspace-compatible export, result import with plan updates, progress status with UI progress bar. New CLI command: `copilotforge workspace`.
+- [x] federation — Cross-org sharing. New file: `cli/src/federation.js` with manifest building (skills/agents/playbook), publish/discover/import workflow, linked repo federation via multi-repo. New CLI command: `copilotforge federation`.

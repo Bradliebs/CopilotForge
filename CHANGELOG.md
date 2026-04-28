@@ -5,6 +5,20 @@ All notable changes to CopilotForge are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - Phase 20 Complete: Next Generation
+
+### Added
+- **LLM code generation** (`cli/src/llm-generate.js`) — playbook-informed prompts, Copilot API integration, template fallback
+- **`copilotforge generate-code`** subcommand — natural language to code with project context
+- **Copilot Workspace integration** (`cli/src/workspace.js`) — task export/import, progress tracking
+- **`copilotforge workspace`** subcommand — export/import/status for Copilot Workspace
+- **Federation** (`cli/src/federation.js`) — cross-org skill/agent sharing via manifests
+- **`copilotforge federation`** subcommand — publish/discover/import federated items
+
+### Changed
+- Major version bump from 2.3.0 to 3.0.0 (Phase 20 complete)
+- All template version stamps updated to v3.0.0
+
 ## [2.3.0] - Phase 20: Next Generation
 
 ### Added

@@ -296,6 +296,27 @@ switch (command) {
     break;
   }
 
+  case 'generate-code': {
+    const llmGen = require('../src/llm-generate');
+    llmGen.run(args.slice(1)).catch((err) => {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    });
+    break;
+  }
+
+  case 'workspace': {
+    const workspace = require('../src/workspace');
+    workspace.run(args.slice(1));
+    break;
+  }
+
+  case 'federation': {
+    const federation = require('../src/federation');
+    federation.run(args.slice(1));
+    break;
+  }
+
   case 'rollback': {
     const rollback = require('../src/rollback');
     rollback.run(args.slice(1)).catch((err) => {
@@ -423,6 +444,12 @@ function printHelp() {
     npx copilotforge graph                Display memory graph stats
     npx copilotforge graph --query <term> Search memory graph
     npx copilotforge graph --mermaid      Export as Mermaid diagram
+    npx copilotforge generate-code "desc" Generate code from description
+    npx copilotforge generate-code "desc" --context file  Add file context
+    npx copilotforge workspace export     Export tasks for Copilot Workspace
+    npx copilotforge workspace status     Show task progress
+    npx copilotforge federation publish   Publish skills/agents for sharing
+    npx copilotforge federation discover  Find items from linked repos
     npx copilotforge --version        Show version
 
   ${colors.bold('Flags:')}

@@ -51,4 +51,4 @@ Recipes live in `cookbook/` and provide copy-paste code patterns.
 
 > Say "set up my project" to generate recipes tailored to your stack.
 
-<!-- copilotforge: v2.3.0 -->
+<!-- copilotforge: v3.0.0 -->

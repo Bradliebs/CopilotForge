@@ -17,7 +17,7 @@ const readline = require('readline');
 
 const SERVER_INFO = {
   name: 'copilotforge',
-  version: '2.3.0',
+  version: '3.0.0',
 };
 
 const TOOLS = [

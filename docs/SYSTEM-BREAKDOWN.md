@@ -150,6 +150,9 @@ The CLI is the human-facing entry point. It installs, upgrades, diagnoses, and m
 | `src/agent-test.js` | Agent testing framework — parsing, rules, conflict detection (Phase 20) |
 | `src/memory-graph.js` | Memory graph — relationship tracking, query, Mermaid export (Phase 20) |
 | `src/i18n.js` | Internationalization — 5 languages, parameter interpolation (Phase 20) |
+| `src/llm-generate.js` | LLM code generation — playbook-informed prompts, API + template fallback (Phase 20) |
+| `src/workspace.js` | Copilot Workspace integration — task export/import, progress tracking (Phase 20) |
+| `src/federation.js` | Federation — cross-org manifest, discover, import (Phase 20) |
 
 ### Templates Modular Split (Phase 13)
 

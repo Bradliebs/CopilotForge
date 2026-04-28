@@ -371,4 +371,210 @@ describe('CLI routing - Phase 20 commands', () => {
       if (err.stdout) assert.ok(err.stdout.includes('graph'));
     }
   });
+
+  it('help includes generate-code', () => {
+    try {
+      const output = execSync(`node "${binPath}" --help`, { encoding: 'utf8', timeout: 5000 });
+      assert.ok(output.includes('generate-code'), 'help should mention generate-code');
+    } catch (err) {
+      if (err.stdout) assert.ok(err.stdout.includes('generate-code'));
+    }
+  });
+
+  it('help includes workspace', () => {
+    try {
+      const output = execSync(`node "${binPath}" --help`, { encoding: 'utf8', timeout: 5000 });
+      assert.ok(output.includes('workspace'), 'help should mention workspace');
+    } catch (err) {
+      if (err.stdout) assert.ok(err.stdout.includes('workspace'));
+    }
+  });
+
+  it('help includes federation', () => {
+    try {
+      const output = execSync(`node "${binPath}" --help`, { encoding: 'utf8', timeout: 5000 });
+      assert.ok(output.includes('federation'), 'help should mention federation');
+    } catch (err) {
+      if (err.stdout) assert.ok(err.stdout.includes('federation'));
+    }
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 20: LLM Code Generation
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('llm-generate - module structure', () => {
+  const lg = require('../src/llm-generate');
+
+  it('exports run', () => { assert.strictEqual(typeof lg.run, 'function'); });
+  it('exports buildSystemPrompt', () => { assert.strictEqual(typeof lg.buildSystemPrompt, 'function'); });
+  it('exports buildUserPrompt', () => { assert.strictEqual(typeof lg.buildUserPrompt, 'function'); });
+  it('exports extractCode', () => { assert.strictEqual(typeof lg.extractCode, 'function'); });
+  it('exports suggestFilename', () => { assert.strictEqual(typeof lg.suggestFilename, 'function'); });
+  it('exports generateLocally', () => { assert.strictEqual(typeof lg.generateLocally, 'function'); });
+});
+
+describe('llm-generate - prompt building', () => {
+  const { buildSystemPrompt, buildUserPrompt, extractCode, suggestFilename, generateLocally } = require('../src/llm-generate');
+
+  it('builds system prompt with project context', () => {
+    const prompt = buildSystemPrompt(process.cwd());
+    assert.ok(prompt.includes('CopilotForge'));
+    assert.ok(prompt.length > 50);
+  });
+
+  it('builds user prompt from description', () => {
+    const prompt = buildUserPrompt('Create a REST endpoint', null);
+    assert.ok(prompt.includes('REST endpoint'));
+  });
+
+  it('builds user prompt with context file', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'lg-ctx-'));
+    const file = path.join(dir, 'app.js');
+    fs.writeFileSync(file, 'const express = require("express");');
+    const prompt = buildUserPrompt('Add middleware', file);
+    assert.ok(prompt.includes('express'));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('extracts code blocks from response', () => {
+    const response = 'Here is the code:\n```js\nconst x = 1;\n```\nDone.';
+    const blocks = extractCode(response);
+    assert.strictEqual(blocks.length, 1);
+    assert.strictEqual(blocks[0].language, 'js');
+    assert.ok(blocks[0].code.includes('const x = 1'));
+  });
+
+  it('suggests appropriate filenames', () => {
+    assert.ok(suggestFilename('Create test suite', 'javascript').includes('test'));
+    assert.ok(suggestFilename('Add API route', 'typescript').includes('route'));
+    assert.ok(suggestFilename('Build config', 'javascript').includes('config'));
+  });
+
+  it('generates locally for REST endpoint', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'lg-local-'));
+    const result = generateLocally('Create an express REST endpoint', dir);
+    assert.ok(result.filename);
+    assert.ok(result.code.includes('router'));
+    assert.strictEqual(result.method, 'template');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('generates locally for tests', () => {
+    const result = generateLocally('Write test specs', os.tmpdir());
+    assert.ok(result.filename.includes('test'));
+    assert.ok(result.code.includes('describe'));
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 20: Workspace Integration
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('workspace - module structure', () => {
+  const ws = require('../src/workspace');
+
+  it('exports run', () => { assert.strictEqual(typeof ws.run, 'function'); });
+  it('exports extractTasks', () => { assert.strictEqual(typeof ws.extractTasks, 'function'); });
+  it('exports exportForWorkspace', () => { assert.strictEqual(typeof ws.exportForWorkspace, 'function'); });
+  it('exports getWorkspaceStatus', () => { assert.strictEqual(typeof ws.getWorkspaceStatus, 'function'); });
+});
+
+describe('workspace - task extraction', () => {
+  const { extractTasks, exportForWorkspace, getWorkspaceStatus } = require('../src/workspace');
+
+  it('extracts tasks from plan', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-tasks-'));
+    fs.writeFileSync(path.join(dir, 'IMPLEMENTATION_PLAN.md'), '# Plan\n\n- [ ] task-1 — First task\n- [x] task-2 — Done task\n- [!] task-3 — Failed\n');
+    const tasks = extractTasks(dir);
+    assert.strictEqual(tasks.length, 3);
+    assert.strictEqual(tasks[0].status, 'pending');
+    assert.strictEqual(tasks[1].status, 'done');
+    assert.strictEqual(tasks[2].status, 'failed');
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('exports pending tasks', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-export-'));
+    fs.writeFileSync(path.join(dir, 'IMPLEMENTATION_PLAN.md'), '- [ ] setup — Initialize\n- [ ] build — Build app\n- [x] done — Completed\n');
+    const data = exportForWorkspace(dir);
+    assert.strictEqual(data.pendingTasks, 2);
+    assert.strictEqual(data.completedTasks, 1);
+    assert.ok(data.tasks.length >= 2);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('returns status with progress', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-status-'));
+    fs.writeFileSync(path.join(dir, 'IMPLEMENTATION_PLAN.md'), '- [x] a — Done\n- [x] b — Done\n- [ ] c — Pending\n');
+    const status = getWorkspaceStatus(dir);
+    assert.strictEqual(status.completed, 2);
+    assert.strictEqual(status.pending, 1);
+    assert.strictEqual(status.progress, 67);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('handles empty project', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-empty-'));
+    const tasks = extractTasks(dir);
+    assert.strictEqual(tasks.length, 0);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 20: Federation
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('federation - module structure', () => {
+  const fed = require('../src/federation');
+
+  it('exports run', () => { assert.strictEqual(typeof fed.run, 'function'); });
+  it('exports buildManifest', () => { assert.strictEqual(typeof fed.buildManifest, 'function'); });
+  it('exports publishManifest', () => { assert.strictEqual(typeof fed.publishManifest, 'function'); });
+  it('exports discoverFederated', () => { assert.strictEqual(typeof fed.discoverFederated, 'function'); });
+});
+
+describe('federation - manifest building', () => {
+  const { buildManifest, publishManifest, discoverFederated } = require('../src/federation');
+
+  it('builds manifest from project', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fed-build-'));
+    fs.mkdirSync(path.join(dir, '.github', 'skills', 'planner'), { recursive: true });
+    fs.writeFileSync(path.join(dir, '.github', 'skills', 'planner', 'SKILL.md'), '# Planner\n\n> Plans projects');
+    const manifest = buildManifest(dir);
+    assert.ok(manifest.items.length >= 1);
+    assert.ok(manifest.items.some((i) => i.type === 'skill'));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('publishes manifest file', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fed-pub-'));
+    fs.mkdirSync(path.join(dir, '.github', 'skills', 'test'), { recursive: true });
+    fs.writeFileSync(path.join(dir, '.github', 'skills', 'test', 'SKILL.md'), '# Test');
+    const result = publishManifest(dir);
+    assert.ok(fs.existsSync(result.path));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('discovers from sources', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fed-disc-'));
+    // Create a source with manifest
+    const srcDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fed-src-'));
+    fs.mkdirSync(path.join(srcDir, '.copilotforge', 'federation'), { recursive: true });
+    fs.writeFileSync(path.join(srcDir, '.copilotforge', 'federation', 'manifest.json'), JSON.stringify({
+      project: 'test-source', items: [{ type: 'skill', name: 'shared-skill', title: 'Shared' }],
+    }));
+    const discovered = discoverFederated([srcDir]);
+    assert.ok(discovered.length >= 1);
+    assert.ok(discovered.some((d) => d.name === 'shared-skill'));
+    fs.rmSync(dir, { recursive: true, force: true });
+    fs.rmSync(srcDir, { recursive: true, force: true });
+  });
+
+  it('returns empty for no sources', () => {
+    const discovered = discoverFederated([]);
+    assert.strictEqual(discovered.length, 0);
+  });
 });
