@@ -1,0 +1,7 @@
+{
+  "name": "copilotforge-test-plugin",
+  "version": "0.0.1",
+  "description": "Test fixture for CopilotForge plugin loader",
+  "main": "index.js",
+  "copilotforge-plugin": true
+}

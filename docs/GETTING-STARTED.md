@@ -31,6 +31,7 @@
 - [Testing That It Worked](#testing-that-it-worked)
 - [Customizing the Output](#customizing-the-output)
 - [Running It Again (Memory in Action)](#running-it-again-memory-in-action)
+- [Oracle Prime — Precision Reasoning](#oracle-prime--precision-reasoning)
 - [Cross-Platform Notes](#cross-platform-notes)
 - [Troubleshooting](#troubleshooting)
 - [Edge Cases & What-Ifs](#edge-cases--what-ifs)
@@ -244,6 +245,8 @@ The wizard creates all the files. When it's done, you see a summary:
 
 ## Step 5 — Explore What Was Created
 
+> Want to understand why these files exist and how they connect? See [Decisions & Architecture](DECISIONS-AND-ARCHITECTURE.md).
+
 Your repo now looks like this:
 
 ```
@@ -453,6 +456,38 @@ The wizard now:
 - **Generates new recipes** — might add a `websocket-handler.ts` to the cookbook
 
 Your customizations survive every re-run. Memory only grows — it never deletes.
+
+---
+
+## Oracle Prime — Precision Reasoning
+
+Oracle Prime is an adaptive reasoning framework that scales analysis depth to match question complexity. It's available as a Q6 extra or can be installed standalone.
+
+### What It Does
+
+When you ask complex questions — architecture decisions, risk assessments, trade-off analysis — Oracle Prime activates a structured reasoning pipeline:
+
+- **Simple tasks** → lightweight decomposition (you won't even notice it)
+- **Medium tasks** → hypothesis mapping + scenario envelope
+- **Complex tasks** → full 7-stage Bayesian pipeline with scenario modeling, counterfactual stress testing, and confidence-rated conclusions
+
+### How to Use It
+
+1. **Install:** Select "Oracle Prime" in Q6 extras during the wizard, or run `npx copilotforge init --oracle-prime`
+2. **Invoke:** Say "deep analysis", "oracle prime", "scenario analysis", or "what are the risks" in Copilot Chat
+3. **Read the output:** Scenario Map (probability-weighted outcomes), Counterfactual Pivot (what flips the base case), and a Confidence rating
+
+### What Gets Created
+
+| File | Purpose |
+|------|---------|
+| `.github/instructions/oracle-prime.instructions.md` | Always-on adaptive reasoning (scales to complexity) |
+| `.github/skills/oracle-prime/SKILL.md` | Full deep-analysis skill with 7-stage pipeline |
+| `.copilot/agents/oracle-prime.md` | Agent template with structured output format |
+
+### Quick Reference
+
+Run `npx copilotforge oracle` to see all trigger phrases and installation details from the terminal.
 
 ---
 

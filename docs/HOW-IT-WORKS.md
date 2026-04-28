@@ -13,12 +13,15 @@
 - [The Memory System](#the-memory-system)
 - [The Cookbook](#the-cookbook)
 - [The Ralph Loop](#the-ralph-loop)
+- [Oracle Prime — Adaptive Reasoning](#oracle-prime--adaptive-reasoning)
 - [How Re-Runs Work](#how-re-runs-work)
 - [Architecture Diagram](#architecture-diagram)
 
 ---
 
 ## The Big Picture
+
+> Want to understand **why** these layers exist and what decisions shaped them? See [Decisions & Architecture](DECISIONS-AND-ARCHITECTURE.md).
 
 CopilotForge has four main layers:
 
@@ -332,6 +335,71 @@ It's called "The Ralph Loop" because Ralph is the tireless worker who never stop
 2. **Code:** Run `npx ts-node cookbook/task-loop.ts`
 
 Both do the same thing — the skill version is conversational, the code version runs headless.
+
+---
+
+## Oracle Prime — Adaptive Reasoning
+
+Oracle Prime is a precision reasoning framework that scales analysis depth to match question complexity. It's not a separate tool — it's woven into every agent interaction.
+
+### The three tiers
+
+| Tier | When It Activates | What Runs |
+|------|-------------------|-----------|
+| **Simple** | Clear instructions, single-file edits, familiar patterns | S1 (Problem Decomposition) only — fast, invisible |
+| **Medium** | Multiple files, some investigation needed, manageable risk | S1 + S2 (Hypothesis Mapping) + S5 (Scenario Envelope) |
+| **Complex** | Cross-cutting changes, competing approaches, high ambiguity | Full S1–S7 pipeline with structured output |
+
+The tier is classified automatically before every response. You don't need to specify it.
+
+### The 7-stage pipeline
+
+When a complex question activates the full pipeline, these stages run internally before output:
+
+1. **S1 — Problem Decomposition.** Actual vs apparent question; knowns, unknowns, hidden assumptions.
+2. **S2 — Hypothesis Space Mapping.** 3–5 hypotheses including contrarian ones. Steel-man each. Pre-mortem: how would each fail?
+3. **S3 — Bayesian Updating.** Assign priors from base rates. State posteriors. Never conflate possibility with probability.
+4. **S4 — Systems Dynamics.** Reinforcing loops, balancing loops, leverage points. Second and third-order consequences.
+5. **S5 — Scenario Envelope.** Base Case (~55%), Bull (~20%), Bear (~15%), Black Swan (~10%). Two confirmation signals each.
+6. **S6 — Counterfactual Stress Test.** What assumption, if reversed, flips the base case?
+7. **S7 — Critical Audit.** Bias scan (confirmation, anchoring, availability, narrative fallacy).
+
+### How it integrates
+
+Oracle Prime works through three files:
+
+| File | Role | When It's Active |
+|------|------|-----------------|
+| `.github/instructions/oracle-prime.instructions.md` | Global — applies to all agents automatically | Always (scales to complexity) |
+| `.github/skills/oracle-prime/SKILL.md` | Deep analysis — full structured output | Trigger phrases: "deep analysis", "oracle prime", etc. |
+| `.copilot/agents/oracle-prime.md` | Agent template — can be invoked directly | When you select Oracle Prime as an agent |
+
+The global instructions file is always active — it provides lightweight reasoning for simple tasks without overhead. The skill file activates for deep analysis when you explicitly request it.
+
+### Algorithm modes
+
+Oracle Prime auto-selects up to 2 reasoning modes based on question type:
+
+- **[ADVERSARIAL]** — Competition, conflict, negotiation
+- **[MONTE CARLO]** — Stochastic variables, outcome distributions
+- **[FERMI]** — No precise data; build from reference points
+- **[RED TEAM]** — Strongest case against the prevailing assumption
+- **[SIGNAL vs NOISE]** — Separate predictive from correlated indicators
+- **[COUNTERFACTUAL]** — Decision forks and post-mortems
+
+### Self-improvement
+
+Oracle Prime includes an Evolution Block that tracks calibration drift and reasoning gaps across sessions. When a patch is valuable enough to persist, it uses the "forge remember" mechanism to write it to `forge-memory/decisions.md`, creating a self-improving loop.
+
+### Installing standalone
+
+If you want Oracle Prime without the full CopilotForge scaffold:
+
+```bash
+npx copilotforge init --oracle-prime
+```
+
+This creates only the 3 Oracle Prime files — no planner, no cookbook, no memory files.
 
 ---
 

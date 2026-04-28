@@ -5,10 +5,57 @@ All notable changes to CopilotForge are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - Phase 14: Conversational Wizard & Distribution
+
+### Added — Phase 15: Agent Harness Runtime
+- **Hook lifecycle system** (`cli/src/hooks.js`) — 16-event pipeline with callback + command hooks, priority ordering, context chaining, blocking, graceful failure, project-level `hooks.json` loading
+- **Experiential memory** (`cli/src/experiential-memory.js`) — playbook with 4 entry types (STRATEGY/PATTERN/ANTIPATTERN/INSIGHT), scoring, reinforcement, search, consolidation (dreaming), Oracle Prime Evolution Block integration
+- **Generator-evaluator separation** (`cli/src/evaluator.js`) — Sprint Contract pattern with file/sanity/convention/test checks, verdict system (confirmed/needs-review/failed)
+- **Five-layer compaction pipeline** (`cli/src/compaction.js`) — budget reduction → snip → microcompact → context collapse → auto-compact, graduated context compression
+- **Trust trajectory tracking** (`cli/src/trust.js`) — 7 signal types, 4 trust levels (cautious/standard/trusted/autonomous), score calculation, behavior recommendations
+- Hooks wired into init.js (PreScaffold/PostScaffold) and upgrade.js
+- Evaluator wired into run.js for post-task verification
+- Trust tracking wired into wizard.js (session recording, confirmation signals)
+- Experiential memory integrated into Oracle Prime SKILL.md (playbook read/write/consolidation)
+- WizardComplete hook fires after wizard confirmation
+- TaskFailed hook fires on plan executor failure
+- 52 new Phase 15 tests across all 5 modules
+
+### Added
+- **Zero-arg wizard** — `npx copilotforge` (no args) launches Q1–Q6 conversational wizard in TTY mode
+- **Rollback system** — automatic snapshots before init/upgrade, `copilotforge rollback` to restore
+- **MCP server** — `copilotforge mcp` exposes tools over stdio for Claude Desktop, VS Code, Cursor
+- **Examples gallery** — `copilotforge examples` to browse, preview, and clone starter projects
+- **Plugin API** — third-party Build Paths (K–Z) via `copilotforge-plugin` npm packages
+- `--answers` flag on `init` for non-interactive JSON input (enables CI wizard testing)
+- Plugin discovery, validation, and path detection integration
+- Snapshot pruning (max 5 per project), forge-memory exclusion from snapshots
+
+### Changed
+- Empty command (`npx copilotforge`) routes to wizard for TTY, interactive menu for non-TTY
+- Init and upgrade now capture snapshots automatically before writing files
+- 31 new Phase 14 tests covering wizard, rollback, examples, plugin-loader, and routing
+
 ## [1.6.0] - Phase 13: Path Awareness
 
 ### Added
 - 10 build paths (A–J): 9 Power Platform paths + existing developer flow (Path J)
+- **Oracle Prime** — adaptive precision reasoning framework integrated across the ecosystem
+  - Global instructions (`.github/instructions/oracle-prime.instructions.md`) — 3-tier complexity classification, always-on
+  - Deep-analysis skill (`.github/skills/oracle-prime/SKILL.md`) — full 7-stage Bayesian pipeline with structured output
+  - Agent template (`templates/agents/oracle-prime.md`) — scaffolded into user repos as Q6 extra
+  - Agent file (`.github/agents/oracle-prime.agent.md`) — directly invocable in this workspace
+  - Cookbook recipes (`cookbook/oracle-prime.ts`, `cookbook/oracle-prime.py`) — structured reasoning harness
+  - Example session (`examples/oracle-prime-session/`) — multi-turn analysis demonstration
+  - `--oracle-prime` flag on `init` — standalone installation without full scaffold
+  - Evolution persistence via forge-remember mechanism
+  - 24 automated tests covering files, triggers, stages, modes, integration points, and jargon compliance
+  - Planner Q6 extras choice, reference.md catalog, fuzzy name mapping
+  - Reviewer agent escalation path for architectural tension
+  - Forge-compass `[ADVERSARIAL]` and `[MOTIVATED]` enhancements
+  - Doctor.js health checks for Oracle Prime file integrity
+  - `ORACLE_PRIME_AGENT_MD` template export in `cli/src/templates/agents.js`
+  - Upgrade path via `cli/src/upgrade.js` FRAMEWORK_FILES
 - forge-compass skill: silent path classifier with contradiction detection
 - power-platform-guide skill: master routing oracle with decision matrix
 - 9 path-specific skill files (studio-agent, studio-connector, declarative-agent, canvas-agent, power-automate, pcf-component, powerbi-report, sharepoint-agent, power-pages)

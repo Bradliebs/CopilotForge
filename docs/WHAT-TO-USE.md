@@ -21,6 +21,7 @@ Find yourself in this table. Follow your path. Ignore everything else.
 | **A developer with a project** who wants AI help | **`npx copilotforge init`** → answer a few questions → done | The wizard picks everything for you |
 | **A developer who just wants code recipes** | [cookbook/CHEATSHEET.md](../cookbook/CHEATSHEET.md) | Skills, agents, and memory entirely |
 | **Someone interested in AI research / experiments** | `auto-research` + `knowledge-wiki` recipes | You don't need the wizard or agents |
+| **Someone facing a complex architecture decision** | `npx copilotforge init --oracle-prime` or select Oracle Prime in Q6 | You just need the reasoning framework — no full scaffold required |
 | **A team lead** setting up AI for a team | Full [GETTING-STARTED.md](GETTING-STARTED.md) walkthrough | You'll use everything — no shortcuts |
 
 ---
@@ -60,6 +61,11 @@ What do you want to do?
 │
 ├─ "I want specialized Copilot agent profiles"
 │   └─ → Custom Agents Guide (`cookbook/copilot-agents-guide.md`)
+│
+├─ "I need help with a complex decision or risk assessment"
+│   └─ → Oracle Prime (`npx copilotforge init --oracle-prime`)
+│       Say "deep analysis" or "oracle prime" in Copilot Chat
+│       for structured scenario modeling and counterfactual reasoning.
 │
 ├─ "I have a plan and want to execute it"
 │   └─ → Say "run the plan" to start The Ralph Loop — it reads
@@ -134,6 +140,7 @@ This is your permission slip to skip things. Seriously.
 - ❌ **You don't need the cookbook** if you just want AI-assisted development → the wizard + skills are enough
 - ❌ **You don't need to understand skills** to use CopilotForge → the wizard creates them for you
 - ❌ **You don't need ALL 24 recipes** → the wizard picks the right ones for your stack
+- ❌ **You don't need Oracle Prime** for simple coding tasks → it auto-scales, but is most valuable for complex architecture decisions and risk analysis
 - ❌ **You don't need npm or Node.js** to use CopilotForge → manual copy works fine (only recipes need a runtime)
 - ❌ **You don't need to read every doc** → this page points you to the one you need
 

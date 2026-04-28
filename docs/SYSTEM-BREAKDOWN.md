@@ -32,7 +32,7 @@
 | **Name** | CopilotForge (repo: Oracle_Prime) |
 | **Owner** | Brad Liebs |
 | **npm package** | `copilotforge` |
-| **CLI version** | 1.6.0 (Phase 14 in progress) |
+| **CLI version** | 1.7.0 |
 | **Node requirement** | >=18.0.0 |
 | **Dependencies** | Zero (pure Node.js + markdown) |
 
@@ -108,12 +108,23 @@ The CLI is the human-facing entry point. It installs, upgrades, diagnoses, and m
 | `bin/copilotforge.js` | Entry point — routes args to modules, handles `--help` / `--version` |
 | `src/init.js` | Copies `CORE_FILES` from `cli/files/`, writes `FULL_FILES` from templates; offers git commit |
 | `src/upgrade.js` | Diffs `FRAMEWORK_FILES` + `COOKBOOK_TEMPLATES` against disk; only updates changed; never touches user state |
-| `src/doctor.js` | 10+ checks: Node version, file existence, git config, write perms, FORGE.md version stamp; Phase 13: reads `<!-- copilotforge: path=[A-J] -->` stamp, Node≥16/pac CLI/paconn probes per path; stale memory nudge (warns if patterns.md has placeholder text after 7+ days) |
+| `src/doctor.js` | 10+ checks: Node version, file existence, git config, write perms, FORGE.md version stamp; Phase 13: reads `<!-- copilotforge: path=[A-J] -->` stamp, Node≥16/pac CLI/paconn probes per path |
 | `src/status.js` | Reads IMPLEMENTATION_PLAN.md, forge-memory, FORGE.md, cookbook — exports 7 data-returning functions |
 | `src/interactive.js` | readline-based home screen — context-aware numbered menu that loops until Exit |
 | `src/utils.js` | Shared primitives: banner, colors, ask(), copyFile(), writeFile(), exists(), hasGit(), gitCommit(), menu() |
 | `src/templates.js` | 5-line shim — re-exports from `cli/src/templates/` (Phase 13 modular split) |
 | `src/uninstall.js` | Removes only CLI-installed planner skill files; removes empty parent dirs |
+| `src/wizard.js` | Q1–Q6 conversational terminal wizard with PP signal detection (Phase 14) |
+| `src/rollback.js` | Snapshot capture/restore/prune for safe undo of init/upgrade (Phase 14) |
+| `src/mcp-server.js` | MCP JSON-RPC server over stdio for AI client integration (Phase 14) |
+| `src/examples.js` | Examples gallery — fetch, cache, preview, clone starter projects (Phase 14) |
+| `src/plugin-loader.js` | Plugin discovery, validation (K–Z paths), path detection integration (Phase 14) |
+| `src/oracle.js` | Oracle Prime CLI usage guide and trigger phrase reference |
+| `src/hooks.js` | Hook lifecycle system — 16 events, callback + command hooks, priority ordering (Phase 15) |
+| `src/experiential-memory.js` | Experiential memory playbook — strategies, patterns, scoring, consolidation (Phase 15) |
+| `src/evaluator.js` | Generator-evaluator separation — Sprint Contract pattern for task verification (Phase 15) |
+| `src/compaction.js` | Five-layer graduated context compaction pipeline (Phase 15) |
+| `src/trust.js` | Trust trajectory tracking — 7 signals, 4 levels, behavior recommendations (Phase 15) |
 
 ### Templates Modular Split (Phase 13)
 
@@ -125,7 +136,7 @@ The CLI is the human-facing entry point. It installs, upgrades, diagnoses, and m
 | `cli/src/templates/platform-forge.js` | 9 path-specific FORGE.md templates (Paths A–I) |
 | `cli/src/templates/agents.js` | Agent template strings |
 | `cli/src/templates/memory.js` | Memory file templates |
-| `cli/src/templates/cookbook.js` | Cookbook recipe templates (TypeScript only) |
+| `cli/src/templates/cookbook.js` | Cookbook recipe templates |
 | `cli/src/templates/init.js` | Init file templates |
 | `cli/src/templates/platform-guides.js` | Platform guide templates |
 | `cli/src/templates/index.js` | Barrel — re-exports all of the above |
@@ -145,20 +156,15 @@ The CLI is the human-facing entry point. It installs, upgrades, diagnoses, and m
 FORGE.md
 IMPLEMENTATION_PLAN.md
 .copilot/agents/planner.md
-forge-memory/decisions.md      ← pre-populated with initial scaffold entry
+forge-memory/decisions.md
 forge-memory/patterns.md
-forge-memory/preferences.md    ← includes BUILD_PATH=J default
-cookbook/hello-world.ts
-cookbook/task-loop.ts
+forge-memory/preferences.md
+cookbook/hello-world.ts|.py
+cookbook/task-loop.ts|.py
 cookbook/copilot-studio-guide.md + agent.yaml
 cookbook/code-apps-guide.md + setup.ts
 cookbook/copilot-agents-guide.md + example.agent.md
 docs/GETTING-STARTED.md
-```
-
-**Usage tracking** (after successful scaffold):
-```
-~/.copilotforge/usage.json     ← appends { path, mode, timestamp } (local only, never transmitted)
 ```
 
 ### Upgrade Safety Model
@@ -208,7 +214,7 @@ Skills are markdown instruction files that AI assistants read as context. When y
      skill-writer   → .github/skills/{name}/SKILL.md
      agent-writer   → .copilot/agents/{name}.md
      memory-writer  → forge-memory/*.md  (append-only on re-runs)
-     cookbook-writer→ cookbook/{recipe}.ts
+     cookbook-writer→ cookbook/{recipe}.ts|.py
 7. Generate FORGE.md (planner does this itself, not delegated)
 8. Output build-transition prompt (ready-to-use for next AI session)
 ```
@@ -270,6 +276,7 @@ Nine path-specific skills plus two routing/classification skills scaffold Power 
 
 | Skill | Path | Description |
 |-------|------|-------------|
+| `oracle-prime` | All | Adaptive precision reasoning — Bayesian scenario analysis, counterfactual stress testing, structured decision support |
 | `forge-compass` | All | Silent path classifier — reads FORGE-CONTEXT, detects contradictions, gates path transitions |
 | `power-platform-guide` | All | Master routing oracle — 10-path decision matrix with tiebreakers |
 | `studio-agent` | A | Copilot Studio Agent (also covers B/H/I path variants) |
@@ -335,6 +342,7 @@ These are what get scaffolded INTO the user's repo:
 
 | Template | Paths | Role |
 |----------|-------|------|
+| `oracle-prime.md` | All | Precision reasoning analyst — deep analysis, risk assessment, scenario modeling |
 | `studio-agent.md` | A, B, H, I | Copilot Studio / SharePoint / Power Pages guide |
 | `declarative-agent.md` | C | Declarative Agent builder for M365 |
 | `canvas-agent.md` | D | Canvas App + AI Builder companion |
@@ -394,7 +402,7 @@ Tracked via invisible HTML comments — machine metadata that doesn't clutter th
 
 **Location:** `cookbook/`
 
-Copy-paste code recipes — actual runnable files, not instructions. TypeScript only (Python duplicates were intentionally removed).
+Copy-paste code recipes — actual runnable files, not instructions. 50+ files, mostly language-paired (TypeScript + Python).
 
 ### Recipe Selection Rules
 
@@ -405,21 +413,26 @@ Copy-paste code recipes — actual runnable files, not instructions. TypeScript 
 
 ### Recipe Catalog
 
-| Category | TypeScript | Notes |
-|----------|-----------|-------|
-| Starter | `hello-world.ts` | Minimal Copilot SDK example |
-| Task automation | `task-loop.ts` | Ralph Loop runner (headless) |
-| API client | `api-client.ts` | HTTP client patterns |
-| Auth middleware | `auth-middleware.ts` | JWT (Express) |
-| Database | `db-query.ts` | Generic; replaced if ORM detected |
-| Routes | `route-handler.ts` | Express patterns |
-| MCP server | `mcp-server.ts` | Model Context Protocol server |
-| Sessions | `session-example.ts` | Session management |
-| Persistence | `persisting-sessions.ts` | — |
-| Memory reader | `memory-reader.ts` | Reads forge-memory files |
-| Multi-session | `multiple-sessions.ts` | — |
-| PR visualization | `pr-visualization.ts` | — |
-| Managing files | `managing-local-files.ts` | — |
+| Category | TypeScript | Python | Notes |
+|----------|-----------|--------|-------|
+| Starter | `hello-world.ts` | `hello-world.py` | Minimal Copilot SDK example |
+| Task automation | `task-loop.ts` | `task-loop.py` | Ralph Loop runner (headless) |
+| API client | `api-client.ts` | `api-client.py` | HTTP client patterns |
+| Auth middleware | `auth-middleware.ts` | `auth-middleware.py` | JWT (Express / FastAPI) |
+| Database | `db-query.ts` | `db-query.py` | Generic; replaced if ORM detected |
+| Routes | `route-handler.ts` | `route-handler.py` | Express / FastAPI patterns |
+| MCP server | `mcp-server.ts` | `mcp-server.py` | Model Context Protocol server |
+| Sessions | `session-example.ts` | `session-example.py` | Session management |
+| Persistence | `persisting-sessions.ts` | `persisting-sessions.py` | — |
+| Memory reader | `memory-reader.ts` | `memory-reader.py` | Reads forge-memory files |
+| Multi-session | `multiple-sessions.ts` | `multiple-sessions.py` | — |
+| Command center | `command-center.ts` | `command-center.py` | — |
+| Auto-research | `auto-research.ts` | `auto-research.py` | — |
+| Copilot hooks | `copilot-hooks.ts` | `copilot-hooks.py` | — |
+| PR visualization | `pr-visualization.ts` | `pr-visualization.py` | — |
+| Knowledge wiki | — | `knowledge-wiki.py` | Python only |
+| Managing files | `managing-local-files.ts` | `managing-local-files.py` | — |
+| Oracle Prime | `oracle-prime.ts` | `oracle-prime.py` | Structured reasoning harness |
 
 **Platform guides (markdown):**
 - `copilot-studio-guide.md` + `copilot-studio-agent.yaml`
@@ -544,7 +557,7 @@ User says "set up my project"
           ├── scaffolds skills    → .github/skills/{name}/SKILL.md
           ├── scaffolds agents    → .copilot/agents/{name}.md
           ├── initializes memory  → forge-memory/*.md  (append-only)
-          ├── generates recipes   → cookbook/{recipe}.ts
+          ├── generates recipes   → cookbook/{recipe}.ts|.py
           │
           ├── generates FORGE.md (planner does this itself)
           │
@@ -573,6 +586,7 @@ User says "set up my project"
 | **ORM-specific beats generic** | One DB recipe per language — no "which one do I use?" confusion. |
 | **MCP detection-gated** | MCP recipes only appear when the MCP SDK is actually in the project. |
 | **Verbosity as instruction** | Templates include all 3 verbosity variants; the scaffolding process selects based on experience level. |
+| **Adaptive reasoning** | Oracle Prime scales reasoning depth to task complexity — lightweight for simple tasks, full Bayesian pipeline for complex decisions. |
 
 ---
 
@@ -593,7 +607,9 @@ User says "set up my project"
 | 11 | ✅ Done | Autonomy audit |
 | 12 | ✅ Done | Perfect 10 companion |
 | 13 | ✅ Done | Path Awareness — 10 build paths (A–J), forge-compass, power-platform-guide, path-specific skills/agents/cookbook, doctor.js path checks, forge-remember, conflict detection | v1.6.0 |
-| 14 | 🚧 In Progress | Simplification & Wizard — Phase scope trimmed (MCP/plugins/gallery deferred), Python cookbook dupes removed, forge-memory pre-populated, usage tracking, integration smoke test, wizard merge into interactive | v1.7.0 |
+| — | ✅ Done | Oracle Prime — adaptive precision reasoning framework (global instructions + deep-analysis skill + agent template) | v1.6.0 |
+| 14 | ✅ Done | Conversational Wizard & Distribution — zero-arg wizard, rollback system, MCP server, examples gallery, plugin API | v1.7.0 |
+| 15 | ✅ Done | Agent Harness Runtime — hook lifecycle (16 events), experiential memory (playbook), generator-evaluator separation, 5-layer compaction pipeline, trust trajectory tracking | v1.7.0 |
 
 ---
 
@@ -606,13 +622,10 @@ Run with: `node --test tests/*.test.js`
 | File | What it tests |
 |------|--------------|
 | `init.test.js` | Init command behavior — file creation, skip logic, git commit |
+| `upgrade.test.js` | Upgrade logic — file diffing, confirmation, dry-run |
 | `status.test.js` | Dashboard data parsing from plan, memory, cookbook |
 | `interactive.test.js` | Menu rendering, context-aware item visibility |
 | `utils.test.js` | File ops, prompts, git helpers |
-| `run.test.js` | Run command, getDoneFailed parsing |
-| `path-detection.test.js` | Path detection scenarios (A–J), contradiction detection, compass confidence |
-| `snapshots.test.js` | Snapshot baselines for all 10 path FORGE.md templates |
-| `integration.test.js` | E2E init→doctor pipeline, memory pre-population, usage tracking |
 
 **Test framework:** Node.js built-in `--test` runner — zero external dependencies.
 
@@ -647,16 +660,15 @@ Run with: `node --test tests/*.test.js`
 
 | Issue | Status | Owner |
 |-------|--------|-------|
+| Jargon leak: specialist names in user-facing templates | ✅ Fixed (Phase 13, Task 1) | Neo |
 | No automated wizard test harness | Carried from Phase 1 | Tank |
 | Specialist agent templates contain cross-references visible to users | Known | Neo |
 | Re-run sub-decisions (3 scenarios still open) | Pending consensus | Tank |
-| Angular component recipes | Deferred | — |
-| Go/C# MCP recipes (SDKs not yet stable) | Deferred | — |
-| Strict mode validator (no `{{placeholder}}` in scaffolded output) | Deferred | — |
-| Recipe versioning / update flow for existing users | Deferred | — |
-| MCP server for multi-client distribution | Deferred (Phase 15+) | — |
-| Plugin API for third-party Build Paths | Deferred (Phase 15+ — needs user demand) | — |
-| Examples gallery command | Deferred (Phase 15+ — needs users first) | — |
+| Angular component recipes | Deferred Phase 4 | — |
+| Go/C# MCP recipes (SDKs not yet stable) | Deferred Phase 4 | — |
+| Recipe plugin system for custom categories | Deferred Phase 4 | — |
+| Strict mode validator (no `{{placeholder}}` in scaffolded output) | Deferred Phase 4 | — |
+| Recipe versioning / update flow for existing users | Deferred Phase 4 | — |
 
 ---
 
