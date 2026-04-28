@@ -81,7 +81,38 @@
           "name": "Skills & Agents"
         }
       ]
-    }
+    },
+    "chatParticipants": [
+      {
+        "id": "copilotforge.chat",
+        "name": "copilotforge",
+        "fullName": "CopilotForge Assistant",
+        "description": "AI-powered project scaffolding and management",
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "init",
+            "description": "Initialize CopilotForge in your project"
+          },
+          {
+            "name": "doctor",
+            "description": "Run a health check on your setup"
+          },
+          {
+            "name": "detect",
+            "description": "Auto-detect the best build path"
+          },
+          {
+            "name": "discover",
+            "description": "Scan for playbook patterns"
+          },
+          {
+            "name": "status",
+            "description": "Show project status"
+          }
+        ]
+      }
+    ]
   },
   "scripts": {
     "compile": "tsc -p ./",

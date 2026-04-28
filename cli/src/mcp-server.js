@@ -17,7 +17,7 @@ const readline = require('readline');
 
 const SERVER_INFO = {
   name: 'copilotforge',
-  version: '2.0.0',
+  version: '2.1.0',
 };
 
 const TOOLS = [
@@ -70,6 +70,41 @@ const TOOLS = [
         dryRun: { type: 'boolean', description: 'Preview without restoring' },
       },
       required: ['cwd'],
+    },
+  },
+  {
+    name: 'copilotforge_detect',
+    description: 'Auto-detect the best build path from project files (smart template selection)',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        cwd: { type: 'string', description: 'Working directory path' },
+      },
+      required: ['cwd'],
+    },
+  },
+  {
+    name: 'copilotforge_chain',
+    description: 'Run multiple CopilotForge tools in sequence (e.g., init → doctor → plan)',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        cwd: { type: 'string', description: 'Working directory path' },
+        steps: {
+          type: 'array',
+          description: 'Array of tool calls to execute in order',
+          items: {
+            type: 'object',
+            properties: {
+              tool: { type: 'string', description: 'Tool name (init, doctor, status, rollback, detect)' },
+              args: { type: 'object', description: 'Tool-specific arguments' },
+            },
+            required: ['tool'],
+          },
+        },
+        stopOnError: { type: 'boolean', description: 'Stop chain on first error (default: true)', default: true },
+      },
+      required: ['cwd', 'steps'],
     },
   },
 ];
@@ -184,6 +219,53 @@ function handleRollback(params) {
 
 // ── MCP protocol handler ────────────────────────────────────────────────
 
+function handleDetect(params) {
+  const cwd = params.cwd || process.cwd();
+  try {
+    const { detectBuildPath } = require('./smart-detect');
+    return { success: true, ...detectBuildPath(cwd) };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
+function handleChain(params) {
+  const cwd = params.cwd || process.cwd();
+  const steps = params.steps || [];
+  const stopOnError = params.stopOnError !== false;
+
+  const toolMap = {
+    init: handleInit,
+    doctor: handleDoctor,
+    status: handleStatus,
+    rollback: handleRollback,
+    detect: handleDetect,
+  };
+
+  const results = [];
+  for (const step of steps) {
+    const handler = toolMap[step.tool];
+    if (!handler) {
+      results.push({ tool: step.tool, success: false, error: `Unknown tool: ${step.tool}` });
+      if (stopOnError) break;
+      continue;
+    }
+
+    const toolArgs = { ...step.args, cwd };
+    const result = handler(toolArgs);
+    results.push({ tool: step.tool, ...result });
+
+    if (!result.success && stopOnError) break;
+  }
+
+  return {
+    success: results.every((r) => r.success),
+    stepsCompleted: results.filter((r) => r.success).length,
+    stepsTotal: steps.length,
+    results,
+  };
+}
+
 function handleMessage(msg) {
   const { method, id, params } = msg;
 
@@ -219,6 +301,12 @@ function handleMessage(msg) {
           break;
         case 'copilotforge_rollback':
           result = handleRollback(toolArgs);
+          break;
+        case 'copilotforge_detect':
+          result = handleDetect(toolArgs);
+          break;
+        case 'copilotforge_chain':
+          result = handleChain(toolArgs);
           break;
         default:
           return jsonRpcError(id, -32601, `Unknown tool: ${toolName}`);

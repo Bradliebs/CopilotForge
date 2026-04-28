@@ -135,6 +135,8 @@ The CLI is the human-facing entry point. It installs, upgrades, diagnoses, and m
 | `src/marketplace.js` | Agent marketplace — browse, search, install community skills/agents (Phase 17) |
 | `src/multi-repo.js` | Multi-repo support — shared playbook and trust across linked repos (Phase 17) |
 | `src/telemetry.js` | Telemetry dashboard — local opt-in usage analytics and reporting (Phase 17) |
+| `src/smart-detect.js` | Smart template selection — auto-detect build path from project files (Phase 18) |
+| `src/discover.js` | Playbook auto-discovery — scan codebase for patterns and entries (Phase 18) |
 
 ### Templates Modular Split (Phase 13)
 

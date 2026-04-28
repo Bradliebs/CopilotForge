@@ -206,6 +206,24 @@ switch (command) {
     break;
   }
 
+  case 'discover': {
+    const discover = require('../src/discover');
+    discover.run(args.slice(1));
+    break;
+  }
+
+  case 'detect': {
+    const smartDetect = require('../src/smart-detect');
+    const result = smartDetect.detectBuildPath(process.cwd());
+    const { colors: c } = require('../src/utils');
+    console.log();
+    console.log(`  Build path: ${c.cyan(result.path)} — ${result.name}`);
+    console.log(`  Confidence: ${result.confidence}`);
+    console.log(`  Reason:     ${result.reason}`);
+    console.log();
+    break;
+  }
+
   case 'rollback': {
     const rollback = require('../src/rollback');
     rollback.run(args.slice(1)).catch((err) => {
@@ -307,6 +325,9 @@ function printHelp() {
     npx copilotforge multi-repo sync    Sync playbook across linked repos
     npx copilotforge telemetry          Show local usage analytics dashboard
     npx copilotforge telemetry enable   Start collecting local usage data
+    npx copilotforge detect             Auto-detect build path from project files
+    npx copilotforge discover            Scan codebase for playbook patterns
+    npx copilotforge discover --apply    Add discovered patterns to playbook
     npx copilotforge --version        Show version
 
   ${colors.bold('Flags:')}

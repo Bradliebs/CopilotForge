@@ -251,5 +251,13 @@
 #   7 = GitHub Actions integration — generate CI/CD workflows tailored to
 #       the detected build path and project structure
 #
-# STATUS: Planning — no tasks defined yet.
+# STATUS: In Progress
 # =============================================================================
+
+- [x] smart-detect — Smart template selection from project analysis. New file: `cli/src/smart-detect.js` with package.json analysis, file structure scanning, README signals, 10-path scoring (A-J), confidence levels (explicit/high/medium/low). New CLI command: `copilotforge detect`. MCP tool: `copilotforge_detect`.
+- [x] mcp-chain — MCP tool chaining for multi-step workflows. New MCP tool: `copilotforge_chain` accepting an array of steps, sequential execution with stop-on-error, aggregate results.
+- [x] auto-discovery — Playbook auto-discovery from codebase analysis. New file: `cli/src/discover.js` scanning stack patterns (test frameworks, UI frameworks, TypeScript, linters), git commit patterns (conventional commits, ticket references), and file structure (monorepo, src/test separation, docs). New CLI command: `copilotforge discover [--apply] [--dry-run]`.
+- [x] chat-participant — VS Code Copilot Chat participant (@copilotforge). New file: `vscode-extension/src/chat-participant.ts` with slash commands (/init, /doctor, /detect, /discover, /status), manifest chatParticipants configuration.
+- [ ] ai-review — AI-assisted code review with playbook-driven suggestions
+- [ ] recipe-generator — Generate custom cookbook recipes from project context
+- [ ] github-actions-gen — Generate CI/CD workflows for detected build paths

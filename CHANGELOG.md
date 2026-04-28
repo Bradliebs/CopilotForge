@@ -5,6 +5,18 @@ All notable changes to CopilotForge are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - Phase 18: Intelligence & Quality
+
+### Added
+- **Smart template selection** (`cli/src/smart-detect.js`) — auto-detect build path from project files without wizard
+- **`copilotforge detect`** subcommand — analyze project and suggest best build path (A-J)
+- **MCP tool chaining** — `copilotforge_chain` tool for multi-step MCP workflows (init → doctor → plan)
+- **MCP detect tool** — `copilotforge_detect` for programmatic build path detection
+- **Playbook auto-discovery** (`cli/src/discover.js`) — scan codebase for patterns and auto-generate entries
+- **`copilotforge discover`** subcommand — find stack, git, and structure patterns with `--apply` option
+- **VS Code Chat participant** — `@copilotforge` in Copilot Chat with /init, /doctor, /detect, /discover, /status commands
+- 30+ Phase 18 tests covering smart detection, MCP chaining, and auto-discovery
+
 ## [2.0.0] - Phase 17: Ecosystem & Collaboration
 
 ### Added

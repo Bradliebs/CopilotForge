@@ -376,7 +376,7 @@ describe('mcp-server - module structure', () => {
 
   it('SERVER_INFO has correct version', () => {
     const { SERVER_INFO } = require('../src/mcp-server');
-    assert.strictEqual(SERVER_INFO.version, '2.0.0', 'server version should be 2.0.0');
+    assert.strictEqual(SERVER_INFO.version, '2.1.0', 'server version should be 2.1.0');
   });
 });
 

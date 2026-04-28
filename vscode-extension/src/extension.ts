@@ -2,10 +2,14 @@ import * as vscode from 'vscode';
 import { TrustProvider } from './views/trust-provider';
 import { PlaybookProvider } from './views/playbook-provider';
 import { SkillsProvider } from './views/skills-provider';
+import { registerChatParticipant } from './chat-participant';
 
 let statusBarItem: vscode.StatusBarItem;
 
 export function activate(context: vscode.ExtensionContext): void {
+  // Chat participant — @copilotforge in Copilot Chat
+  registerChatParticipant(context);
+
   // Status bar — trust level indicator
   statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   statusBarItem.command = 'copilotforge.trust';
