@@ -284,5 +284,13 @@
 #   7 = Performance profiling — measure and optimize init/doctor/detect
 #       execution time with benchmarking infrastructure
 #
-# STATUS: Planning — no tasks defined yet.
+# STATUS: In Progress
 # =============================================================================
+
+- [x] config-file — Per-project and global config file support. New file: `cli/src/config.js` supporting `.copilotforgerc`, `.copilotforgerc.json`, `copilotforge.config.js`, and `~/.copilotforge/config.json`. Config schema: path, verbosity, extras, autoCommit, dryRun, telemetry, plugins. Priority: project > global > defaults. New CLI command: `copilotforge config`.
+- [x] plugin-scaffold — Plugin scaffold generator. New file: `cli/src/plugin-scaffold.js` with `copilotforge plugin create <name>` generating package.json (copilotforge-plugin marker), index.js (plugin contract), README.md. Also: `plugin list` (discover installed), `plugin validate` (check contract).
+- [x] upgrade-migration — Version migration system. New file: `cli/src/migrate.js` with version detection from FORGE.md stamps, migration checks (version stamp, playbook, trust, oracle-prime), apply/dry-run modes. New CLI command: `copilotforge migrate [--apply] [--dry-run]`.
+- [x] perf-profiling — Performance profiling. New file: `cli/src/perf.js` with hrtime.bigint benchmarking, 7 benchmark targets (require, config, detect, playbook, trust, discover, review), formatted output with status icons. New CLI command: `copilotforge perf`.
+- [ ] interactive-improvements — Arrow-key navigation and tab completion
+- [ ] documentation-site — Static site generator from docs/
+- [ ] i18n — Internationalization for CLI messages

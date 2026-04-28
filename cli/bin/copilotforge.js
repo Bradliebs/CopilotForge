@@ -242,6 +242,36 @@ switch (command) {
     break;
   }
 
+  case 'config': {
+    const config = require('../src/config');
+    const found = config.findConfigFile();
+    const loaded = config.loadConfig();
+    const { colors: c } = require('../src/utils');
+    console.log();
+    console.log(`  Config source: ${found ? c.cyan(found.file) + ` (${found.scope})` : c.dim('defaults')}`);
+    console.log(`  ${JSON.stringify(loaded, null, 2).split('\n').join('\n  ')}`);
+    console.log();
+    break;
+  }
+
+  case 'plugin': {
+    const pluginScaffold = require('../src/plugin-scaffold');
+    pluginScaffold.run(args.slice(1));
+    break;
+  }
+
+  case 'migrate': {
+    const migrate = require('../src/migrate');
+    migrate.run(args.slice(1));
+    break;
+  }
+
+  case 'perf': {
+    const perf = require('../src/perf');
+    perf.run(args.slice(1));
+    break;
+  }
+
   case 'rollback': {
     const rollback = require('../src/rollback');
     rollback.run(args.slice(1)).catch((err) => {
@@ -352,6 +382,13 @@ function printHelp() {
     npx copilotforge generate <type>     Generate a cookbook recipe
     npx copilotforge ci                  Generate GitHub Actions CI workflow
     npx copilotforge ci --dry-run        Preview CI workflow without writing
+    npx copilotforge config             Show active configuration
+    npx copilotforge plugin create <n>  Scaffold a new CopilotForge plugin
+    npx copilotforge plugin list        List installed plugins
+    npx copilotforge plugin validate    Validate plugin in current directory
+    npx copilotforge migrate            Check for needed version migrations
+    npx copilotforge migrate --apply    Apply all migrations
+    npx copilotforge perf               Run performance benchmarks
     npx copilotforge --version        Show version
 
   ${colors.bold('Flags:')}

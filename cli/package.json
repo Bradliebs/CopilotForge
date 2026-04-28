@@ -1,6 +1,6 @@
 {
   "name": "copilotforge",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "One command to set up AI-powered coding assistants in any project",
   "bin": {
     "copilotforge": "./bin/copilotforge.js"

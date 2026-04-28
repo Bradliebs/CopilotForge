@@ -5,6 +5,22 @@ All notable changes to CopilotForge are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - Phase 19: Developer Experience & Polish
+
+### Added
+- **Config file support** (`cli/src/config.js`) — `.copilotforgerc`, `.copilotforgerc.json`, `copilotforge.config.js` for project defaults
+- **`copilotforge config`** subcommand — show active configuration and source
+- **Plugin scaffold generator** (`cli/src/plugin-scaffold.js`) — `copilotforge plugin create <name>` bootstraps plugin packages
+- **`copilotforge plugin`** subcommand — create/list/validate plugins
+- **Upgrade migration** (`cli/src/migrate.js`) — auto-detect and migrate older CopilotForge installations
+- **`copilotforge migrate`** subcommand — check/apply migrations with `--dry-run` preview
+- **Performance profiling** (`cli/src/perf.js`) — benchmark key CLI operations with formatted output
+- **`copilotforge perf`** subcommand — run benchmarks for detect, config, discover, review, etc.
+- 35+ Phase 19 tests covering config, plugin scaffold, migration, and perf
+
+### Changed
+- Version bump from 2.1.0 to 2.2.0 (Phase 19 features)
+
 ## [2.1.0] - Phase 18: Intelligence & Quality
 
 ### Added

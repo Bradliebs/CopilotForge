@@ -140,6 +140,10 @@ The CLI is the human-facing entry point. It installs, upgrades, diagnoses, and m
 | `src/review.js` | AI-assisted code review — 5 rules, secret detection, anti-pattern matching (Phase 18) |
 | `src/generate.js` | Recipe generator — 4 recipe types with framework-aware generation (Phase 18) |
 | `src/ci-generator.js` | GitHub Actions CI generator — Node/Python/generic workflows (Phase 18) |
+| `src/config.js` | Config file support — .copilotforgerc, project/global defaults (Phase 19) |
+| `src/plugin-scaffold.js` | Plugin scaffold generator — create/list/validate plugins (Phase 19) |
+| `src/migrate.js` | Version migration — detect and migrate older installations (Phase 19) |
+| `src/perf.js` | Performance profiling — benchmark key CLI operations (Phase 19) |
 
 ### Templates Modular Split (Phase 13)
 
