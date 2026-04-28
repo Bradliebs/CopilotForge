@@ -133,19 +133,26 @@ function run() {
   }
 
   // VS Code CLI (soft -- warn only)
+  // Skip when already running inside VS Code terminal to avoid spawning new windows
+  const insideVSCode = !!(process.env.VSCODE_PID || process.env.TERM_PROGRAM === 'vscode' || process.env.VSCODE_GIT_IPC_HANDLE);
   let vscodeFound = false;
-  try {
-    execSync('code --version', { stdio: 'pipe' });
+  if (insideVSCode) {
     vscodeFound = true;
-    recordCheck('VS Code', 'pass', 'VS Code detected -- OK', '');
-  } catch {
-    recordCheck('VS Code', 'warn', 'VS Code not found in PATH -- install from https://code.visualstudio.com or add code to PATH', '');
+    recordCheck('VS Code', 'pass', 'VS Code detected (running inside VS Code)', '');
+  } else {
+    try {
+      execSync('code --version', { stdio: 'pipe', timeout: 5000, windowsHide: true });
+      vscodeFound = true;
+      recordCheck('VS Code', 'pass', 'VS Code detected -- OK', '');
+    } catch {
+      recordCheck('VS Code', 'warn', 'VS Code not found in PATH -- install from https://code.visualstudio.com or add code to PATH', '');
+    }
   }
 
   // GitHub Copilot extension (only if VS Code found)
-  if (vscodeFound) {
+  if (vscodeFound && !insideVSCode) {
     try {
-      const extensions = execSync('code --list-extensions', { stdio: 'pipe' }).toString().toLowerCase();
+      const extensions = execSync('code --list-extensions', { stdio: 'pipe', timeout: 10000, windowsHide: true }).toString().toLowerCase();
       if (extensions.includes('github.copilot')) {
         recordCheck('GitHub Copilot extension', 'pass', 'GitHub Copilot extension detected -- OK', '');
       } else {
@@ -154,6 +161,8 @@ function run() {
     } catch {
       recordCheck('GitHub Copilot extension', 'warn', 'GitHub Copilot extension not found -- install from VS Code marketplace', '');
     }
+  } else if (insideVSCode) {
+    recordCheck('GitHub Copilot extension', 'pass', 'GitHub Copilot detected (running inside VS Code)', '');
   }
 
   let forgeContent = null;

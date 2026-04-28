@@ -412,6 +412,21 @@ describe('CopilotForge E2E Validation', () => {
     });
   });
 
+  describe('Plan CLI', () => {
+    let planDir;
+
+    it('should generate plan with --dry-run', () => {
+      planDir = createTempDir();
+      const result = runCLI('plan "A REST API with auth and search" --stack "TypeScript, Express" --dry-run', planDir);
+      assert.ok(result.output.includes('add-auth') || result.output.includes('auth'),
+        'Plan should include auth task in dry-run output');
+    });
+
+    it('cleanup plan temp dir', () => {
+      cleanup(planDir);
+    });
+  });
+
   // Cleanup after all tests
   describe('Cleanup', () => {
     it('should remove all temp directories', () => {

@@ -5,6 +5,22 @@ All notable changes to CopilotForge are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - Phase 16: Intelligence & Ecosystem
+
+### Added
+- **AI plan generation** (`cli/src/plan-generator.js`) — auto-generate IMPLEMENTATION_PLAN.md from project description + stack
+- **`copilotforge plan`** subcommand — generate plans from CLI with `--stack` and `--dry-run` flags
+- **`copilotforge compact`** subcommand — five-layer context compaction for conversation transcripts
+- **Trust-adaptive wizard** — skip confirmation at 'autonomous' level, suggest extras at 'trusted' level
+- **Playbook-driven plan generation** — high-scored playbook strategies become implementation tasks
+- **Global playbook** — merge `~/.copilotforge/playbook.md` with project-level entries, `--promote` flag
+- **Compaction-aware Ralph Loop** — session messages tracked and compacted after 20 messages
+- **Experiential context loading** in Oracle Prime instructions — top-5 playbook entries injected on analysis start
+- Trust signals in plan-executor: `tasksCompleted` on success, `tasksFailed` on failure
+- E2E pipeline integration test (init → plan gen → verify → trust)
+- Phase 16 + 17 planning headers in IMPLEMENTATION_PLAN.md
+- 41 Phase 16 tests covering plan-generator, global playbook, CLI routing, trust integration
+
 ## [1.8.0] - Phase 15: Agent Harness Runtime
 
 ### Added

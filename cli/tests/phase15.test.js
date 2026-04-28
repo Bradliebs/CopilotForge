@@ -158,18 +158,18 @@ describe('experiential-memory - playbook operations', () => {
 
   it('getTopEntries returns sorted by score', () => {
     const dir = createTempDir();
-    addPlaybookEntry('STRATEGY', 'Low score TS', 'Content', dir);
-    addPlaybookEntry('PATTERN', 'High score TS', 'Content', dir);
-    reinforceEntry('High score TS', dir);
-    reinforceEntry('High score TS', dir);
-    const top = getTopEntries(10, dir);
-    assert.ok(top.length >= 2);
-    // Among project entries, high-score should come before low-score
+    const suffix = Date.now();
+    addPlaybookEntry('STRATEGY', `Low score ${suffix}`, 'Content', dir);
+    addPlaybookEntry('PATTERN', `High score ${suffix}`, 'Content', dir);
+    reinforceEntry(`High score ${suffix}`, dir);
+    reinforceEntry(`High score ${suffix}`, dir);
+    // Use a large N to ensure project entries aren't pushed out by global entries
+    const top = getTopEntries(100, dir);
     const projectTop = top.filter((e) => e.source === 'project');
-    assert.ok(projectTop.length >= 2, 'should have at least 2 project entries');
-    const highIdx = projectTop.findIndex((e) => e.title === 'High score TS');
-    const lowIdx = projectTop.findIndex((e) => e.title === 'Low score TS');
-    assert.ok(highIdx < lowIdx, 'High score should rank before Low score in project entries');
+    assert.ok(projectTop.length >= 2, `should have at least 2 project entries, got ${projectTop.length}: ${projectTop.map(e=>e.title).join(', ')}`);
+    const highIdx = projectTop.findIndex((e) => e.title.startsWith('High score'));
+    const lowIdx = projectTop.findIndex((e) => e.title.startsWith('Low score'));
+    assert.ok(highIdx < lowIdx, 'High score should rank before Low score');
     cleanup(dir);
   });
 

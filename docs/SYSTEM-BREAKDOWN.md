@@ -32,7 +32,7 @@
 | **Name** | CopilotForge (repo: Oracle_Prime) |
 | **Owner** | Brad Liebs |
 | **npm package** | `copilotforge` |
-| **CLI version** | 1.8.0 |
+| **CLI version** | 1.9.0 |
 | **Node requirement** | >=18.0.0 |
 | **Dependencies** | Zero (pure Node.js + markdown) |
 

@@ -213,6 +213,10 @@ describe('experiential-memory - global playbook', () => {
     if (fs.existsSync(globalPath)) {
       const content = fs.readFileSync(globalPath, 'utf8');
       assert.ok(content.includes(uniqueTitle), 'global should contain promoted entry');
+
+      // Clean up: remove the test entry from the global playbook
+      const cleaned = content.replace(new RegExp(`## \\[STRATEGY\\] ${uniqueTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?(?=## \\[|$)`), '');
+      fs.writeFileSync(globalPath, cleaned, 'utf8');
     }
 
     cleanup(dir);
