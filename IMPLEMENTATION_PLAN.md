@@ -228,3 +228,28 @@
 - [x] agent-marketplace — Agent marketplace for community skills/agents/recipes. New file: `cli/src/marketplace.js` with GitHub registry fetch, search, install/uninstall, builtin registry fallback, cache management. New CLI command: `copilotforge marketplace [browse|search|install|uninstall|info|list]`.
 - [x] multi-repo — Shared playbook and trust across multiple repositories. New file: `cli/src/multi-repo.js` with repo linking, playbook collection/deduplication, trust aggregation, shared playbook generation. New CLI command: `copilotforge multi-repo [status|link|unlink|sync]`.
 - [x] telemetry-dashboard — Opt-in local usage analytics. New file: `cli/src/telemetry.js` with event recording, analysis (command usage, path popularity, trust trends, daily activity), enable/disable/reset/export. New CLI command: `copilotforge telemetry [show|enable|disable|reset|export]`.
+
+# =============================================================================
+# PHASE 18 — INTELLIGENCE & QUALITY (v2.0.0 → v2.1.0)
+# =============================================================================
+#
+# Deepens CopilotForge's AI integration and code quality capabilities.
+#
+# Feature Candidates:
+#   1 = AI-assisted code review — scan generated files for common issues,
+#       suggest improvements, and flag anti-patterns using playbook entries
+#   2 = Smart template selection — use project analysis (package.json, file
+#       structure, README) to auto-select the best build path without wizard
+#   3 = Copilot Chat participant — register as a VS Code Chat participant
+#       (@copilotforge) using the Chat API for inline workspace integration
+#   4 = MCP tool chaining — compose multiple MCP tools into workflows
+#       (e.g., init → doctor → plan in a single MCP call)
+#   5 = Playbook auto-discovery — scan codebase for recurring patterns and
+#       auto-generate playbook entries from git history analysis
+#   6 = Recipe generator — generate custom cookbook recipes from project
+#       context (stack, patterns, conventions) using LLM passthrough
+#   7 = GitHub Actions integration — generate CI/CD workflows tailored to
+#       the detected build path and project structure
+#
+# STATUS: Planning — no tasks defined yet.
+# =============================================================================

@@ -1,0 +1,107 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-04-28",
+  "description": "CopilotForge community marketplace — skills, agents, recipes, and plugins",
+  "items": [
+    {
+      "name": "oracle-prime",
+      "type": "skill",
+      "description": "Adaptive precision reasoning framework with Bayesian analysis",
+      "author": "copilotforge",
+      "version": "2.0.0",
+      "tags": ["reasoning", "analysis", "decision-making"],
+      "install": "builtin",
+      "downloads": 0
+    },
+    {
+      "name": "plan-executor",
+      "type": "skill",
+      "description": "Autonomous plan execution with task validation and commit workflow",
+      "author": "copilotforge",
+      "version": "2.0.0",
+      "tags": ["automation", "planning", "execution"],
+      "install": "builtin",
+      "downloads": 0
+    },
+    {
+      "name": "forge-compass",
+      "type": "skill",
+      "description": "Pre-scaffold gate for build-path detection and prerequisite checks",
+      "author": "copilotforge",
+      "version": "2.0.0",
+      "tags": ["scaffolding", "detection", "validation"],
+      "install": "builtin",
+      "downloads": 0
+    },
+    {
+      "name": "power-platform-guide",
+      "type": "skill",
+      "description": "Routing oracle for all 10 Power Platform build paths (A-J)",
+      "author": "copilotforge",
+      "version": "2.0.0",
+      "tags": ["power-platform", "routing", "build-paths"],
+      "install": "builtin",
+      "downloads": 0
+    },
+    {
+      "name": "api-client",
+      "type": "recipe",
+      "description": "HTTP client with retry, auth, and error handling patterns",
+      "author": "copilotforge",
+      "version": "1.0.0",
+      "tags": ["api", "http", "networking"],
+      "install": "builtin",
+      "downloads": 0
+    },
+    {
+      "name": "mcp-server",
+      "type": "recipe",
+      "description": "Model Context Protocol server for AI tool integration",
+      "author": "copilotforge",
+      "version": "1.0.0",
+      "tags": ["mcp", "ai", "integration"],
+      "install": "builtin",
+      "downloads": 0
+    },
+    {
+      "name": "task-loop",
+      "type": "recipe",
+      "description": "Ralph Loop — persistent autonomous task executor with evaluator",
+      "author": "copilotforge",
+      "version": "1.0.0",
+      "tags": ["automation", "tasks", "executor"],
+      "install": "builtin",
+      "downloads": 0
+    },
+    {
+      "name": "error-handling",
+      "type": "recipe",
+      "description": "Structured error handling with recovery strategies",
+      "author": "copilotforge",
+      "version": "1.0.0",
+      "tags": ["error-handling", "resilience", "patterns"],
+      "install": "builtin",
+      "downloads": 0
+    },
+    {
+      "name": "session-example",
+      "type": "recipe",
+      "description": "Session management patterns for multi-turn conversations",
+      "author": "copilotforge",
+      "version": "1.0.0",
+      "tags": ["sessions", "state", "conversations"],
+      "install": "builtin",
+      "downloads": 0
+    },
+    {
+      "name": "knowledge-wiki",
+      "type": "recipe",
+      "description": "Knowledge base with semantic search and retrieval",
+      "author": "copilotforge",
+      "version": "1.0.0",
+      "tags": ["knowledge", "search", "retrieval"],
+      "install": "builtin",
+      "downloads": 0
+    }
+  ]
+}
