@@ -217,6 +217,19 @@ function generatePlan(answers) {
   // Quality tasks
   for (const t of QUALITY_TASKS) addTask(t);
 
+  // Playbook-driven tasks — inject tasks from high-scored playbook strategies
+  try {
+    const { getTopEntries } = require('./experiential-memory');
+    const topEntries = getTopEntries(5, answers.cwd || process.cwd());
+    for (const entry of topEntries) {
+      if (entry.type === 'STRATEGY' && entry.score >= 2) {
+        // Convert high-scored strategies into plan tasks
+        const taskId = `playbook-${entry.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 30)}`;
+        addTask({ id: taskId, title: `[From playbook] ${entry.title}` });
+      }
+    }
+  } catch { /* playbook is optional */ }
+
   // Infrastructure tasks
   for (const t of INFRA_TASKS) addTask(t);
 

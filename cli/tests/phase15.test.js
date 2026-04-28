@@ -143,9 +143,10 @@ describe('experiential-memory - playbook operations', () => {
     const dir = createTempDir();
     addPlaybookEntry('STRATEGY', 'Test strategy', 'Use caching for repeated lookups', dir);
     const { entries } = readPlaybook(dir);
-    assert.strictEqual(entries.length, 1);
-    assert.strictEqual(entries[0].type, 'STRATEGY');
-    assert.strictEqual(entries[0].title, 'Test strategy');
+    const projectEntries = entries.filter((e) => e.source === 'project');
+    assert.strictEqual(projectEntries.length, 1);
+    assert.strictEqual(projectEntries[0].type, 'STRATEGY');
+    assert.strictEqual(projectEntries[0].title, 'Test strategy');
     cleanup(dir);
   });
 
@@ -163,7 +164,9 @@ describe('experiential-memory - playbook operations', () => {
     reinforceEntry('High score', dir);
     const top = getTopEntries(5, dir);
     assert.ok(top.length >= 2);
-    assert.strictEqual(top[0].title, 'High score');
+    // First entry should be highest scored (High score has score >= 3)
+    const projectTop = top.filter((e) => e.source === 'project');
+    assert.strictEqual(projectTop[0].title, 'High score');
     cleanup(dir);
   });
 
@@ -219,14 +222,17 @@ describe('experiential-memory - playbook operations', () => {
     }, dir);
     // Should reinforce, not create new entry
     const { entries } = readPlaybook(dir);
-    assert.strictEqual(entries.length, 1);
+    const projectEntries = entries.filter((e) => e.source === 'project');
+    assert.strictEqual(projectEntries.length, 1);
     cleanup(dir);
   });
 
   it('readPlaybook returns empty for missing file', () => {
     const dir = createTempDir();
     const { entries } = readPlaybook(dir);
-    assert.strictEqual(entries.length, 0);
+    // May include global entries but no project entries
+    const projectEntries = entries.filter((e) => e.source === 'project');
+    assert.strictEqual(projectEntries.length, 0);
     cleanup(dir);
   });
 });
@@ -671,7 +677,9 @@ describe('Phase 15 - playbook and trust CLI', () => {
     addPlaybookEntry('STRATEGY', 'Test seed 3', 'Content 3', tmpDir);
 
     const { entries } = readPlaybook(tmpDir);
-    assert.strictEqual(entries.length, 3, 'should have 3 seeded entries');
+    // readPlaybook now merges project + global entries, so count may include global
+    const projectEntries = entries.filter((e) => e.source === 'project');
+    assert.strictEqual(projectEntries.length, 3, 'should have 3 project-level seeded entries');
 
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });

@@ -139,6 +139,8 @@ function ralphLoop(planPath: string, maxIterations: number = {{MAX_ITERATIONS}})
   }
 
   let iteration = 0;
+  // Context tracking for compaction awareness
+  const sessionMessages: Array<{ role: string; content: string }> = [];
 
   while (iteration < maxIterations) {
     iteration++;
@@ -146,6 +148,24 @@ function ralphLoop(planPath: string, maxIterations: number = {{MAX_ITERATIONS}})
 
     if (iteration === 1) {
       console.log(`[Ralph] Loaded ${tasks.length} tasks from ${planPath}`);
+    }
+
+    // Compaction check — if session messages exceed threshold, compact
+    if (sessionMessages.length > 20) {
+      try {
+        const compaction = require('../../cli/src/compaction');
+        if (compaction && compaction.compact) {
+          const { messages: compacted, stats } = await compaction.compact(sessionMessages);
+          const saved = sessionMessages.length - compacted.length;
+          if (saved > 0) {
+            console.log(`[Ralph] 📦 Compacted context: ${sessionMessages.length} → ${compacted.length} messages`);
+            sessionMessages.length = 0;
+            sessionMessages.push(...compacted);
+          }
+        }
+      } catch {
+        // Compaction is optional
+      }
     }
 
     const pending = tasks.find((t) => t.status === "pending");
@@ -198,8 +218,10 @@ function ralphLoop(planPath: string, maxIterations: number = {{MAX_ITERATIONS}})
     if (passed && evaluatorVerdict === 'confirmed') {
       console.log(`[Ralph] ✅ Task ${pending.id} passed — committing.`);
       gitCommit(`feat: ${pending.id} — ${pending.title}`);
+      sessionMessages.push({ role: 'assistant', content: `✅ Task ${pending.id} completed: ${pending.title}` });
     } else {
       console.log(`[Ralph] ❌ Task ${pending.id} failed — logged.`);
+      sessionMessages.push({ role: 'assistant', content: `❌ Task ${pending.id} failed: ${pending.title}` });
     }
   }
 
