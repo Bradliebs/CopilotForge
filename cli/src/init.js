@@ -389,6 +389,19 @@ async function run(args) {
       createdFiles.push(path.join('docs', 'GETTING-STARTED.md'));
     }
 
+    // Seed experiential memory playbook with starter strategies
+    try {
+      const { addPlaybookEntry, getPlaybookPath } = require('./experiential-memory');
+      const playbookPath = getPlaybookPath(cwd);
+      if (!exists(playbookPath)) {
+        addPlaybookEntry('STRATEGY', 'Read memory before acting', 'Always check forge-memory/decisions.md and patterns.md before generating code — prior decisions provide constraints the model would otherwise miss.', cwd);
+        addPlaybookEntry('PATTERN', 'Validate after every change', 'Run the project test suite after every code modification. Never mark a task done without validation passing.', cwd);
+        addPlaybookEntry('STRATEGY', 'Decompose before implementing', 'Break complex tasks into subtasks of 50 lines or less. Smaller changes are easier to validate and review.', cwd);
+        success('Created forge-memory/playbook.md (3 starter strategies)');
+        createdFiles.push(path.join('forge-memory', 'playbook.md'));
+      }
+    } catch { /* experiential memory is optional */ }
+
     // --beginner: write extra guidance files (Win 6)
     if (beginner) {
       console.log();

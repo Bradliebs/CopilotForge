@@ -163,14 +163,39 @@ function ralphLoop(planPath: string, maxIterations: number = {{MAX_ITERATIONS}})
 
     const passed = validateTask(pending);
 
+    // Evaluator integration — independent verification of task quality
+    let evaluatorVerdict = 'confirmed';
+    try {
+      const evalModule = require('../../cli/src/evaluator');
+      if (evalModule && evalModule.evaluate) {
+        const evalResult = await evalModule.evaluate(
+          { id: pending.id, title: pending.title, modifiedFiles: [`{{OUTPUT_DIR}}/${pending.id}.ts`] },
+          { cwd: process.cwd() }
+        );
+        evaluatorVerdict = evalResult.verdict;
+        if (evalResult.verdict !== 'confirmed') {
+          console.log(`[Ralph] ⚠️ Evaluator: ${evalResult.verdict} — ${evalResult.checks.filter(c => c.status !== 'pass').map(c => c.detail).join('; ')}`);
+        }
+      }
+    } catch {
+      // Evaluator is optional — don't block the loop
+    }
+
     const freshTasks = parsePlan(planPath);
     const target = freshTasks.find((t) => t.id === pending.id);
     if (target) {
-      target.status = passed ? "done" : "failed";
+      if (!passed) {
+        target.status = 'failed';
+      } else if (evaluatorVerdict === 'needs-review') {
+        target.status = 'failed'; // Mark as needing attention
+        console.log(`[Ralph] 🔍 Task ${pending.id} needs review — marked for attention.`);
+      } else {
+        target.status = 'done';
+      }
       writePlan(planPath, freshTasks);
     }
 
-    if (passed) {
+    if (passed && evaluatorVerdict === 'confirmed') {
       console.log(`[Ralph] ✅ Task ${pending.id} passed — committing.`);
       gitCommit(`feat: ${pending.id} — ${pending.title}`);
     } else {

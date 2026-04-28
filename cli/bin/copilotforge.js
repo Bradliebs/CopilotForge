@@ -109,6 +109,17 @@ switch (command) {
     break;
   }
 
+  case 'trust': {
+    const trustCli = require('../src/trust-cli');
+    try {
+      trustCli.run(args.slice(1));
+    } catch (err) {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    }
+    break;
+  }
+
   case 'wizard': {
     const wizard = require('../src/wizard');
     wizard.run().catch((err) => {
@@ -199,6 +210,8 @@ function printHelp() {
     npx copilotforge run --dry-run    Preview what run would do without executing
     npx copilotforge run --task <id>  Run a single task by ID and exit
     npx copilotforge oracle           Show Oracle Prime usage guide and trigger phrases
+    npx copilotforge trust            View trust trajectory (level, score, history)
+    npx copilotforge trust --reset    Reset trust state to defaults
     npx copilotforge wizard           Run the conversational setup wizard (Q1-Q6)
     npx copilotforge rollback         Restore files from a previous init/upgrade snapshot
     npx copilotforge rollback --list  Show available snapshots
