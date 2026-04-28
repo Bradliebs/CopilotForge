@@ -267,6 +267,97 @@ Opens the live browser dashboard at `http://localhost:3731`.
 npx copilotforge uninstall
 ```
 
+### Detect — Smart Build Path Detection
+
+```bash
+npx copilotforge detect
+```
+
+Analyzes your project files (package.json, file structure, README) and suggests the best build path (A-J) without running the wizard.
+
+### Discover — Playbook Auto-Discovery
+
+```bash
+npx copilotforge discover            # Scan for patterns
+npx copilotforge discover --apply    # Add discovered patterns to playbook
+```
+
+Scans your codebase for recurring patterns (test frameworks, linters, git conventions, monorepo structure) and generates playbook entries.
+
+### Review — Code Quality Scanner
+
+```bash
+npx copilotforge review              # Scan project files
+npx copilotforge review --playbook   # Include playbook anti-pattern checks
+npx copilotforge review src/app.js   # Review a specific file
+```
+
+Checks for hardcoded secrets, TODO markers, eval usage, empty catch blocks, and large files. With `--playbook`, also matches against your playbook anti-patterns.
+
+### Generate — Recipe Generator
+
+```bash
+npx copilotforge generate --list      # List available recipe types
+npx copilotforge generate api-route   # Generate an API route recipe
+npx copilotforge generate test-suite  # Generate a test suite recipe
+npx copilotforge generate --dry-run   # Preview without writing
+```
+
+Available types: `api-route`, `test-suite`, `error-handler`, `config-loader`. Detects TypeScript and your framework to produce matching code.
+
+### CI — GitHub Actions Generator
+
+```bash
+npx copilotforge ci                   # Generate CI workflow
+npx copilotforge ci --dry-run         # Preview without writing
+```
+
+Detects Node/Python/generic projects and generates `.github/workflows/ci.yml` with test matrix, lint, and build steps.
+
+### Team — Shared Memory
+
+```bash
+npx copilotforge team init            # Install git hooks for shared memory
+npx copilotforge team sync            # Pull and merge remote memory
+npx copilotforge team status          # Show sync status
+npx copilotforge team uninstall       # Remove hooks
+```
+
+### Marketplace — Community Skills
+
+```bash
+npx copilotforge marketplace                  # Browse items
+npx copilotforge marketplace search <query>   # Search
+npx copilotforge marketplace install <name>   # Install
+```
+
+### Multi-Repo — Cross-Repository Sync
+
+```bash
+npx copilotforge multi-repo link      # Link current repo
+npx copilotforge multi-repo sync      # Sync playbook across repos
+npx copilotforge multi-repo status    # Show linked repos
+```
+
+### Telemetry — Local Usage Analytics
+
+```bash
+npx copilotforge telemetry            # Show dashboard
+npx copilotforge telemetry enable     # Start collecting (local only)
+npx copilotforge telemetry export     # Export as JSON
+```
+
+All data stays local — nothing is transmitted.
+
+### Copilot Extension
+
+```bash
+npx copilotforge extension            # Start HTTP/SSE agent server
+npx copilotforge extension --port 8080
+```
+
+Runs CopilotForge as a GitHub Copilot Extension agent. See [Copilot Extension Setup](docs/COPILOT-EXTENSION-SETUP.md).
+
 ### Watch — Persistent Plan Executor
 
 ```bash

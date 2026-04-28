@@ -261,3 +261,28 @@
 - [x] ai-review — AI-assisted code review with playbook-driven suggestions. New file: `cli/src/review.js` with 5 built-in rules (hardcoded secrets, TODO markers, console.log, eval, empty catch), large file detection, playbook anti-pattern matching. New CLI command: `copilotforge review [file] [--playbook]`.
 - [x] recipe-generator — Generate custom cookbook recipes from project context. New file: `cli/src/generate.js` with 4 recipe types (api-route, test-suite, error-handler, config-loader), TypeScript/JavaScript auto-detection, framework-aware generation. New CLI command: `copilotforge generate <type> [--list] [--dry-run]`.
 - [x] github-actions-gen — Generate CI/CD workflows for detected build paths. New file: `cli/src/ci-generator.js` with Node/Python/generic project detection, test/lint/build step generation. New CLI command: `copilotforge ci [--dry-run]`.
+
+# =============================================================================
+# PHASE 19 — DEVELOPER EXPERIENCE & POLISH (v2.1.0 → v2.2.0)
+# =============================================================================
+#
+# Focuses on refinement, developer experience, and production readiness.
+#
+# Feature Candidates:
+#   1 = Interactive mode improvements — arrow-key navigation, color themes,
+#       progress bars, and tab completion in the terminal wizard
+#   2 = Config file support — .copilotforgerc or copilotforge.config.js
+#       for per-project defaults (path, verbosity, extras)
+#   3 = Upgrade migration — auto-detect older CopilotForge installations
+#       and migrate to v2.x format with backwards compatibility
+#   4 = Plugin scaffold generator — `copilotforge plugin create <name>`
+#       to bootstrap a new plugin package with the correct contract
+#   5 = Documentation site — static site generator from docs/ content
+#       with search, versioned docs, and API reference
+#   6 = Internationalization — i18n support for CLI messages and wizard
+#       prompts (English, Spanish, Portuguese, Japanese, German)
+#   7 = Performance profiling — measure and optimize init/doctor/detect
+#       execution time with benchmarking infrastructure
+#
+# STATUS: Planning — no tasks defined yet.
+# =============================================================================

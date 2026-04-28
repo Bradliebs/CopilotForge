@@ -63,6 +63,36 @@ const RULES = [
     message: 'Empty catch handler swallows errors',
     suggestion: 'Log or handle the error, or use a comment to document why it is safe to ignore',
   },
+  {
+    id: 'deprecated-api',
+    severity: 'warn',
+    pattern: /\b(fs\.exists\b|url\.parse\b|new Buffer\b|domain\.create\b|require\('sys'\))/g,
+    message: 'Deprecated API usage detected',
+    suggestion: 'Use the modern equivalent (fs.existsSync, new URL(), Buffer.from(), etc.)',
+  },
+  {
+    id: 'magic-number',
+    severity: 'info',
+    pattern: /(?:===?\s*|!==?\s*|[><=]+\s*|return\s+)(\d{3,})(?!\d)/g,
+    message: 'Magic number — consider extracting to a named constant',
+    suggestion: 'Define as a const with a descriptive name for readability',
+    excludePatterns: ['test', 'spec', '.test.', '.spec.'],
+  },
+  {
+    id: 'async-no-await',
+    severity: 'warn',
+    pattern: /async\s+(?:function\s+\w+|(?:\w+|\([^)]*\))\s*=>)\s*\{[^}]*\}/g,
+    message: 'Async function may not use await',
+    suggestion: 'Remove async keyword if no await is needed, or verify await is used inside',
+    excludePatterns: ['test', 'spec', '.test.', '.spec.'],
+  },
+  {
+    id: 'http-url',
+    severity: 'warn',
+    pattern: /['"]http:\/\/(?!localhost|127\.0\.0\.1|0\.0\.0\.0)/g,
+    message: 'Non-HTTPS URL detected',
+    suggestion: 'Use HTTPS for production URLs to ensure encrypted communication',
+  },
 ];
 
 // ── File scanning ───────────────────────────────────────────────────────

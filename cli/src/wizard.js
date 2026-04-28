@@ -99,6 +99,25 @@ async function run() {
   const rl = createRL();
   const answers = {};
 
+  // Smart build path detection (Phase 18)
+  let detectedPath = null;
+  try {
+    const { detectBuildPath } = require('./smart-detect');
+    const detection = detectBuildPath(process.cwd());
+    if (detection.confidence === 'explicit') {
+      info(`  Build path: ${colors.cyan(detection.path)} — ${detection.name} (from FORGE.md)`);
+      detectedPath = detection;
+    } else if (detection.confidence === 'high') {
+      info(`  Detected: ${colors.cyan(detection.path)} — ${detection.name}`);
+      info(colors.dim(`  ${detection.reason}`));
+      detectedPath = detection;
+    } else if (detection.confidence === 'medium') {
+      info(`  Possible: ${colors.cyan(detection.path)} — ${detection.name}`);
+      detectedPath = detection;
+    }
+    if (detectedPath) console.log();
+  } catch { /* smart-detect is optional */ }
+
   // Q1 — What are you building?
   let q1 = '';
   while (!q1) {

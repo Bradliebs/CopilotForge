@@ -452,6 +452,37 @@ describe('review - scanning', () => {
     assert.ok(typeof result.totalFindings === 'number');
     fs.rmSync(dir, { recursive: true, force: true });
   });
+
+  it('detects deprecated API usage', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rev-depr-'));
+    const file = path.join(dir, 'test.js');
+    fs.writeFileSync(file, 'const buf = new Buffer(10);\n');
+    const findings = scanFile(file, RULES);
+    assert.ok(findings.some((f) => f.rule === 'deprecated-api'));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('detects non-HTTPS URLs', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rev-http-'));
+    const file = path.join(dir, 'test.js');
+    fs.writeFileSync(file, "const url = 'http://example.com/api';\n");
+    const findings = scanFile(file, RULES);
+    assert.ok(findings.some((f) => f.rule === 'http-url'));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('allows localhost HTTP URLs', () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rev-local-'));
+    const file = path.join(dir, 'test.js');
+    fs.writeFileSync(file, "const url = 'http://localhost:3000';\n");
+    const findings = scanFile(file, RULES);
+    assert.ok(!findings.some((f) => f.rule === 'http-url'));
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('has at least 9 rules after expansion', () => {
+    assert.ok(RULES.length >= 9, `Expected >= 9 rules, got ${RULES.length}`);
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
