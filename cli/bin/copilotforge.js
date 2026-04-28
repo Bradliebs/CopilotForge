@@ -149,20 +149,11 @@ switch (command) {
 
   case 'interactive':
   case '': {
-    // Empty command: use wizard if TTY, interactive menu otherwise
-    if (command === '' && process.stdin.isTTY) {
-      const wizard = require('../src/wizard');
-      wizard.run().catch((err) => {
-        console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
-        process.exit(1);
-      });
-    } else {
-      const interactive = require('../src/interactive');
-      interactive.run().catch((err) => {
-        console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
-        process.exit(1);
-      });
-    }
+    const interactive = require('../src/interactive');
+    interactive.run().catch((err) => {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    });
     break;
   }
 
