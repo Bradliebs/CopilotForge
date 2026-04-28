@@ -508,18 +508,9 @@ async function run(args) {
     info(`${colors.cyan('💡 Beginner tip: Open WHAT_THIS_MEANS.md to understand everything that was just created!')}`);
   }
 
-  // Auto-open the Command Center dashboard pointed at this project
-  const dashboard = require('./dashboard');
-  const dashboardOpened = dashboard.tryOpen(cwd);
-  if (dashboardOpened) {
-    console.log();
-    info(`${colors.green('📊 Opening CopilotForge Command Center...')}`);
-    info(colors.dim('  The dashboard will show your plan and Ralph status live.'));
-    info(colors.dim(`  If it closes, reopen it with: ${colors.cyan('npx copilotforge dashboard')}`));
-  } else {
-    console.log();
-    info(colors.dim(`📊 Want a live dashboard? Install it: ${colors.cyan('npx copilotforge dashboard')}`));
-  }
+  // Dashboard hint (no longer auto-opens to avoid spawning windows during CI/testing)
+  console.log();
+  info(colors.dim(`📊 Want a live dashboard? Run: ${colors.cyan('npx copilotforge dashboard')}`));
 
   separator();
 }
