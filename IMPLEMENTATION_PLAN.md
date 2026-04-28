@@ -217,5 +217,12 @@
 #   6 = VS Code extension — native VS Code integration with sidebar,
 #       status bar trust indicator, and inline playbook suggestions
 #
-# STATUS: Planning — no tasks defined yet.
+# STATUS: In Progress
 # =============================================================================
+
+- [x] copilot-extension — Create GitHub Copilot Extension HTTP/SSE agent server. New file: `cli/src/extension-server.js` implementing POST handler with SSE response streaming. Features: intent parsing (init/doctor/status/rollback/trust/playbook/plan/wizard/help), GitHub signature verification via `api.github.com/meta/public_keys/copilot_api`, SSE helpers (ack/text/done/error), health check endpoint (GET /), CORS preflight. New CLI command: `copilotforge extension [--port PORT]`. Zero new dependencies. Test file: `cli/tests/phase17.test.js` with 21 tests covering module structure, intent parsing, HTTP handler, and CLI routing.
+- [ ] team-workspaces — Shared forge-memory across team members via git hooks with conflict resolution
+- [ ] agent-marketplace — Discover and install community agents/skills from a public registry
+- [ ] multi-repo — Shared playbook and trust across multiple repositories in a workspace
+- [ ] telemetry-dashboard — Opt-in usage analytics for project leads
+- [ ] vscode-extension — Native VS Code integration with sidebar and status bar

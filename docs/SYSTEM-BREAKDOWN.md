@@ -125,6 +125,12 @@ The CLI is the human-facing entry point. It installs, upgrades, diagnoses, and m
 | `src/evaluator.js` | Generator-evaluator separation — Sprint Contract pattern for task verification (Phase 15) |
 | `src/compaction.js` | Five-layer graduated context compaction pipeline (Phase 15) |
 | `src/trust.js` | Trust trajectory tracking — 7 signals, 4 levels, behavior recommendations (Phase 15) |
+| `src/plan-generator.js` | AI plan generation from project description + stack detection (Phase 16) |
+| `src/plan-cli.js` | CLI wrapper for plan generation with --stack and --dry-run flags (Phase 16) |
+| `src/compact-cli.js` | CLI wrapper for five-layer compaction pipeline (Phase 16) |
+| `src/playbook-cli.js` | CLI wrapper for playbook search, top entries, consolidation (Phase 16) |
+| `src/trust-cli.js` | CLI wrapper for trust trajectory display and reset (Phase 16) |
+| `src/extension-server.js` | GitHub Copilot Extension HTTP/SSE agent server (Phase 17) |
 
 ### Templates Modular Split (Phase 13)
 

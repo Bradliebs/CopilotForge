@@ -173,6 +173,12 @@ switch (command) {
     break;
   }
 
+  case 'extension': {
+    const extensionServer = require('../src/extension-server');
+    extensionServer.run(args.slice(1));
+    break;
+  }
+
   case 'rollback': {
     const rollback = require('../src/rollback');
     rollback.run(args.slice(1)).catch((err) => {
@@ -260,6 +266,8 @@ function printHelp() {
     npx copilotforge examples         Browse example projects
     npx copilotforge examples <name>  Clone an example project
     npx copilotforge mcp              Start MCP server (stdio transport for AI clients)
+    npx copilotforge extension        Start Copilot Extension agent server (HTTP/SSE)
+    npx copilotforge extension --port 8080  Use a custom port (default: 3456)
     npx copilotforge --version        Show version
 
   ${colors.bold('Flags:')}

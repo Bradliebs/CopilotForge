@@ -16,10 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Global playbook** — merge `~/.copilotforge/playbook.md` with project-level entries, `--promote` flag
 - **Compaction-aware Ralph Loop** — session messages tracked and compacted after 20 messages
 - **Experiential context loading** in Oracle Prime instructions — top-5 playbook entries injected on analysis start
+- **Copilot Extension agent** (`cli/src/extension-server.js`) — HTTP/SSE server for GitHub Copilot Chat integration
+- **`copilotforge extension`** subcommand — start Copilot Extension agent server with `--port` flag
+- Intent parsing (init/doctor/status/rollback/trust/playbook/plan/wizard/help) with SSE streaming
+- GitHub signature verification via `api.github.com/meta/public_keys/copilot_api`
+- VS Code terminal detection in doctor.js — skip `code --version` when inside VS Code
 - Trust signals in plan-executor: `tasksCompleted` on success, `tasksFailed` on failure
 - E2E pipeline integration test (init → plan gen → verify → trust)
 - Phase 16 + 17 planning headers in IMPLEMENTATION_PLAN.md
-- 41 Phase 16 tests covering plan-generator, global playbook, CLI routing, trust integration
+- 41 Phase 16 tests, 21 Phase 17 tests (extension-server)
 
 ## [1.8.0] - Phase 15: Agent Harness Runtime
 
