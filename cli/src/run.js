@@ -69,10 +69,31 @@ function runTaskLoop(projectPath, taskLoopScript, args) {
     if (code === 0) {
       console.log();
       console.log(`  ${colors.bold(colors.green('✅ Plan executor finished — all tasks complete.'))}`);
+
+      // Run post-execution evaluation
+      try {
+        const { evaluate } = require('./evaluator');
+        evaluate(
+          { id: 'plan-run', title: 'Plan execution complete' },
+          { cwd: projectPath }
+        ).then((result) => {
+          if (result.verdict === 'confirmed') {
+            console.log(`  ${colors.green('✅')} Evaluator: ${result.verdict}`);
+          } else {
+            console.log(`  ${colors.yellow('⚠')} Evaluator: ${result.verdict}`);
+          }
+        }).catch(() => {});
+      } catch { /* evaluator is optional */ }
     } else {
       console.log();
       console.log(`  ${colors.bold(colors.red('❌ Plan executor exited with code ' + code))}`);
       console.log(`  ${colors.dim('Check the output above for details.')}`);
+
+      // Fire TaskFailed hook
+      try {
+        const { fireHooks } = require('./hooks');
+        fireHooks('TaskFailed', { exitCode: code, cwd: projectPath }).catch(() => {});
+      } catch { /* hooks are optional */ }
     }
     process.exit(code || 0);
   });
