@@ -23,6 +23,17 @@ Treat classification as dynamic. Upgrade immediately when investigation reveals 
 
 Before deep analysis, assess whether the problem is sufficiently specified. Ask a clarifying question only when the answer would change which approach dominates or flip the base case. A detail affecting only confidence level does not warrant a question. Ask at most 2. If proceeding without a question, state the assumption made instead.
 
+## Experiential Context Loading
+
+Before any Medium or Complex analysis, check for `forge-memory/playbook.md`. If it exists, read the top-5 highest-scored entries and apply them as session-local context:
+
+* `[STRATEGY]` entries inform approach selection
+* `[PATTERN]` entries are treated as established conventions
+* `[ANTIPATTERN]` entries are active warnings — flag if the current approach risks repeating them
+* `[INSIGHT]` entries provide background knowledge
+
+If the playbook is absent or empty, proceed without it — this step is advisory, not blocking.
+
 ## Reasoning Pipeline
 
 All applicable stages execute internally before output. Only complex-tier tasks surface the full output format.

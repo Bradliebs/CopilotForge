@@ -164,3 +164,35 @@
 #
 # STATUS: Planning — no tasks defined yet.
 # =============================================================================
+
+# =============================================================================
+# PHASE 16 — INTELLIGENCE & ECOSYSTEM (v1.8.0 → v1.9.0)
+# =============================================================================
+#
+# Builds on the Phase 15 agent harness runtime to add intelligence and
+# ecosystem features. The harness infrastructure (hooks, compaction, trust,
+# evaluator, experiential memory) is now operational — Phase 16 uses it.
+#
+# Feature Candidates:
+#   1 = AI plan generation — after wizard Q1+Q2, auto-generate
+#       IMPLEMENTATION_PLAN.md tasks using project description + stack
+#   2 = Playbook-driven generation — use top-scored playbook strategies
+#       to influence which skills/agents/recipes the wizard generates
+#   3 = Trust-adaptive wizard — wizard behavior adjusts based on trust
+#       level (skip confirmations at 'trusted', auto-select extras at
+#       'autonomous', verbose explanations at 'cautious')
+#   4 = Compaction-aware Ralph Loop — inject compaction pipeline before
+#       each model call in the Ralph Loop for long-running sessions
+#   5 = Hook marketplace — discover and install community hooks from
+#       a registry (similar to npm/VS Code extensions)
+#   6 = Multi-project playbook — share experiential memory entries across
+#       projects via a global playbook at ~/.copilotforge/playbook.md
+#
+# DEPENDENCY CHAIN:
+#   1, 2, 3 can run in parallel (no dependencies)
+#   4 depends on compaction pipeline (Phase 15 — complete)
+#   5 is independent
+#   6 depends on experiential memory (Phase 15 — complete)
+#
+# STATUS: Planning — no tasks defined yet.
+# =============================================================================

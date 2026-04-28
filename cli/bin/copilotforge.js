@@ -120,6 +120,17 @@ switch (command) {
     break;
   }
 
+  case 'compact': {
+    const compactCli = require('../src/compact-cli');
+    try {
+      compactCli.run(args.slice(1));
+    } catch (err) {
+      console.error(`\n  ${colors.red('Error:')} ${err.message}\n`);
+      process.exit(1);
+    }
+    break;
+  }
+
   case 'playbook': {
     const playbookCli = require('../src/playbook-cli');
     try {
@@ -227,6 +238,8 @@ function printHelp() {
     npx copilotforge playbook <query> Search playbook by keyword
     npx copilotforge playbook --top   Show highest-scored entries
     npx copilotforge playbook --consolidate  Prune low-score entries
+    npx copilotforge compact <file>       Compact a conversation transcript
+    npx copilotforge compact --stats      Show compaction pipeline configuration
     npx copilotforge wizard           Run the conversational setup wizard (Q1-Q6)
     npx copilotforge rollback         Restore files from a previous init/upgrade snapshot
     npx copilotforge rollback --list  Show available snapshots
