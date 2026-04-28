@@ -5,6 +5,21 @@ All notable changes to CopilotForge are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - Phase 20: Next Generation
+
+### Added
+- **Agent composition pipelines** (`cli/src/compose.js`) — chain agents with conditional branching and output routing
+- **`copilotforge compose`** subcommand — run/list/create pipelines with 3 builtins
+- **Agent testing framework** (`cli/src/agent-test.js`) — 7 rules, conflict detection, mock contexts
+- **`copilotforge test-agents`** subcommand — validate agent .md files with --strict mode
+- **Memory graph** (`cli/src/memory-graph.js`) — graph-based relationship tracking with query and Mermaid export
+- **`copilotforge graph`** subcommand — visualize memory relationships
+- **i18n support** (`cli/src/i18n.js`) — 5 languages (en/es/de/pt/ja) with 30+ keys
+- 50+ Phase 20 tests
+
+### Changed
+- Version bump from 2.2.0 to 2.3.0
+
 ## [2.2.0] - Phase 19: Developer Experience & Polish
 
 ### Added

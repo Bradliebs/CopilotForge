@@ -316,5 +316,13 @@
 #   6 = Federation — cross-organization sharing of skills, agents, and
 #       playbook entries via a decentralized registry
 #
-# STATUS: Planning — no tasks defined yet.
+# STATUS: In Progress
 # =============================================================================
+
+- [x] compose — Agent composition pipelines. New file: `cli/src/compose.js` with step execution, conditional branching, onSuccess/onFailure handlers, 3 builtin pipelines. New CLI command: `copilotforge compose`.
+- [x] agent-test — Agent testing framework. New file: `cli/src/agent-test.js` with agent file parsing, 7 test rules, cross-agent conflict detection. New CLI command: `copilotforge test-agents`.
+- [x] memory-graph — Memory graph. New file: `cli/src/memory-graph.js` with graph data structure, keyword edge inference, query, JSON/Mermaid export. New CLI command: `copilotforge graph`.
+- [x] i18n — Internationalization. New file: `cli/src/i18n.js` with 5 languages (en/es/de/pt/ja), parameter interpolation, language detection.
+- [ ] llm-generation — LLM-powered code generation with playbook prompts
+- [ ] copilot-workspace — Native Copilot Workspace integration
+- [ ] federation — Cross-org skill/agent sharing

@@ -146,6 +146,10 @@ The CLI is the human-facing entry point. It installs, upgrades, diagnoses, and m
 | `src/perf.js` | Performance profiling — benchmark key CLI operations (Phase 19) |
 | `src/ui.js` | Terminal UI helpers — progress bar, spinner, box, table (Phase 19) |
 | `src/docs-site.js` | Documentation site generator — markdown to HTML with dark theme (Phase 19) |
+| `src/compose.js` | Agent composition pipelines — step execution, branching, builtins (Phase 20) |
+| `src/agent-test.js` | Agent testing framework — parsing, rules, conflict detection (Phase 20) |
+| `src/memory-graph.js` | Memory graph — relationship tracking, query, Mermaid export (Phase 20) |
+| `src/i18n.js` | Internationalization — 5 languages, parameter interpolation (Phase 20) |
 
 ### Templates Modular Split (Phase 13)
 

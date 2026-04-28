@@ -278,6 +278,24 @@ switch (command) {
     break;
   }
 
+  case 'compose': {
+    const compose = require('../src/compose');
+    compose.run(args.slice(1));
+    break;
+  }
+
+  case 'test-agents': {
+    const agentTest = require('../src/agent-test');
+    agentTest.run(args.slice(1));
+    break;
+  }
+
+  case 'graph': {
+    const memoryGraph = require('../src/memory-graph');
+    memoryGraph.run(args.slice(1));
+    break;
+  }
+
   case 'rollback': {
     const rollback = require('../src/rollback');
     rollback.run(args.slice(1)).catch((err) => {
@@ -397,6 +415,14 @@ function printHelp() {
     npx copilotforge migrate            Check for needed version migrations
     npx copilotforge migrate --apply    Apply all migrations
     npx copilotforge perf               Run performance benchmarks
+    npx copilotforge compose              Run agent composition pipeline
+    npx copilotforge compose --list       List builtin pipelines
+    npx copilotforge compose --create <n> Create pipeline template
+    npx copilotforge test-agents          Test all agent definitions
+    npx copilotforge test-agents --strict Fail on warnings
+    npx copilotforge graph                Display memory graph stats
+    npx copilotforge graph --query <term> Search memory graph
+    npx copilotforge graph --mermaid      Export as Mermaid diagram
     npx copilotforge --version        Show version
 
   ${colors.bold('Flags:')}
