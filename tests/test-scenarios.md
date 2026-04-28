@@ -472,6 +472,38 @@
 
 ---
 
+### SV-06: Oracle Prime Q6 Extras Selection — Full Integration
+
+**Input:**
+1. What are you building? → "A real-time analytics dashboard with user authentication"
+2. What's your stack? → "TypeScript, Express, PostgreSQL"
+3. Memory across sessions? → Yes
+4. Test automation? → Yes
+5. Skill level? → Advanced
+6. Extras → Select "Oracle Prime"
+
+**Expected output:**
+- `cookbook/oracle-prime.ts` — Structured reasoning harness recipe (TypeScript variant)
+- `.copilot/agents/oracle-prime.md` — Agent definition with full reasoning pipeline
+- `.github/skills/oracle-prime/SKILL.md` — Skill file with triggers and output format
+- `.github/instructions/oracle-prime.instructions.md` — Global adaptive reasoning instructions
+- FORGE.md Skills Index includes Oracle Prime entry
+- FORGE.md Cookbook section includes `oracle-prime.ts`
+
+**Validation:**
+- ⬚ Oracle Prime appears in Q6 extras choices list
+- ⬚ Selecting Oracle Prime generates the agent template file
+- ⬚ Generated agent contains all 7 reasoning stages (S1–S7)
+- ⬚ Generated agent contains all 6 algorithm modes
+- ⬚ Generated cookbook recipe follows standard header format (WHAT/WHEN/HOW/PREREQUISITES)
+- ⬚ No jargon leak — no specialist names in generated files
+- ⬚ FORGE.md references Oracle Prime in Skills Index and Cookbook sections
+- ⬚ Oracle Prime skill responds to trigger phrases: "deep analysis", "oracle prime", "scenario analysis"
+
+**Status:** ⬚
+
+---
+
 ## Test Execution Tracking
 
 | ID | Name | Category | Status |
@@ -500,3 +532,4 @@
 | SV-03 | Path consistency | Structural | ⬚ |
 | SV-04 | YAML frontmatter validity | Structural | ⬚ |
 | SV-05 | Memory file initialization | Structural | ⬚ |
+| SV-06 | Oracle Prime Q6 integration | Structural | ⬚ |

@@ -122,6 +122,8 @@ Replace `[stored_path_name]`, `[stored_path]`, `[detected_path_name]`, and `[det
 - If user answers **yes**: update `detected_path` to the new path and continue.
 - If user answers **no** (stay): set `detected_path = stored_path` and continue.
 
+**Oracle Prime enhancement:** When a contradiction fires with **High** confidence and the two paths are in different domains (e.g., Power Platform vs Developer), apply Oracle Prime's `[ADVERSARIAL]` mode internally — steel-man both paths in one sentence each before surfacing the warning. This helps the user make an informed choice rather than defaulting to the stored path.
+
 ---
 
 ### Step 3 — Prerequisite Risk Flag
@@ -145,6 +147,8 @@ Just checking: you mentioned [stated preference] but your description sounds mor
 ```
 
 Only trigger this if the mismatch is clear — not on ambiguous or partial overlaps. When in doubt, stay silent.
+
+**Oracle Prime enhancement:** When motivated reasoning is detected (Standing Patch P5), apply Oracle Prime's `[MOTIVATED]` flag internally. Weight the user's stated preference more critically — present one sentence explaining why the detected path might be a better fit, alongside the confirmation prompt. This counterbalances the tendency to rationalize a preferred path over the evidence-indicated one.
 
 ---
 

@@ -47,6 +47,21 @@ A brand-new empty project with no config files. Shows:
 
 ---
 
+### Oracle Prime Analysis Session
+
+**Path:** `examples/oracle-prime-session/`
+
+A multi-turn Oracle Prime analysis demonstrating the full reasoning pipeline. Shows:
+- Adaptive complexity classification triggering the full S1–S7 pipeline
+- Session state tracking with Evidence Register and Weight Log
+- Scenario Map flipping between turns based on new evidence
+- Evolution Block persistence via the forge remember mechanism
+- [RIVAL] hypothesis tracking and resolution
+
+**Topic:** Whether to migrate an e-commerce monolith to microservices
+
+---
+
 ## How to Use These Examples
 
 ### Browse Before Running the Wizard

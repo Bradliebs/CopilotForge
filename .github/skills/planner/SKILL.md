@@ -380,6 +380,7 @@ choices:
   - "🏗️ Copilot Studio — build enterprise agents (requires Power Platform)"
   - "💻 Code Apps — Power Apps with React/TypeScript (requires Power Platform)"
   - "🧩 Custom agents — .agent.md profiles for GitHub Copilot"
+  - "🔮 Oracle Prime — precision reasoning for complex decisions and risk analysis"
   - "✅ Done — I've made my selections, continue"
 ```
 
@@ -392,7 +393,7 @@ choices:
 **Default suggestions by experience level:**
 - **beginner** → "Skip" is shown first; say the reassurance message above before showing choices
 - **intermediate** → Highlight before showing choices: *"I'd suggest **Task automation** and **Command center** — they pair well with most projects. Click to add them, or skip."*
-- **advanced** → Highlight before showing choices: *"Popular picks: **Task automation**, **Auto-experiments**, and **Custom agents**. Click to add or pick your own."*
+- **advanced** → Highlight before showing choices: *"Popular picks: **Task automation**, **Auto-experiments**, **Custom agents**, and **Oracle Prime**. Click to add or pick your own."*
 
 If the user skips or says nothing, default to **none** (no extras).
 
@@ -629,6 +630,7 @@ Generate code recipes based on the project's detected stack. Recipes are copy-pa
 | Copilot Studio | Enterprise agent builder — clone, edit YAML, sync to Copilot Studio | Guide + YAML example |
 | Code Apps | Power Apps with React/TypeScript — scaffold, connect, publish | TypeScript + Guide |
 | Custom agents | GitHub Copilot `.agent.md` profiles — tools, MCP, specialized prompts | Guide + Example |
+| Oracle Prime | Precision reasoning — Bayesian scenario analysis, risk assessment, decision support | Guide + Agent template |
 
 **How recipes are selected:**
 
@@ -652,6 +654,7 @@ The goal is: every recipe matches something you actually use. No generic filler.
 - Copilot Studio → `copilot-studio-guide.md` + `copilot-studio-agent.yaml`
 - Code Apps → `code-apps-guide.md` + `code-apps-setup.ts`
 - Custom agents → `copilot-agents-guide.md` + `copilot-agents-example.agent.md`
+- Oracle Prime → `oracle-prime.ts` or `oracle-prime.py` + `oracle-prime.md` (agent template)
 
 Extras recipes are only generated if explicitly selected. They are never auto-included.
 
@@ -871,6 +874,7 @@ When this skill is active, listen for recipe requests during any conversation:
 | "Copilot Studio" | `cookbook/copilot-studio-guide.md` | Enterprise agent building |
 | "code apps" / "Power Apps" | `cookbook/code-apps-guide.md` | React/TS Power Apps |
 | "custom agents" / "agent.md" | `cookbook/copilot-agents-guide.md` | GitHub Copilot agents |
+| "oracle prime" / "reasoning" / "analysis" | `cookbook/oracle-prime.{ext}` | Precision reasoning |
 
 **For recipes that don't exist yet:** If the user asks for a recipe that wasn't generated during setup, offer to create it:
 > That recipe wasn't included in your initial setup. Want me to generate it now? I'll create `cookbook/{name}.{ext}` with patterns for your {stack} project.

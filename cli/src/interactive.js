@@ -193,15 +193,17 @@ function buildMenuItems(cwd) {
   const hasInit = exists(path.join(cwd, '.github', 'skills', 'planner', 'SKILL.md'));
   const hasPlan = exists(path.join(cwd, 'IMPLEMENTATION_PLAN.md'));
   const hasGuide = exists(path.join(cwd, 'docs', 'GETTING-STARTED.md'));
+  const hasOracle = exists(path.join(cwd, '.github', 'skills', 'oracle-prime', 'SKILL.md'));
 
   return [
-    { label: '\uD83D\uDE80 Set up my project',       value: 'init',    show: !hasInit },
-    { label: '\uD83D\uDD0D Check my setup (doctor)',  value: 'doctor',  show: true },
-    { label: '\u2B06\uFE0F  Update to latest',        value: 'upgrade', show: hasInit },
-    { label: '\uD83D\uDCCB View my plan',             value: 'plan',    show: hasPlan },
-    { label: '\uD83D\uDCD6 Getting started guide',    value: 'guide',   show: hasGuide },
-    { label: '\uD83D\uDD04 Refresh dashboard',        value: 'refresh', show: true },
-    { label: '\u274C Exit',                            value: 'exit',    show: true },
+    { label: '\uD83D\uDE80 Set up my project',       value: 'init',          show: !hasInit },
+    { label: '\uD83D\uDD2E Install Oracle Prime',     value: 'oracle-prime',  show: !hasOracle },
+    { label: '\uD83D\uDD0D Check my setup (doctor)',  value: 'doctor',        show: true },
+    { label: '\u2B06\uFE0F  Update to latest',        value: 'upgrade',       show: hasInit },
+    { label: '\uD83D\uDCCB View my plan',             value: 'plan',          show: hasPlan },
+    { label: '\uD83D\uDCD6 Getting started guide',    value: 'guide',         show: hasGuide },
+    { label: '\uD83D\uDD04 Refresh dashboard',        value: 'refresh',       show: true },
+    { label: '\u274C Exit',                            value: 'exit',          show: true },
   ];
 }
 
@@ -211,6 +213,9 @@ async function handleChoice(choice, cwd) {
   switch (choice) {
     case 'init':
       await require('./init').run(['--yes']);
+      break;
+    case 'oracle-prime':
+      await require('./init').run(['--oracle-prime', '--yes']);
       break;
     case 'doctor':
       require('./doctor').run();

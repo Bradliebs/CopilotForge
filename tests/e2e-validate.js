@@ -366,6 +366,52 @@ describe('CopilotForge E2E Validation', () => {
     });
   });
 
+  describe('Init --oracle-prime Flag', () => {
+    let oracleDir;
+
+    it('should create Oracle Prime files with --oracle-prime flag', () => {
+      oracleDir = createTempDir();
+      const result = runCLI('init --oracle-prime --yes', oracleDir);
+      assert.ok(result.success || result.exitCode === 0, `--oracle-prime should succeed: ${result.error || result.output}`);
+    });
+
+    it('should create oracle-prime agent template', () => {
+      assert.ok(
+        fileExists(oracleDir, path.join('.copilot', 'agents', 'oracle-prime.md')),
+        '.copilot/agents/oracle-prime.md should exist'
+      );
+    });
+
+    it('should create oracle-prime instructions', () => {
+      assert.ok(
+        fileExists(oracleDir, path.join('.github', 'instructions', 'oracle-prime.instructions.md')),
+        '.github/instructions/oracle-prime.instructions.md should exist'
+      );
+    });
+
+    it('should create oracle-prime skill', () => {
+      assert.ok(
+        fileExists(oracleDir, path.join('.github', 'skills', 'oracle-prime', 'SKILL.md')),
+        '.github/skills/oracle-prime/SKILL.md should exist'
+      );
+    });
+
+    it('should NOT create planner or other full scaffold files', () => {
+      assert.ok(
+        !fileExists(oracleDir, 'FORGE.md'),
+        'FORGE.md should NOT be created with --oracle-prime'
+      );
+      assert.ok(
+        !fileExists(oracleDir, 'IMPLEMENTATION_PLAN.md'),
+        'IMPLEMENTATION_PLAN.md should NOT be created with --oracle-prime'
+      );
+    });
+
+    it('cleanup oracle-prime temp dir', () => {
+      cleanup(oracleDir);
+    });
+  });
+
   // Cleanup after all tests
   describe('Cleanup', () => {
     it('should remove all temp directories', () => {

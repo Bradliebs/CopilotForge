@@ -1,0 +1,100 @@
+{
+  "Oracle Prime: Full Analysis": {
+    "scope": "markdown",
+    "prefix": "oracle-full",
+    "description": "Oracle Prime full analysis template with all output sections",
+    "body": [
+      "## Oracle Prime Analysis",
+      "",
+      "🔍 **REFRAME** — [${1|DECISION,ANALYSIS|}] ${2:Core question reframed in one sentence}",
+      "",
+      "🔧 **TRANSPARENCY LOG**",
+      "- P1: [${3|TRIGGERED,BYPASSED|}]",
+      "- P2: [${4|TRIGGERED,BYPASSED|}]",
+      "- P3: [${5|TRIGGERED,BYPASSED|}]",
+      "- P4: [${6|TRIGGERED,BYPASSED|}]",
+      "- P5: [${7|TRIGGERED,BYPASSED|}]",
+      "",
+      "📊 **KEY VARIABLES** (ranked by influence)",
+      "1. ${8:Variable 1}",
+      "2. ${9:Variable 2}",
+      "3. ${10:Variable 3}",
+      "",
+      "🔮 **SCENARIO MAP**",
+      "",
+      "| Scenario | Probability | Description |",
+      "|----------|-------------|-------------|",
+      "| Base Case | ${11:55%} | ${12:Most probable outcome} |",
+      "| Bull Case | ${13:20%} | ${14:Optimistic but plausible} |",
+      "| Bear Case | ${15:15%} | ${16:Meaningful deterioration} |",
+      "| Black Swan | ${17:10%} | ${18:Assumption-shattering tail risk} |",
+      "",
+      "⚙️ **CAUSAL CHAIN**",
+      "- ${19:Primary cause} → ${20:Effect}",
+      "- ${21:Second-order consequence}",
+      "",
+      "🔬 **COUNTERFACTUAL PIVOT**",
+      "- **Assumption:** ${22:Load-bearing assumption}",
+      "- **Flip condition:** ${23:What reverses the base case}",
+      "",
+      "⚠️ **CRITICAL UNCERTAINTIES**",
+      "- **[${24|DATA,MODEL,VARIANCE,MOTIVATED,RIVAL|}]** ${25:Description}",
+      "",
+      "✅ **CONCLUSION / ACTION**",
+      "${26:Lead with the answer}",
+      "",
+      "📌 **CONFIDENCE: ${27|High,Medium,Low|}**",
+      "${28:Justification}",
+      "",
+      "```",
+      "SESSION STATE",
+      "EVIDENCE REGISTER: [${29:facts}]",
+      "WEIGHT LOG: [${30:adjustments}]",
+      "ACTIVE MODE(S): [${31:modes}]",
+      "STYLE NOTES: [${32:calibration}]",
+      "```"
+    ]
+  },
+  "Oracle Prime: Quick Scenario": {
+    "scope": "markdown",
+    "prefix": "oracle-scenario",
+    "description": "Oracle Prime scenario map table",
+    "body": [
+      "🔮 **SCENARIO MAP**",
+      "",
+      "| Scenario | Probability | Description |",
+      "|----------|-------------|-------------|",
+      "| Base Case | ${1:55%} | ${2:Most probable outcome} |",
+      "| Bull Case | ${3:20%} | ${4:Optimistic but plausible} |",
+      "| Bear Case | ${5:15%} | ${6:Meaningful deterioration} |",
+      "| Black Swan | ${7:10%} | ${8:Tail risk} |"
+    ]
+  },
+  "Oracle Prime: Evolution Block": {
+    "scope": "markdown",
+    "prefix": "oracle-evolution",
+    "description": "Oracle Prime evolution tracking block",
+    "body": [
+      "```",
+      "⚙️ ORACLE EVOLUTION",
+      "DRIFT: ${1:What shifted in calibration this response}",
+      "GAP: ${2:What was missing or weak in the framework}",
+      "PATCH: ${3:One instruction fixing the GAP (max 100 chars)}",
+      "```"
+    ]
+  },
+  "Oracle Prime: Session State": {
+    "scope": "markdown",
+    "prefix": "oracle-session",
+    "description": "Oracle Prime session state block",
+    "body": [
+      "```",
+      "SESSION STATE",
+      "EVIDENCE REGISTER: [${1:Confirmed facts and constraints}]",
+      "WEIGHT LOG: [${2:Scenario weight adjustments}]",
+      "ACTIVE MODE(S): [${3|ADVERSARIAL,MONTE CARLO,FERMI,RED TEAM,SIGNAL vs NOISE,COUNTERFACTUAL|}]",
+      "STYLE NOTES: [${4:Depth and brevity calibration}]",
+      "```"
+    ]
+  }
+}

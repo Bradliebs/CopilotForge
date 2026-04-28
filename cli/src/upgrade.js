@@ -17,6 +17,7 @@ const FRAMEWORK_FILES = [
   { type: 'copy', src: path.join('.github', 'skills', 'plan-executor', 'reference.md') },
   // Template-based files
   { type: 'template', dest: path.join('.copilot', 'agents', 'planner.md'), content: templates.PLANNER_AGENT_MD },
+  { type: 'template', dest: path.join('.copilot', 'agents', 'oracle-prime.md'), content: templates.ORACLE_PRIME_AGENT_MD },
   { type: 'template', dest: path.join('docs', 'GETTING-STARTED.md'), content: templates.GETTING_STARTED_MD },
 ];
 
@@ -56,6 +57,32 @@ async function run(args) {
   let skipped = 0;
   let current = 0;
   const updatedFiles = [];
+
+  // Capture snapshot before writing (for rollback)
+  if (!dryRun) {
+    try {
+      const { captureSnapshot } = require('./rollback');
+      const allPaths = [
+        ...FRAMEWORK_FILES.map((f) => f.type === 'copy' ? f.src : f.dest),
+        ...COOKBOOK_TEMPLATES.map((f) => f.dest),
+      ];
+      captureSnapshot(allPaths, cwd);
+    } catch { /* rollback is optional */ }
+  }
+
+  // Load project hooks and fire PreScaffold for upgrade
+  if (!dryRun) {
+    try {
+      const { loadProjectHooks, fireHooks } = require('./hooks');
+      loadProjectHooks(cwd);
+      const hookResult = await fireHooks('PreScaffold', { cwd, operation: 'upgrade' });
+      if (hookResult.blocked) {
+        warn('Upgrade blocked by a PreScaffold hook.');
+        console.log();
+        return;
+      }
+    } catch { /* hooks are optional */ }
+  }
 
   // --- Core framework files ---
   info(colors.bold('Core files:'));

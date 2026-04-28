@@ -273,6 +273,50 @@ function run() {
     void pathIssues; void pathChecks;
   }
 
+  // Oracle Prime health checks
+  const oracleInstructions = path.join(cwd, '.github', 'instructions', 'oracle-prime.instructions.md');
+  const oracleSkill = path.join(cwd, '.github', 'skills', 'oracle-prime', 'SKILL.md');
+  const oracleAgent = path.join(cwd, '.copilot', 'agents', 'oracle-prime.md');
+
+  const oracleFilesExist = exists(oracleInstructions) || exists(oracleSkill) || exists(oracleAgent);
+
+  if (oracleFilesExist) {
+    if (exists(oracleInstructions)) {
+      recordCheck('Oracle Prime instructions', 'pass', 'Oracle Prime instructions found', '');
+    } else {
+      recordCheck('Oracle Prime instructions', 'warn', 'Oracle Prime instructions missing (.github/instructions/oracle-prime.instructions.md)', '');
+    }
+
+    if (exists(oracleSkill)) {
+      recordCheck('Oracle Prime skill', 'pass', 'Oracle Prime skill found', '');
+    } else {
+      recordCheck('Oracle Prime skill', 'warn', 'Oracle Prime skill missing (.github/skills/oracle-prime/SKILL.md)', '');
+    }
+
+    if (exists(oracleAgent)) {
+      recordCheck('Oracle Prime agent', 'pass', 'Oracle Prime agent found', '');
+    } else {
+      recordCheck('Oracle Prime agent', 'warn', 'Oracle Prime agent missing (.copilot/agents/oracle-prime.md)', '');
+    }
+  }
+
+  // Plugin health checks
+  try {
+    const { getRegisteredPlugins, reportPlugins } = require('./plugin-loader');
+    const { plugins, conflicts } = getRegisteredPlugins(cwd);
+    if (plugins.length > 0) {
+      if (!jsonMode) {
+        info(colors.bold('Plugins:'));
+        console.log();
+      }
+      reportPlugins(plugins, recordCheck);
+      for (const c of conflicts) {
+        recordCheck(`Plugin conflict: ${c.conflicting}`, 'warn',
+          `Plugin ${c.conflicting} conflicts with ${c.existing} on path ${c.letter}`, '');
+      }
+    }
+  } catch { /* plugin-loader is optional */ }
+
   if (jsonMode) {
     const total = checkResults.length;
     const passed = checkResults.filter(c => c.status === 'pass').length;

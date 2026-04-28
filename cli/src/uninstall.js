@@ -7,6 +7,8 @@ const { banner, fail, info, separator, removeFile, removeEmptyDirs, colors } = r
 const INSTALLED_FILES = [
   path.join('.github', 'skills', 'planner', 'SKILL.md'),
   path.join('.github', 'skills', 'planner', 'reference.md'),
+  path.join('.github', 'skills', 'oracle-prime', 'SKILL.md'),
+  path.join('.github', 'instructions', 'oracle-prime.instructions.md'),
 ];
 
 function run() {
@@ -42,6 +44,8 @@ function run() {
 
   // Clean up empty directories left behind
   removeEmptyDirs(path.join(cwd, '.github', 'skills', 'planner'));
+  removeEmptyDirs(path.join(cwd, '.github', 'skills', 'oracle-prime'));
+  removeEmptyDirs(path.join(cwd, '.github', 'instructions'));
   removeEmptyDirs(path.join(cwd, '.github', 'skills'));
 
   console.log();

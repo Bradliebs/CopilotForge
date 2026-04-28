@@ -319,8 +319,8 @@ When the user selects extras in Question 6, generate the corresponding recipe fi
 
 ### Extras Edge Cases
 
-- **"I want everything"** / **"all of them"** → Select all 11 extras. Warn: "That's a lot of files! I'll generate them all — you can always delete ones you don't use."
-- **"I want the wiki"** → Map fuzzy names: "wiki" = Knowledge wiki, "loops" / "automation" = Task automation, "research" / "experiments" = Auto-experiments, "hooks" = CLI hooks, "blog" = Blog writer, "templates" / "docs" = Template factory, "dashboard" / "PRs" = PR dashboard, "command center" / "status" = Command center, "studio" / "copilot studio" = Copilot Studio, "code apps" / "power apps" / "code app" = Code Apps, "custom agents" / ".agent.md" / "agent profiles" = Custom agents.
+- **"I want everything"** / **"all of them"** → Select all 12 extras. Warn: "That's a lot of files! I'll generate them all — you can always delete ones you don't use."
+- **"I want the wiki"** → Map fuzzy names: "wiki" = Knowledge wiki, "loops" / "automation" = Task automation, "research" / "experiments" = Auto-experiments, "hooks" = CLI hooks, "blog" = Blog writer, "templates" / "docs" = Template factory, "dashboard" / "PRs" = PR dashboard, "command center" / "status" = Command center, "studio" / "copilot studio" = Copilot Studio, "code apps" / "power apps" / "code app" = Code Apps, "custom agents" / ".agent.md" / "agent profiles" = Custom agents, "oracle" / "reasoning" / "analysis" / "oracle prime" = Oracle Prime.
 - **User picks an extra that needs TypeScript/Python but their stack is Go/Rust** → Generate anyway with a comment: `// NOTE: This recipe is optimized for TypeScript. Adapt patterns for your {stack}.`
 - **Returning user** → Read extras list from `preferences.md`. Show current selections. Only ask about changes.
 
@@ -386,6 +386,17 @@ When the user selects extras in Question 6, generate the corresponding recipe fi
   ```
 - **Stack mapping:** Language-independent — `.agent.md` files work for any project
 - **Beginner note:** This is the lowest-barrier option. If you have GitHub Copilot, you already have everything you need. No extra licenses, no cloud services. Just create a markdown file and your AI assistant gets a new personality.
+
+### 🔮 Oracle Prime
+- **What it does:** Adds a precision reasoning framework to your project. Oracle Prime scales reasoning depth to task complexity — lightweight decomposition for simple tasks, full Bayesian scenario analysis with counterfactual stress testing for complex decisions. Includes an agent template and a cookbook recipe showing structured analysis patterns.
+- **Prerequisites:** None — works with any AI assistant that reads `.agent.md` files.
+- **What gets generated:**
+  1. `cookbook/oracle-prime.{ext}` — Programmatic reasoning harness showing how to structure queries, interpret scenario maps, and feed conclusions into `forge-memory/decisions.md`
+  2. `.copilot/agents/oracle-prime.md` — Agent template with the full reasoning pipeline, algorithm modes, and output format specification
+- **Reasoning pipeline:** 7 stages (Problem Decomposition → Hypothesis Mapping → Bayesian Updating → Systems Dynamics → Scenario Envelope → Counterfactual Stress Test → Critical Audit). Stages activate based on complexity tier (Simple/Medium/Complex).
+- **Algorithm modes:** `[ADVERSARIAL]`, `[MONTE CARLO]`, `[FERMI]`, `[RED TEAM]`, `[SIGNAL vs NOISE]`, `[COUNTERFACTUAL]` — auto-activated based on problem type.
+- **Stack mapping:** TypeScript → `oracle-prime.ts`, Python → `oracle-prime.py`
+- **Beginner note:** Oracle Prime adds structured thinking to your AI assistant. It helps with architecture decisions, risk assessment, and complex trade-offs. Safe to enable at any level — it scales its depth to match the question.
 
 ### Planning Mode (Task Automation)
 

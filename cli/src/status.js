@@ -235,8 +235,12 @@ function showSkills(cwd) {
   info(
     `\uD83D\uDD27 ${pad('Skills')}${colors.green(String(data.names.length))} active`
   );
+
+  const styledNames = data.names.map((n) =>
+    n === 'oracle-prime' ? `\uD83D\uDD2E ${n}` : n
+  );
   info(
-    `${' '.repeat(LABEL_W + 2)}${colors.dim(data.names.join(' \u00B7 '))}`
+    `${' '.repeat(LABEL_W + 2)}${colors.dim(styledNames.join(' \u00B7 '))}`
   );
 
   console.log();

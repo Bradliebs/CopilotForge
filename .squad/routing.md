@@ -16,6 +16,7 @@ How to decide who handles what.
 | Beginner UX review | Tank | Is it understandable? Does the generated output make sense? |
 | Code review | Morpheus | Review PRs, check quality, architectural consistency |
 | Scope & priorities | Morpheus | What to build next, trade-offs, phase boundaries |
+| Deep analysis & risk assessment | Oracle Prime | Architecture decisions, scenario modeling, counterfactual stress testing |
 | Prompt review | Trinity | Review system prompts, skill triggers, agent definitions |
 | Session logging | Scribe | Automatic — never needs routing |
 
